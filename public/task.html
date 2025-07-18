@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Task List</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <style>
+    body {
+      background: #fffbe6;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+      color: #222;
+    }
+    .header {
+      background: #1175d3;
+      padding: 12px 0 0 0;
+      margin-bottom: -8px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 1.13em;
+      color: #fff;
+      letter-spacing: 1px;
+    }
+    .level-card {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 2px 8px #2979ff22;
+      margin: 18px 8px 18px 8px;
+      padding: 18px 18px 20px 18px;
+      border: 1.5px solid #f4e882;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      position: relative;
+    }
+    .level-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 6px;
+      gap: 8px;
+    }
+    .level-icon {
+      width: 28px; height: 28px;
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 5px;
+    }
+    .level-title {
+      font-weight: 700;
+      font-size: 1.09em;
+      color: #ffe600;
+      background: #222;
+      border-radius: 7px;
+      padding: 3px 10px;
+      display: flex;
+      align-items: center;
+      letter-spacing: 1px;
+    }
+    .level-title .bond-logo {
+      width: 22px; height: 22px; margin-right: 5px;
+      vertical-align: middle;
+    }
+    .level-progress-label, .level-progress-label-complete {
+      font-size: 1em;
+      margin-top: 3px;
+      margin-bottom: 2px;
+      color: #333;
+    }
+    .level-progress-label-complete { color: #2979ff; font-weight: 600;}
+    .level-progress-bar-bg {
+      width: 100%; height: 7px; background: #ffe60033; border-radius: 7px;
+      margin-top: 6px; margin-bottom: 2px;
+      overflow: hidden;
+    }
+    .level-progress-bar-fg {
+      height: 100%; background: linear-gradient(90deg, #ffe600 70%, #2979ff 100%);
+      border-radius: 7px;
+      width: 0;
+      transition: width 0.6s;
+    }
+    .tasks-section {
+      margin-bottom: 72px;
+      padding-bottom: 20px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    ul.task-list {
+      margin: 0;
+      padding: 0;
+      list-style-type: none;
+    }
+    li.task-card {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 2px 8px #2979ff10;
+      padding: 13px 10px;
+      margin: 14px 10px 0 10px;
+      border: 1px solid #f4e882;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      transition: box-shadow 0.18s;
+      position: relative;
+    }
+    li.task-card:hover {
+      box-shadow: 0 4px 14px #2979ff28;
+    }
+    .task-thumb {
+      width: 70px; height: 70px;
+      border-radius: 11px;
+      background: #ddd;
+      border: 1.5px solid #ffe60044;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .task-thumb img {
+      width: 100%; height: 100%; object-fit: cover; border-radius: 11px;
+      display: block;
+    }
+    .play-btn {
+      position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);
+      background: #1175d3;
+      border-radius: 50%; padding: 8px;
+      color: #fff;
+      font-size: 1.6em;
+      display: flex; align-items: center; justify-content: center;
+      border: 2.5px solid #fff;
+      z-index: 2;
+      box-shadow: 0 2px 8px #ffe60022;
+    }
+    .task-details {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 0;
+    }
+    .task-level-tag {
+      display: inline-block;
+      background: #1175d3;
+      color: #fff;
+      border-radius: 7px;
+      padding: 2px 10px;
+      font-size: 0.98em;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+    .task-reward {
+      font-size: 1.07em;
+      color: #ff9d00;
+      font-weight: 700;
+      margin-left: 0;
+    }
+    .task-card-completed {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+    /* Modal styles */
+    .modal-bg {
+      position: fixed;
+      top:0; left:0; right:0; bottom:0;
+      background: rgba(0,0,0,0.38);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-bg.active { display: flex; }
+    .modal-card {
+      background: #fffbe6;
+      border-radius: 20px;
+      max-width: 430px;
+      width: 97vw;
+      box-shadow: 0 8px 50px #0003;
+      padding: 0 0 24px 0;
+      position: relative;
+      animation: popin 0.18s;
+    }
+    @keyframes popin {
+      from { transform: scale(0.96);}
+      to { transform: scale(1);}
+    }
+    .modal-header {
+      background: #1175d3;
+      border-top-left-radius: 20px;
+      border-top-right-radius: 20px;
+      padding: 15px 0 10px 0;
+      text-align: center;
+      font-size: 1.13em;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 1px;
+    }
+    .modal-video-box {
+      background: #333;
+      width: 100%;
+      height: 190px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 0 0 15px 15px;
+      position: relative;
+      overflow: hidden;
+    }
+    .modal-video-box video {
+      width: 100%;
+      height: 100%;
+      background: #222;
+      border-radius: 0 0 15px 15px;
+      object-fit: cover;
+    }
+    .modal-section {
+      margin: 17px 18px 0 18px;
+    }
+    .modal-intro {
+      background: #fff;
+      border-radius: 11px;
+      font-weight: 500;
+      font-size: 1.09em;
+      color: #222;
+      padding: 13px 10px;
+    }
+    .modal-req-row {
+      display: flex;
+      gap: 12px;
+      justify-content: start;
+      margin: 10px 0 0 0;
+    }
+    .modal-req-block {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow:0 1px 4px #2979ff22;
+      padding: 9px 17px;
+      font-weight: 600;
+      color: #2979ff;
+      font-size: 1em;
+      text-align: center;
+      min-width: 0;
+      flex: 1;
+    }
+    .modal-req-block.reward { color: #e32f2f; font-size: 1.13em;}
+    .modal-answer-section {
+      margin: 16px 0 0 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .modal-question-box {
+      background: #fffbe6;
+      border-radius: 9px;
+      padding: 12px 10px;
+      margin-bottom: 9px;
+      font-size: 1.07em;
+      font-weight: 500;
+      color: #2979ff;
+    }
+    .modal-answer-box {
+      width: 100%;
+      padding: 11px 8px;
+      font-size: 1.09em;
+      border-radius: 9px;
+      border: 1.5px solid #2979ff33;
+      margin-bottom: 10px;
+    }
+    .modal-actions-row {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      margin-top: 18px;
+    }
+    .modal-action-btn {
+      background: #2979ff;
+      color: #fff;
+      border: none;
+      border-radius: 19px;
+      padding: 12px 23px;
+      font-size: 1.09em;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow:0 2px 10px #2979ff18; transition:background 0.18s;
+    }
+    .modal-action-btn:disabled { background: #a7c6ff; cursor:not-allowed;}
+    .modal-watch-later-btn { background: #ccc; color: #2979ff; }
+    .modal-success-msg {
+      color: #43e97b;
+      font-weight: 700;
+      text-align: center;
+      margin: 12px 0 0 0;
+      font-size: 1.08em;
+    }
+    .modal-error-msg {
+      color: #e32f2f;
+      font-weight: 700;
+      text-align: center;
+      margin: 12px 0 0 0;
+      font-size: 1.08em;
+    }
+    .modal-close-btn {
+      position: absolute;
+      top: 10px; right: 15px;
+      background: #fff;
+      border-radius: 50%;
+      border: none;
+      width: 35px; height: 35px;
+      font-size: 1.33em;
+      color: #333;
+      cursor: pointer;
+      box-shadow:0 2px 8px #3332;
+    }
+    nav.bottom-nav {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      height: 58px;
+      background: #fff;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      box-shadow: 0 -2px 8px #ffe60022;
+      z-index: 1000;
+      border-top: 1.5px solid #ffe60044;
+    }
+    nav.bottom-nav a {
+      color: #333;
+      font-size: 0.98em;
+      font-weight: 600;
+      text-align: center;
+      padding: 2px 2px 0 2px;
+      border-radius: 7px;
+      display: flex; flex-direction: column; align-items: center;
+      text-decoration: none;
+      flex: 1;
+      transition: background 0.2s, color 0.2s;
+    }
+    nav.bottom-nav a.active, nav.bottom-nav a:focus {
+      background: #fffbe6;
+      color: #1f10ad;
+      font-weight: 700;
+    }
+    nav.bottom-nav a svg {
+      width: 23px; height: 23px;
+      margin: 0 auto 2px auto;
+      fill: currentColor;
+    }
+    @media (max-width:600px) {
+      .level-card,
+      .tasks-section,
+      .modal-card { max-width: 98vw; }
+      .task-thumb { width: 54px; height: 54px;}
+      .modal-video-box { height: 140px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="header">Task list</div>
+  <div class="level-card" id="level-card">
+    <div class="level-row">
+      <span class="level-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+          <path d="M12 2L15 8H21L16.5 12L18 19L12 15L6 19L7.5 12L3 8H9L12 2Z" stroke="#1175d3" stroke-width="2" fill="none"/>
+        </svg>
+      </span>
+      <span class="level-title">
+        <img class="bond-logo" src="https://img.icons8.com/ios-filled/50/000000/r.png" alt="Bond" />
+        Lv<span id="user-level">1</span>
+      </span>
+    </div>
+    <div class="level-progress-label">Tasks remaining today: <span id="tasks-remaining">0</span></div>
+    <div class="level-progress-label-complete">Tasks completed today: <span id="tasks-completed">0</span></div>
+    <div class="level-progress-bar-bg">
+      <div class="level-progress-bar-fg" id="level-progress-bar"></div>
+    </div>
+  </div>
+  <div class="tasks-section">
+    <ul class="task-list" id="task-list"></ul>
+  </div>
+  <!-- Modal for single task -->
+  <div class="modal-bg" id="modal-bg">
+    <div class="modal-card" id="modal-card">
+      <button class="modal-close-btn" id="modal-close-btn">&times;</button>
+      <div class="modal-header">Task details</div>
+      <div class="modal-video-box">
+        <video id="modal-video" controls preload="auto" playsinline></video>
+      </div>
+      <div class="modal-section">
+        <div class="modal-intro" id="modal-intro"></div>
+        <div class="modal-req-row">
+          <div class="modal-req-block" id="modal-watch-timer-label">Watch for 15 seconds<br>Currently watched 0 seconds</div>
+          <div class="modal-req-block reward" id="modal-reward-label">Reward price: KSh 0.00</div>
+        </div>
+        <div class="modal-answer-section" id="modal-answer-section" style="display:none;">
+          <div class="modal-question-box" id="modal-question-text"></div>
+          <input class="modal-answer-box" id="modal-answer-input" type="text" placeholder="Your answer here..." />
+        </div>
+        <div class="modal-actions-row" id="modal-actions-row">
+          <button class="modal-action-btn modal-watch-later-btn" id="modal-watch-later-btn">Watch later</button>
+          <button class="modal-action-btn" id="modal-start-answering-btn" disabled>Start Answering</button>
+          <button class="modal-action-btn" id="modal-submit-answer-btn" style="display:none;">Submit Answer</button>
+        </div>
+        <div class="modal-success-msg" id="modal-success-msg"></div>
+        <div class="modal-error-msg" id="modal-error-msg"></div>
+      </div>
+    </div>
+  </div>
+  <nav class="bottom-nav" role="navigation" aria-label="Bottom Navigation">
+    <a href="home.html">
+      <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      Home
+    </a>
+    <a href="task.html" class="active">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+      Task
+    </a>
+    <a href="team-management.html">
+      <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2 0-6 1-6 3v2h12v-2c0-2-4-3-6-3zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45v2h6v-2c0-2-4-3-6-3z"/></svg>
+      Team Management
+    </a>
+    <a href="level.html">
+      <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zm0 7l-10 5 10 5 10-5-10-5z"/></svg>
+      Level
+    </a>
+    <a href="profile.html">
+      <svg viewBox="0 0 24 24"><path d="M12 12c2.67 0 8 1.34 8 4v4H4v-4c0-2.66 5.33-4 8-4zm0-2a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/></svg>
+      My
+    </a>
+  </nav>
+  <script>
+    // --- Fetch bond/user info from backend (simulate with localStorage) ---
+    function getProfileData() {
+      let profile = localStorage.getItem('profile');
+      if (profile) return JSON.parse(profile);
+      // Default profile
+      profile = {
+        bondLevel: 1,
+        completedToday: 0,
+        maxTasksPerDay: 5,
+        // Can add more user info here
+      };
+      localStorage.setItem('profile', JSON.stringify(profile));
+      return profile;
+    }
+    function setProfileData(profile) {
+      localStorage.setItem('profile', JSON.stringify(profile));
+    }
+    // --- Save/retrieve task records ---
+    function getTaskRecords() {
+      let rec = localStorage.getItem('taskRecords');
+      if (rec) return JSON.parse(rec);
+      rec = {};
+      localStorage.setItem('taskRecords', JSON.stringify(rec));
+      return rec;
+    }
+    function setTaskRecords(rec) {
+      localStorage.setItem('taskRecords', JSON.stringify(rec));
+    }
+
+    // --- Diverse ads and creative questions/answers ---
+    const diverseTasks = [
+      {
+        id: 1,
+        thumb: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=200&q=80",
+        video: "https://www.w3schools.com/html/mov_bbb.mp4",
+        intro: "Samsung introduces the Galaxy S Ultra with advanced camera features.",
+        question: "Which phone brand is featured in this ad?",
+        answer: "Samsung",
+        reward: 16.0,
+        required_seconds: 17,
+        level: 1,
+      },
+      {
+        id: 2,
+        thumb: "https://images.unsplash.com/photo-1424746219973-8fe3bd07d8e3?auto=format&fit=crop&w=200&q=80",
+        video: "https://www.w3schools.com/html/movie.mp4",
+        intro: "Coca-Cola refreshes your moments with a new taste.",
+        question: "What drink is promoted here?",
+        answer: "Coca-Cola",
+        reward: 16.0,
+        required_seconds: 15,
+        level: 1,
+      },
+      {
+        id: 3,
+        thumb: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=200&q=80",
+        video: "https://www.w3schools.com/html/mov_bbb.mp4",
+        intro: "Apple launches the latest iPhone with revolutionary features.",
+        question: "Which company is advertising the iPhone?",
+        answer: "Apple",
+        reward: 16.0,
+        required_seconds: 18,
+        level: 1,
+      },
+      {
+        id: 4,
+        thumb: "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=200&q=80",
+        video: "https://www.w3schools.com/html/movie.mp4",
+        intro: "Pepsi brings fun to your party. Recognize the brand.",
+        question: "Which drink brand is shown in this ad?",
+        answer: "Pepsi",
+        reward: 16.0,
+        required_seconds: 15,
+        level: 1,
+      },
+      {
+        id: 5,
+        thumb: "https://images.unsplash.com/photo-1581291519195-ef11498d1cf5?auto=format&fit=crop&w=200&q=80",
+        video: "https://www.w3schools.com/html/mov_bbb.mp4",
+        intro: "Gucci presents its latest designer clothing line.",
+        question: "What designer brand is being advertised?",
+        answer: "Gucci",
+        reward: 16.0,
+        required_seconds: 20,
+        level: 1,
+      },
+      {
+        id: 6,
+        thumb: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=200&q=80",
+        video: "https://www.w3schools.com/html/movie.mp4",
+        intro: "Nike ads often attract consumers through emotional resonance.",
+        question: "Which sports brand is advertised in this video?",
+        answer: "Nike",
+        reward: 16.0,
+        required_seconds: 15,
+        level: 1,
+      },
+      {
+        id: 7,
+        thumb: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=200&q=80",
+        video: "https://www.w3schools.com/html/mov_bbb.mp4",
+        intro: "Huawei launches its creative ad for the P Series.",
+        question: "What mobile brand is featured?",
+        answer: "Huawei",
+        reward: 16.0,
+        required_seconds: 16,
+        level: 1,
+      },
+      {
+        id: 8,
+        thumb: "https://images.unsplash.com/photo-1581291519195-ef11498d1cf5?auto=format&fit=crop&w=200&q=80",
+        video: "https://www.w3schools.com/html/movie.mp4",
+        intro: "Fanta brings joy to every sip in its colorful ad.",
+        question: "Which beverage is highlighted?",
+        answer: "Fanta",
+        reward: 16.0,
+        required_seconds: 15,
+        level: 1,
+      },
+      {
+        id: 9,
+        thumb: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=200&q=80",
+        video: "https://www.w3schools.com/html/mov_bbb.mp4",
+        intro: "Adidas inspires athletes with new sports gear.",
+        question: "Which company makes the gear in this ad?",
+        answer: "Adidas",
+        reward: 16.0,
+        required_seconds: 17,
+        level: 1,
+      },
+      {
+        id: 10,
+        thumb: "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=200&q=80",
+        video: "https://www.w3schools.com/html/movie.mp4",
+        intro: "Sprite refreshes you instantly. What's the brand?",
+        question: "Which soft drink is this ad for?",
+        answer: "Sprite",
+        reward: 16.0,
+        required_seconds: 15,
+        level: 1,
+      },
+    ];
+
+    // RXM table for task reward and number of tasks by level
+    const rxmTable = {
+      1: {tasks: 5, income: 16.0},
+      2: {tasks: 10, income: 25.0},
+      3: {tasks: 20, income: 40.0},
+      4: {tasks: 40, income: 68.0},
+      5: {tasks: 60, income: 117.0},
+      6: {tasks: 100, income: 150.0},
+      7: {tasks: 160, income: 219.0},
+      8: {tasks: 240, income: 417.0},
+      9: {tasks: 400, income: 3500.0}
+    };
+
+    let userInfo = getProfileData();
+    // Use RXM for maxTasksPerDay and reward per task
+    if (rxmTable[userInfo.bondLevel]) {
+      userInfo.maxTasksPerDay = rxmTable[userInfo.bondLevel].tasks;
+    } else {
+      userInfo.maxTasksPerDay = 5;
+    }
+
+    let taskRecords = getTaskRecords();
+    // Compute reward with +1.5 per level
+    function rewardForLevel(base, level) {
+      return (parseFloat(base) + 1.5 * (level - 1)).toFixed(2);
+    }
+    let tasks = diverseTasks.map((task, idx) => {
+      // For demo: assign each task a level (cycle through available levels)
+      const tlevel = userInfo.bondLevel;
+      return {
+        ...task,
+        level: tlevel,
+        reward: rewardForLevel(rxmTable[tlevel]?.income || task.reward, tlevel),
+        completed: taskRecords[task.id] ? true : false
+      };
+    });
+
+    let currentModalTask = null;
+    let watchSeconds = 0, requiredSeconds = 15, timerInterval = null, answered = false;
+
+    function updateUserInfo() {
+      document.getElementById("user-level").textContent = userInfo.bondLevel;
+      const completed = Object.keys(taskRecords).length;
+      document.getElementById("tasks-completed").textContent = completed;
+      document.getElementById("tasks-remaining").textContent = Math.max(0, userInfo.maxTasksPerDay - completed);
+      const percent = (completed / userInfo.maxTasksPerDay) * 100;
+      document.getElementById("level-progress-bar").style.width = Math.min(percent, 100) + "%";
+      setProfileData(userInfo);
+    }
+    function renderTasks() {
+      const list = document.getElementById("task-list");
+      list.innerHTML = "";
+      // Only show maxTasksPerDay tasks
+      tasks.slice(0, userInfo.maxTasksPerDay).forEach(task => {
+        const li = document.createElement("li");
+        li.className = "task-card" + (taskRecords[task.id] ? " task-card-completed" : "");
+        li.innerHTML = `
+          <div class="task-thumb">
+            <img src="${task.thumb}">
+            <span class="play-btn">&#9654;</span>
+          </div>
+          <div class="task-details">
+            <span class="task-level-tag">Lv${task.level}</span>
+            <span class="task-reward">Reward price: KSh +${task.reward}</span>
+          </div>
+        `;
+        if (!taskRecords[task.id]) {
+          li.onclick = () => openTaskModal(task);
+        }
+        list.appendChild(li);
+      });
+    }
+    function openTaskModal(task) {
+      currentModalTask = task;
+      document.getElementById("modal-bg").classList.add("active");
+      document.getElementById("modal-video").src = task.video;
+      document.getElementById("modal-intro").textContent = task.intro;
+      document.getElementById("modal-reward-label").textContent = `Reward price: KSh ${task.reward}`;
+      document.getElementById("modal-question-text").textContent = task.question;
+      document.getElementById("modal-watch-timer-label").innerHTML = `Watch for ${task.required_seconds} seconds<br>Currently watched 0 seconds`;
+      document.getElementById("modal-answer-input").value = "";
+      document.getElementById("modal-answer-section").style.display = "none";
+      document.getElementById("modal-success-msg").textContent = "";
+      document.getElementById("modal-error-msg").textContent = "";
+      document.getElementById("modal-start-answering-btn").disabled = true;
+      document.getElementById("modal-submit-answer-btn").style.display = "none";
+      document.getElementById("modal-start-answering-btn").style.display = "inline-block";
+      answered = false; watchSeconds = 0;
+      requiredSeconds = task.required_seconds;
+      setupWatchTimer();
+    }
+    function closeTaskModal() {
+      document.getElementById("modal-bg").classList.remove("active");
+      document.getElementById("modal-video").pause();
+      document.getElementById("modal-video").src = "";
+    }
+    document.getElementById("modal-close-btn").onclick = closeTaskModal;
+    document.getElementById("modal-watch-later-btn").onclick = closeTaskModal;
+
+    function setupWatchTimer() {
+      const video = document.getElementById('modal-video');
+      video.currentTime = 0;
+      let enableAnswer = false;
+      video.onended = function() {
+        enableAnswer = true;
+        document.getElementById('modal-start-answering-btn').disabled = false;
+      }
+      video.ontimeupdate = function() {
+        watchSeconds = Math.floor(video.currentTime);
+        document.getElementById('modal-watch-timer-label').innerHTML =
+          `Watch for ${requiredSeconds} seconds<br>Currently watched ${watchSeconds} seconds`;
+        if (watchSeconds >= requiredSeconds && !enableAnswer) {
+          enableAnswer = true;
+          document.getElementById('modal-start-answering-btn').disabled = false;
+        }
+      }
+    }
+    document.getElementById('modal-start-answering-btn').onclick = function() {
+      document.getElementById('modal-answer-section').style.display = "flex";
+      this.style.display = "none";
+      document.getElementById('modal-submit-answer-btn').style.display = "inline-block";
+      answered = true;
+    };
+    document.getElementById('modal-submit-answer-btn').onclick = function() {
+      const answer = document.getElementById('modal-answer-input').value.trim();
+      const correctAnswer = currentModalTask.answer.trim().toLowerCase();
+      if (!answer) {
+        document.getElementById('modal-error-msg').textContent = "Please provide an answer!";
+        return;
+      }
+      if (answer.toLowerCase() !== correctAnswer) {
+        document.getElementById('modal-error-msg').textContent = "Incorrect answer. Please watch the ad and answer correctly!";
+        return;
+      }
+      document.getElementById('modal-error-msg').textContent = "";
+      // Save record (simulate backend DB save)
+      taskRecords[currentModalTask.id] = {
+        answer: answer,
+        time: new Date().toISOString(),
+        reward: currentModalTask.reward
+      };
+      setTaskRecords(taskRecords);
+      userInfo.completedToday = Object.keys(taskRecords).length;
+      setProfileData(userInfo);
+      document.getElementById('modal-success-msg').textContent = "Task completed! Reward credited.";
+      setTimeout(() => {
+        closeTaskModal();
+        updateUserInfo();
+        renderTasks();
+      }, 1300);
+    };
+    document.addEventListener("DOMContentLoaded", function() {
+      updateUserInfo();
+      renderTasks();
+    });
+  </script>
+</body>
+</html>

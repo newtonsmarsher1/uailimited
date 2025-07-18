@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Task Details - UAI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --brand-yellow:#2979ff ;
+      --brand-dark: #282828;
+      --brand-accent: #2979ff;
+      --icon-bg: #fff200;
+      --icon-color: #282828;
+      --menu-bg: #fff;
+      --menu-icon-active: var(--brand-accent);
+    }
+    body {
+      margin:0; padding:0; font-family:'Segoe UI',Arial,sans-serif;
+      background: linear-gradient(135deg,#fffbe6 0%,#e3f0ff 100%);
+      min-height:100vh;
+      display: flex; flex-direction: column;
+    }
+    .top-section {
+      background: var(--brand-yellow);
+      min-height: 80px;
+      position: relative;
+      padding: 0 0 0 0;
+      border-bottom-left-radius: 24px;
+      border-bottom-right-radius: 24px;
+    }
+    .lang-bell-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 18px 0 18px;
+    }
+    #language-chooser {
+      background: #fff;
+      border-radius: 13px;
+      padding: 6px 18px 6px 10px;
+      box-shadow: 0 1px 8px #2979ff33;
+      font-size: 1.09em;
+      color: var(--brand-accent);
+      font-weight: 700;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      height: 32px;
+    }
+    #language-chooser:focus { background: #e3f0ff; }
+    .notification-btn {
+      background: var(--icon-bg);
+      color: var(--icon-color);
+      border: none;
+      border-radius: 50%;
+      width: 36px; height: 36px;
+      font-size: 22px;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(41,121,255,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s;
+      user-select: none;
+    }
+    .notification-btn:hover { background: #fff; }
+    .logo-title-row {
+      display: flex;
+      align-items: center;
+      padding: 24px 24px 0 24px;
+    }
+    .brand-title {
+      font-weight: 700;
+      font-size: 2em;
+      color: #e3b;
+      margin-left: 12px;
+      letter-spacing: 2px;
+    }
+    .task-header {
+      color: #fff;
+      font-weight: 700;
+      font-size: 1.19em;
+      margin-left: 24px;
+      margin-top: 12px;
+      text-shadow: 0 2px 8px #2979ff44;
+      letter-spacing: 1px;
+    }
+    .main-content { max-width:480px;margin:0 auto;padding:12px; }
+    .video-box { width:100%;height:220px;background:#222;display:flex;align-items:center;justify-content:center;position:relative;border-radius:12px;overflow:hidden; }
+    video { width:100%; height:100%; background:#000; border-radius:12px; }
+    .ad-intro { background:#fffbe6; border-radius:9px; padding:13px 10px; margin:11px 0; font-size:1.09em; font-weight:500; color:#1a237e; }
+    .requirements-row { display:flex;gap:8px;justify-content:center;margin:10px 0; }
+    .req-block { background:#fff; border-radius:12px; box-shadow:0 1px 4px #2979ff22; padding:9px 18px; font-weight:600; color:#2979ff; font-size:1em; text-align:center; }
+    .req-block.reward { color:#e32f2f; font-size:1.13em; }
+    .answer-section { margin:15px 0 0 0; }
+    .question-box { background:#fffbe6; border-radius:9px; padding:12px 10px; margin-bottom:9px; font-size:1.07em; font-weight:500; color:#2979ff; }
+    .answer-box { width:100%;padding:11px 8px;font-size:1.09em;border-radius:9px;border:1.5px solid #2979ff33;margin-bottom:10px; }
+    .actions-row { display:flex;gap:14px;justify-content:center;margin-top:18px; }
+    .action-btn { background:#2979ff; color:#fff; border:none; border-radius:19px; padding:12px 23px; font-size:1.09em; font-weight:600; cursor:pointer; box-shadow:0 2px 10px #2979ff18; transition:background 0.18s; }
+    .action-btn:disabled { background:#a7c6ff; cursor:not-allowed;}
+    .watch-later-btn { background:#ccc; color:#2979ff; }
+    .success-msg { color:#43e97b; font-weight:700; text-align:center; margin:12px 0 0 0; }
+    .upgrade-msg { color:#e32f2f; background:#fffbe6; border-radius:12px; padding:12px; text-align:center; font-weight:600; margin:12px 0 0 0; }
+    /* Bottom nav */
+    nav.bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 56px;
+      background: #fff;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      border-top: 1px solid #e3f0ff;
+      z-index: 1000;
+    }
+    nav.bottom-nav a {
+      background: transparent;
+      border: none;
+      color: #282828;
+      font-size: 0.85em;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      user-select: none;
+      transition: color 0.3s;
+      padding: 2px 4px;
+      flex-shrink: 0;
+      text-decoration: none;
+    }
+    nav.bottom-nav a.active,
+    nav.bottom-nav a:focus {
+      color: var(--menu-icon-active);
+    }
+    nav.bottom-nav a svg {
+      width: 22px;
+      height: 22px;
+      margin-bottom: 2px;
+      fill: currentColor;
+    }
+    @media (max-width: 720px) {
+      .main-content { max-width: 100vw; }
+    }
+    @media (max-width: 420px) {
+      .task-header { font-size: 1.01em; }
+      .video-box { height: 160px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="top-section">
+    <div class="lang-bell-row">
+      <select id="language-chooser" aria-label="Change Language">
+        <option value="en">English</option>
+        <option value="sw">Swahili</option>
+        <option value="fr">French</option>
+      </select>
+      <button class="notification-btn" aria-label="Notifications" title="Notifications" onclick="window.location.href='notifications.html'">
+        &#128276;
+      </button>
+    </div>
+    <div class="logo-title-row">
+      <span class="brand-title">UAI</span>
+    </div>
+    <div class="task-header">Task Details</div>
+  </div>
+  <div class="main-content">
+    <div class="video-box">
+      <video id="adVideo" controls preload="auto" playsinline></video>
+    </div>
+    <div class="ad-intro" id="ad-intro">
+      <!-- Ad intro here -->
+    </div>
+    <div class="requirements-row">
+      <div class="req-block" id="watch-timer-label">Watch for 15 seconds<br>Currently watched 0 seconds</div>
+      <div class="req-block reward" id="reward-label">Reward price: KSh 0.00</div>
+    </div>
+    <div class="answer-section" id="answer-section" style="display:none;">
+      <div class="question-box" id="question-text">What brand was advertised?</div>
+      <input class="answer-box" id="answer-input" type="text" placeholder="Your answer here..." />
+    </div>
+    <div class="actions-row" id="actions-row">
+      <button class="action-btn watch-later-btn" onclick="window.location.href='task.html'">Watch Later</button>
+      <button class="action-btn" id="start-answering-btn" disabled>Start Answering</button>
+      <button class="action-btn" id="submit-answer-btn" style="display:none;">Submit Answer</button>
+    </div>
+    <div class="success-msg" id="success-msg"></div>
+    <div class="upgrade-msg" id="upgrade-msg" style="display:none;"></div>
+  </div>
+  <nav class="bottom-nav" role="navigation" aria-label="Bottom Navigation">
+    <a href="home.html" id="nav-home">
+      <svg viewBox="0 0 24 24"><path d="M3 21v-7.5l9-6.5 9 6.5V21H3z"/></svg>
+      <span id="nav-home-label">Home</span>
+    </a>
+    <a href="task.html" class="active" id="nav-task">
+      <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 10h8M8 14h4"/></svg>
+      <span id="nav-task-label">Task</span>
+    </a>
+    <a href="team-management.html" id="nav-team">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3"/><path d="M12 15c-4 0-8 2-8 4v1h16v-1c0-2-4-4-8-4z"/></svg>
+      <span id="nav-team-label">Team Management</span>
+    </a>
+    <a href="level.html" id="nav-level">
+      <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 7v10l10 5 10-5V7"/></svg>
+      <span id="nav-level-label">Level</span>
+    </a>
+    <a href="profile.html" id="nav-profile">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M2 20v-2a8 8 0 0 1 16 0v2"/></svg>
+      <span id="nav-profile-label">Profile</span>
+    </a>
+  </nav>
+  <script>
+    // --- Language Switch ---
+    const translations = {
+      en: {
+        brand_title: "UAI",
+        home: "Home",
+        task: "Task",
+        team_management: "Team Management",
+        level: "Level",
+        profile: "Profile",
+        watch_for: "Watch for",
+        currently_watched: "Currently watched",
+        reward_price: "Reward price",
+        start_answering: "Start Answering",
+        submit_answer: "Submit Answer",
+        watch_later: "Watch Later",
+        completed: "Task completed! Reward credited.",
+        failed: "Failed to complete task.",
+        upgrade_msg: "You have reached the task limit for free users. Please upgrade your bond to continue earning!"
+      },
+      sw: {
+        brand_title: "UAI",
+        home: "Nyumbani",
+        task: "Kazi",
+        team_management: "Usimamizi wa Timu",
+        level: "Kiwango",
+        profile: "Wasifu",
+        watch_for: "Tazama kwa",
+        currently_watched: "Umetazama sasa",
+        reward_price: "Bei ya zawadi",
+        start_answering: "Anza Kujibu",
+        submit_answer: "Tuma Jibu",
+        watch_later: "Tazama Baadaye",
+        completed: "Kazi imekamilika! Zawadi imeongezwa.",
+        failed: "Imeshindikana kukamilisha kazi.",
+        upgrade_msg: "Umefikia kikomo cha kazi kwa watumiaji wa bure. Tafadhali boresha bondi yako kuendelea kupata zawadi!"
+      },
+      fr: {
+        brand_title: "UAI",
+        home: "Accueil",
+        task: "Tâche",
+        team_management: "Gestion d'équipe",
+        level: "Niveau",
+        profile: "Profil",
+        watch_for: "Regardez pour",
+        currently_watched: "Regardé actuellement",
+        reward_price: "Prix de la récompense",
+        start_answering: "Commencer à répondre",
+        submit_answer: "Soumettre la réponse",
+        watch_later: "Regarder plus tard",
+        completed: "Tâche terminée ! Récompense créditée.",
+        failed: "Échec de la tâche.",
+        upgrade_msg: "Vous avez atteint la limite de tâches pour les utilisateurs gratuits. Veuillez améliorer votre bond pour continuer à gagner !"
+      }
+    };
+    function getLang() { return localStorage.getItem("lang") || "en"; }
+    function setLang(lang) {
+      localStorage.setItem("lang", lang);
+      updateLabels();
+    }
+    function updateLabels() {
+      const lang = getLang();
+      const trans = translations[lang] || translations.en;
+      document.querySelector('.brand-title').textContent = trans.brand_title;
+      document.getElementById("nav-home-label").textContent = trans.home;
+      document.getElementById("nav-task-label").textContent = trans.task;
+      document.getElementById("nav-team-label").textContent = trans.team_management;
+      document.getElementById("nav-level-label").textContent = trans.level;
+      document.getElementById("nav-profile-label").textContent = trans.profile;
+      document.getElementById("start-answering-btn").textContent = trans.start_answering;
+      document.getElementById("submit-answer-btn").textContent = trans.submit_answer;
+      document.querySelector(".watch-later-btn").textContent = trans.watch_later;
+    }
+    document.addEventListener("DOMContentLoaded", function() {
+      updateLabels();
+      document.getElementById("language-chooser").value = getLang();
+      document.getElementById("language-chooser").addEventListener("change", function() {
+        setLang(this.value);
+      });
+    });
+
+    // --- Parameters ---
+    const urlParams = new URLSearchParams(window.location.search);
+    const taskId = urlParams.get('id');
+    let adData = null;
+    let watchSeconds = 0;
+    let requiredSeconds = 15;
+    let timerInterval = null;
+    let answered = false;
+
+    async function fetchTaskDetails() {
+      const token = localStorage.getItem('token');
+      if (!token || !taskId) {
+        window.location.href = "task.html";
+        return;
+      }
+      const res = await fetch(`/api/tasks?id=${taskId}`, {
+        headers: { Authorization: "Bearer " + token }
+      });
+      if (!res.ok) {
+        document.getElementById('ad-intro').textContent = "Failed to load task.";
+        return;
+      }
+      const tasks = await res.json();
+      adData = Array.isArray(tasks) ? tasks.find(t => t.id == taskId) : tasks;
+      if (!adData) {
+        document.getElementById('ad-intro').textContent = "Task not found.";
+        return;
+      }
+      document.getElementById('ad-intro').textContent = adData.description || adData.intro || "No description";
+      document.getElementById('reward-label').textContent = `Reward price: KSh ${adData.reward || '0.00'}`;
+      document.getElementById('question-text').textContent = adData.question || "What brand was advertised?";
+      document.getElementById('adVideo').src = adData.video_url || '';
+      requiredSeconds = adData.required_seconds || 15;
+
+      // Bond logic: if user must upgrade, show upgrade message
+      if(adData.must_upgrade) {
+        document.getElementById('upgrade-msg').style.display = "block";
+        document.getElementById('upgrade-msg').textContent = translations[getLang()].upgrade_msg;
+        document.getElementById('actions-row').style.display = "none";
+      }
+    }
+
+    // --- Watch Timer Logic ---
+    function setupWatchTimer() {
+      const video = document.getElementById('adVideo');
+      video.addEventListener('play', () => {
+        if (!timerInterval && !answered) {
+          timerInterval = setInterval(() => {
+            watchSeconds = Math.floor(video.currentTime);
+            document.getElementById('watch-timer-label').innerHTML =
+              `Watch for ${requiredSeconds} seconds<br>Currently watched ${watchSeconds} seconds`;
+            if (watchSeconds >= requiredSeconds) {
+              document.getElementById('start-answering-btn').disabled = false;
+              clearInterval(timerInterval);
+              timerInterval = null;
+            }
+          }, 1000);
+        }
+      });
+      video.addEventListener('pause', () => {
+        if (timerInterval) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+        }
+      });
+    }
+
+    // --- Start Answering ---
+    document.getElementById('start-answering-btn').onclick = function() {
+      document.getElementById('answer-section').style.display = "block";
+      this.style.display = "none";
+      document.getElementById('submit-answer-btn').style.display = "inline-block";
+      answered = true;
+    };
+
+    // --- Submit Answer ---
+    document.getElementById('submit-answer-btn').onclick = async function() {
+      const answer = document.getElementById('answer-input').value.trim();
+      if (!answer) { alert("Please provide an answer!"); return; }
+      const token = localStorage.getItem('token');
+      const res = await fetch('/api/complete-task', {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
+        body: JSON.stringify({ task_id: taskId, answer })
+      });
+      if (res.ok) {
+        document.getElementById('success-msg').textContent = translations[getLang()].completed;
+        setTimeout(() => { window.location.href = "profile.html"; }, 1800);
+      } else {
+        document.getElementById('success-msg').textContent = translations[getLang()].failed;
+      }
+    };
+
+    document.addEventListener("DOMContentLoaded", function() {
+      fetchTaskDetails();
+      setupWatchTimer();
+    });
+  </script>
+</body>
+</html>

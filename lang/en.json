@@ -1,0 +1,22 @@
+{
+  "login_success": "Login successful!",
+  "login_failed": "Login failed. Please check your credentials.",
+  "home": "Home",
+  "profile": "Profile",
+  "tasks": "Tasks",
+  "recharge": "Recharge",
+  "today_earning": "Today's Earnings",
+  "month_earning": "This Month",
+  "total_revenue": "Total Revenue",
+  "total_withdrawal": "Total Withdrawn",
+  "wallet_balance": "Wallet Balance",
+  "bond": "Bond",
+  "profit": "Profit",
+  "tasks_done": "Tasks Done",
+  "logout": "Log Out",
+  "language_select": "Select Language",
+  "notification": "Notification",
+  "withdraw": "Withdraw",
+  "bind_details": "Bind Withdrawal Details",
+  "privacy_policy": "Privacy Policy"
+}

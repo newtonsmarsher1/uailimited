@@ -1,0 +1,33 @@
+{
+  "name": "uai-project",
+  "version": "1.0.0",
+  "description": "UAI multi-language task & payment site with admin",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "mysql": "^2.18.1",
+    "mysql2": "^3.9.3"
+  }
+}
+{
+  "phone": "+12345678901",
+  "password": "secret",
+  "referral": "INVITECODE"   // <-- must be "referral", not "invitation"
+}
+{
+  "phone": "+254712345678",
+  "level": 2,
+  "avatar": "", // optional, emoji or image url
+  "today_earning": 350,
+  "month_earning": 4200,
+  "total_revenue": 12400,
+  "total_withdrawal": 4700,
+  "wallet_balance": 7700,
+  "bond": 7000 // user's current bond from system
+}

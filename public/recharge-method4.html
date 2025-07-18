@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Recharge Method 4 - UAI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #2979ff 0%, #ad7ce6 100%);
+      margin: 0; padding: 0;
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .container {
+      background: rgba(255,255,255,0.96);
+      margin-top: 60px;
+      padding: 36px 24px 28px 24px;
+      border-radius: 22px;
+      max-width: 410px;
+      width: 97vw;
+      box-shadow: 0 2px 24px #ad7ce62a;
+      text-align: center;
+      position: relative;
+    }
+    .uai-logo {
+      position: absolute;
+      left: 50%; top: -38px;
+      transform: translateX(-50%);
+      width: 70px; height: 70px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ad7ce6 0%, #2979ff 100%);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 18px #7a09c555;
+      border: 4px solid #fff;
+    }
+    .uai-logo span {
+      color: #fff;
+      font-size: 2em;
+      font-weight: 800;
+      letter-spacing: 3px;
+      text-shadow: 0 2px 8px #7a09c577, 0 0 2px #4f2b7c;
+    }
+    h2 { color: #2979ff; margin-bottom: 1.5em;}
+    .info-block {
+      margin: 1.3em 0 2em 0;
+      background: #e3f0ff;
+      border-radius: 12px;
+      padding: 15px 13px;
+      color: #2979ff;
+      font-weight: 700;
+      font-size: 1.12em;
+      letter-spacing: 0.4px;
+      word-break: break-all;
+      box-shadow: 0 1px 8px #ad7ce632;
+    }
+    .copy-btn {
+      background: #ad7ce6;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 7px 18px;
+      font-size: 0.95em;
+      font-weight: 600;
+      margin-left: 10px;
+      cursor: pointer;
+      margin-bottom: 1em;
+      transition: background .15s;
+    }
+    .copy-btn:active { background: #2979ff; }
+    .label {
+      color: #ad7ce6;
+      font-size: 0.98em;
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: block;
+    }
+    .message { margin-top: 1.2em; color: #2979ff; font-weight: 600; min-height: 24px;}
+    .recharge-note {
+      color: #ad7ce6;
+      margin-bottom: 19px;
+      font-size: 1.01em;
+      font-style: italic;
+      text-align: center;
+    }
+    @media (max-width:600px) {
+      .container { padding: 18px 4vw 15px 4vw; }
+      .uai-logo { width: 48px; height: 48px; top: -28px; }
+      .uai-logo span { font-size: 1.15em;}
+      h2 { font-size: 1.1em;}
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="uai-logo"><span>UAI</span></div>
+  <h2>Recharge - Method 4 (Pay to Till Number)</h2>
+  <div class="recharge-note">
+    Pay directly to the following Till Number. You should see the business name below when you pay:
+  </div>
+  <div class="label">Till Number:</div>
+  <div class="info-block" id="till-block">
+    654321
+    <button class="copy-btn" onclick="copyText('654321')">Copy</button>
+  </div>
+  <div class="label">Business Name:</div>
+  <div class="info-block" id="till-name-block">
+    UAI COMPANY
+    <button class="copy-btn" onclick="copyText('UAI COMPANY')">Copy</button>
+  </div>
+</div>
+<script>
+  function copyText(text) {
+    navigator.clipboard.writeText(text);
+  }
+</script>
+</body>
+</html>

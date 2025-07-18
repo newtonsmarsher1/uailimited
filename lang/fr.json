@@ -1,0 +1,22 @@
+{
+  "login_success": "Connexion réussie!",
+  "login_failed": "Échec de la connexion. Veuillez vérifier vos identifiants.",
+  "home": "Accueil",
+  "profile": "Profil",
+  "tasks": "Tâches",
+  "recharge": "Recharger",
+  "today_earning": "Gains d'aujourd'hui",
+  "month_earning": "Ce Mois",
+  "total_revenue": "Revenu Total",
+  "total_withdrawal": "Total Retiré",
+  "wallet_balance": "Solde du portefeuille",
+  "bond": "Caution",
+  "profit": "Profit",
+  "tasks_done": "Tâches Réalisées",
+  "logout": "Déconnexion",
+  "language_select": "Choisir la langue",
+  "notification": "Notification",
+  "withdraw": "Retirer",
+  "bind_details": "Lier les détails de retrait",
+  "privacy_policy": "Politique de confidentialité"
+}

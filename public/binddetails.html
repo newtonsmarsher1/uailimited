@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Bind Withdrawal Details</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body>
+  <h2>Bind Withdrawal Details</h2>
+  <form id="detailsForm">
+    <label>Bank/Mpesa Number:</label>
+    <input type="text" id="details" required>
+    <br>
+    <button type="submit">Save</button>
+  </form>
+  <div id="message"></div>
+  <script>
+    document.getElementById('detailsForm').onsubmit = async function(e) {
+      e.preventDefault();
+      const details = document.getElementById('details').value;
+      const token = localStorage.getItem('token');
+      const res = await fetch('/api/bind-details', {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
+        body: JSON.stringify({ details })
+      });
+      const data = await res.json();
+      document.getElementById('message').textContent = data.message || data.error;
+    };
+  </script>
+</body>
+</html>

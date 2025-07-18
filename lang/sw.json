@@ -1,0 +1,22 @@
+{
+  "login_success": "Umeingia vizuri!",
+  "login_failed": "Kuingia kumeharibika. Tafadhali angalia taarifa zako.",
+  "home": "Nyumbani",
+  "profile": "Wasifu",
+  "tasks": "Kazi",
+  "recharge": "Jaza upya",
+  "today_earning": "Mapato ya Leo",
+  "month_earning": "Mwezi Huu",
+  "total_revenue": "Mapato Jumla",
+  "total_withdrawal": "Jumla Iliyotolewa",
+  "wallet_balance": "Salio la Wallet",
+  "bond": "Bond",
+  "profit": "Faida",
+  "tasks_done": "Kazi Zilizofanywa",
+  "logout": "Toka",
+  "language_select": "Chagua Lugha",
+  "notification": "Arifa",
+  "withdraw": "Toa",
+  "bind_details": "Weka Maelezo ya Uondoaji",
+  "privacy_policy": "Sera ya Faragha"
+}

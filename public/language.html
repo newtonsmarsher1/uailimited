@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Choose Language</title>
+</head>
+<body>
+  <h2>Choose Language</h2>
+  <button onclick="setLang('en')">English</button>
+  <button onclick="setLang('sw')">Swahili</button>
+  <script>
+
+    function setLang(lang) {
+      const token = localStorage.getItem('token');
+      fetch('/api/set-lang', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+        body: JSON.stringify({ lang })
+      }).then(() => window.location = 'home.html');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>UAI Profile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    html, body {
+      padding: 0;
+      margin: 0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #2979ff 0%, #ad7ce6 100%);
+      min-height: 100vh;
+    }
+    #top-notifications {
+      position: fixed;
+      top: 0; left: 0; width: 100%; z-index: 999;
+    }
+    #system-notification-bar {
+      min-height: 2px;
+      padding: -21px 9px;
+      background: #2979ff;
+      color: #fff;
+      font-weight: 600;
+      box-shadow: 0 2px 8px #2979ff33;
+      font-size: 1.03em;
+      display: none;
+      letter-spacing: 0.03em;
+    }
+    .top-nav {
+      position: fixed;
+      top: 35px;
+      left: 0;
+      right: 0;
+      height: 62px;
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      z-index: 100;
+      box-shadow: 0 2px 18px #7a09c515;
+      margin-bottom: 0;
+    }
+    .logo-nav {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .hexagon-mini {
+      width: 44px;
+      height: 44px;
+      background: #bd7de7;
+      clip-path: polygon(25% 6%, 75% 6%, 100% 50%, 75% 94%, 25% 94%, 0% 50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      box-shadow: 0 2px 10px #ad7ce658;
+    }
+    .hexagon-mini span {
+      color: #fff;
+      font-size: 1.5em;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-shadow: 0 2px 7px #7a09c577, 0 0 2px #4f2b7c;
+    }
+    .user-level-pill {
+      margin-left: 8px;
+      background: #e3f0ffbb;
+      color: #2979ff;
+      font-weight: 600;
+      font-size: 1.05em;
+      padding: 4px 17px;
+      border-radius: 15px;
+      border: 1px solid #bd7de7;
+      box-shadow: 0 1px 8px #bd7de748;
+      letter-spacing: 0.5px;
+    }
+    .logout-btn {
+      margin-left: auto;
+      background: none;
+      border: none;
+      color: #fff;
+      font-weight: 600;
+      font-size: 1.1em;
+      cursor: pointer;
+      transition: color 0.13s;
+      padding: 5px 10px;
+      border-radius: 10px;
+    }
+    .logout-btn:hover { background: #fff2; color: #f44; }
+
+    .main-content {
+      margin: 112px 0 80px 0;
+      min-height: calc(100vh - 160px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+    .profile-avatar {
+      width: 92px;
+      height: 92px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ad7ce6 0%, #2979ff 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.7em;
+      color: #fff;
+      box-shadow: 0 2px 18px #7a09c555;
+      margin-top: 8px;
+      border: 5px solid #fff4;
+    }
+    .profile-name {
+      color: #fff;
+      font-size: 1.24em;
+      font-weight: 600;
+      text-shadow: 0 2px 8px #0003;
+      margin-top: 10px;
+      letter-spacing: 0.5px;
+    }
+    .profile-phone {
+      color: #e3f0ff;
+      font-size: 1.08em;
+      font-weight: 500;
+      margin-top: 3px;
+      margin-bottom: 6px;
+    }
+    .earnings-row {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .earn-block {
+      background: rgba(255,255,255,0.23);
+      border-radius: 18px;
+      box-shadow: 0 2px 18px #ad7ce62b;
+      padding: 18px 22px 13px 22px;
+      text-align: center;
+      color: #fff;
+      font-weight: 600;
+      min-width: 110px;
+      margin-bottom: 8px;
+      backdrop-filter: blur(1.5px);
+      border: 2px solid #ad7ce63a;
+    }
+    .earn-block .value {
+      display: block;
+      font-size: 1.15em;
+      margin-top: 5px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .earn-block.profit { color: #43e97b; }
+    .earn-block.wallet { color: #fffb88; background: rgba(41,121,255,0.36);}
+    .earn-block.loss { color: #ff5858; }
+    .earn-block.bond { color: #ad7ce6; }
+    .earn-block.tasks { color: #1565c0; }
+    .actions-row {
+      display: flex;
+      gap: 18px;
+      margin: 7px 0 8px 0;
+      justify-content: center;
+      width: 100%;
+    }
+    .action-btn {
+      padding: 13px 25px;
+      background: linear-gradient(90deg, #2979ff 0%, #ad7ce6 100%);
+      color: #fff;
+      font-weight: 600;
+      border: none;
+      border-radius: 24px;
+      font-size: 1.1em;
+      cursor: pointer;
+      transition: background 0.2s, box-shadow 0.17s;
+      box-shadow: 0 2px 12px #ad7ce621;
+    }
+    .action-btn:active { background: #1565c0; }
+    .download-app-btn {
+      background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+      color: #1a3231;
+      font-weight: 700;
+      margin-top: 6px;
+    }
+    .security-btn {
+      margin: 24px 0 0 0;
+      background: #fffbe6;
+      color: #c62828;
+      border: 1px solid #ffe082;
+      font-weight: 600;
+      font-size: 1.08em;
+      border-radius: 16px;
+      padding: 13px 14px;
+      width: 100%;
+      cursor: pointer;
+      box-shadow: 0 1px 4px #ffe08246;
+      transition: background 0.18s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      justify-content: center;
+      text-decoration: none;
+    }
+    .security-btn:active { background: #fff2c0; }
+    .policy-link {
+      color: #fff;
+      text-decoration: underline;
+      font-size: 1.07em;
+      cursor: pointer;
+      font-weight: 500;
+      display: block;
+      margin-top: 19px;
+      text-align: center;
+      opacity: .84;
+      letter-spacing: .05em;
+    }
+    .exit-btn {
+      margin: 18px 0 0 0;
+      display: block;
+      width: 100%;
+      background: #fff0f0;
+      color: #c62828;
+      font-weight: 700;
+      border: none;
+      border-radius: 14px;
+      font-size: 1em;
+      padding: 14px 0;
+      cursor: pointer;
+      box-shadow: 0 1px 8px #c6282819;
+      transition: background 0.19s;
+    }
+    .exit-btn:active { background: #ffeaea; }
+    @media (max-width: 480px) {
+      .main-content { gap: 14px; }
+      .profile-avatar { width: 70px; height: 70px; }
+      .earn-block { padding: 10px 7px 6px 7px; min-width: 87px;}
+      .actions-row { gap: 9px;}
+      .action-btn, .download-app-btn { padding: 10px 9vw; font-size: 1em;}
+      .security-btn { font-size: .97em;}
+    }
+    .fade-in {
+      animation: fadein 1.2s;
+    }
+    @keyframes fadein { from {opacity:0;} to {opacity:1;} }
+    /* Bottom nav */
+    .bottom-nav {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: #2979ff;
+      border-top: 1px solid #e3f0ff;
+      z-index: 101;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      height: 60px;
+      box-shadow: 0 -1px 8px #2979ff0e;
+      backdrop-filter: blur(7px);
+    }
+    .nav-btn {
+      background: none;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-size: 1.3em;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      transition: color 0.12s;
+      padding: 0 2vw;
+      border-radius: 8px;
+      font-weight: 600;
+      text-align: center;
+      text-decoration: none;
+    }
+    .nav-btn.active { color: #bd7de7; }
+    .nav-label {
+      font-size: 0.93em;
+      margin-top: 2px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      opacity: .87;
+    }
+    .language-chooser {
+      position: fixed;
+      top: 35px;
+      right: 18px;
+      z-index: 110;
+      background: #fff;
+      border-radius: 13px;
+      padding: 6px 18px 6px 10px;
+      box-shadow: 0 1px 8px #2979ff33;
+      font-size: 1.09em;
+      color: #2979ff;
+      font-weight: 700;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+    .language-chooser:focus { background: #e3f0ff; }
+    .language-chooser option { font-weight: 600; }
+    .user-info-row {
+      width: 99%;
+      background: #fffbe6;
+      color: #2979ff;
+      border-radius: 13px;
+      padding: 8px 10px;
+      font-size: 1em;
+      margin: 10px auto 2px auto;
+      box-shadow: 0 1px 8px #ad7ce633;
+      text-align: left;
+      font-weight: 600;
+      letter-spacing: .04em;
+    }
+    .user-info-label {
+      color: #ad7ce6; font-weight: 700; margin-right: 7px;
+    }
+    .user-info-val {
+      color: #2979ff; font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <!-- Top Notification bar -->
+  <div id="top-notifications">
+    <div id="system-notification-bar"></div>
+  </div>
+
+  <!-- Top Navigation -->
+  <div class="top-nav fade-in">
+    <div class="logo-nav">
+      <div class="hexagon-mini"><span>UAI</span></div>
+      <span class="user-level-pill" id="user-level-pill">Level --</span>
+    </div>
+    <button class="logout-btn" id="logout-btn">Log Out</button>
+    <select class="language-chooser" id="language-chooser">
+      <option value="en">English</option>
+      <option value="sw">Swahili</option>
+      <option value="fr">French</option>
+    </select>
+  </div>
+
+  <div class="main-content fade-in">
+    <div class="profile-avatar" id="profile-avatar">👤</div>
+    <div class="profile-name" id="profile-name">--</div>
+    <div class="profile-phone" id="profile-phone">--</div>
+    <div class="earnings-row">
+      <div class="earn-block">
+        <span id="today-earning-label">Today's Earnings</span>
+        <span class="value" id="today-earning">KES 0</span>
+      </div>
+      <div class="earn-block">
+        <span id="month-earning-label">This Month</span>
+        <span class="value" id="month-earning">KES 0</span>
+      </div>
+      <div class="earn-block">
+        <span id="total-revenue-label">Total Revenue</span>
+        <span class="value" id="total-revenue">KES 0</span>
+      </div>
+      <div class="earn-block loss">
+        <span id="total-withdrawal-label">Total Withdrawn</span>
+        <span class="value" id="total-withdrawal">KES 0</span>
+      </div>
+      <div class="earn-block wallet">
+        <span id="wallet-balance-label">Wallet Balance</span>
+        <span class="value" id="wallet-balance">KES 0</span>
+      </div>
+      <div class="earn-block bond">
+        <span id="bond-label">Bond</span>
+        <span class="value" id="bond-amount">KES 0</span>
+      </div>
+      <div class="earn-block profit">
+        <span id="profit-label">Profit</span>
+        <span class="value" id="profit">KES 0</span>
+      </div>
+      <div class="earn-block tasks">
+        <span id="tasks-done-label">Tasks Done</span>
+        <span class="value" id="tasks-done">0</span>
+      </div>
+    </div>
+    <div class="user-info-row">
+      <span class="user-info-label">Referral Code:</span>
+      <span class="user-info-val" id="referral-code">--</span>
+      <span class="user-info-label">Referred By:</span>
+      <span class="user-info-val" id="referred-by">--</span>
+    </div>
+    <div class="actions-row">
+      <button class="action-btn" onclick="window.location.href='recharge.html'">
+        💰 Recharge
+      </button>
+      <button class="action-btn" onclick="window.location.href='withdrawal.html'">
+        🏦 Withdraw
+      </button>
+    </div>
+    <a class="security-btn" href="binddetails.html">
+      🔒 Account Security: Bind Withdrawal Details
+    </a>
+    <button class="download-app-btn action-btn" onclick="window.open('https://yourapp-download-link.com', '_blank')">
+      ⬇️ Download Mobile App
+    </button>
+    <a class="policy-link" href="privacy.html" target="_blank">
+      Privacy Policy
+    </a>
+    <button class="exit-btn" id="exit-btn">Exit & Log Out</button>
+  </div>
+  <script>
+    // --- Notifications System (top left area) ---
+    async function loadNotifications() {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+      try {
+        const res = await fetch('/api/notifications', {
+          headers: { Authorization: "Bearer " + token }
+        });
+        if (!res.ok) return;
+        const notes = await res.json();
+        const bar = document.getElementById('system-notification-bar');
+        if (notes.length) {
+          bar.innerHTML = notes.map(n =>
+            `<span style="margin-right:22px;color:${n.type==='success'?'#43e97b':n.type==='error'?'#ff5858':'#fff'};">${n.message}</span>`
+          ).join('');
+          bar.style.display = "block";
+        } else {
+          bar.style.display = "none";
+        }
+      } catch (err) {
+        // If API fails, hide notification bar
+        document.getElementById('system-notification-bar').style.display = "none";
+      }
+    }
+
+    // --- Language Switch ---
+    function setLabels(trans) {
+      document.getElementById('today-earning-label').textContent = trans.today_earning || "Today's Earnings";
+      document.getElementById('month-earning-label').textContent = trans.month_earning || "This Month";
+      document.getElementById('total-revenue-label').textContent = trans.total_revenue || "Total Revenue";
+      document.getElementById('total-withdrawal-label').textContent = trans.total_withdrawal || "Total Withdrawn";
+      document.getElementById('wallet-balance-label').textContent = trans.wallet_balance || "Wallet Balance";
+      document.getElementById('bond-label').textContent = trans.bond || "Bond";
+      document.getElementById('profit-label').textContent = trans.profit || "Profit";
+      document.getElementById('tasks-done-label').textContent = trans.tasks_done || "Tasks Done";
+      document.getElementById('nav-home-label').textContent = trans.home || "Home";
+      document.getElementById('nav-tasks-label').textContent = trans.tasks || "Tasks";
+      document.getElementById('nav-recharge-label').textContent = trans.recharge || "Recharge";
+      document.getElementById('nav-profile-label').textContent = trans.profile || "Profile";
+    }
+
+    async function setLanguage(langCode) {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+      await fetch('/api/set-lang', {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
+        body: JSON.stringify({ lang: langCode })
+      });
+      loadLanguage();
+    }
+
+    async function loadLanguage() {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+      const res = await fetch('/api/get-lang', {
+        headers: { Authorization: "Bearer " + token }
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      setLabels(data.translations || {});
+      document.getElementById('language-chooser').value = data.lang || 'en';
+    }
+
+    document.getElementById('language-chooser').addEventListener('change', function() {
+      setLanguage(this.value);
+    });
+
+    // --- Profile Data ---
+    async function loadProfileData() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = "index.html";
+        return;
+      }
+      try {
+        const res = await fetch('/api/user-stats', { headers: { Authorization: "Bearer " + token } });
+        if (!res.ok) throw new Error("Not logged in");
+        const data = await res.json();
+        // User info display
+        document.getElementById('profile-name').textContent = data.name || data.phone || "--";
+        document.getElementById('profile-phone').textContent = data.phone || "--";
+        document.getElementById('profile-avatar').textContent = data.avatar ? data.avatar : "👤";
+        document.getElementById('user-level-pill').textContent = "Level " + (data.level || '--');
+        document.getElementById('today-earning').textContent = "KES " + (data.today_earning || 0);
+        document.getElementById('month-earning').textContent = "KES " + (data.month_earning || 0);
+        document.getElementById('total-revenue').textContent = "KES " + (data.total_revenue || 0);
+        document.getElementById('total-withdrawal').textContent = "KES " + (data.total_withdrawal || 0);
+        document.getElementById('wallet-balance').textContent = "KES " + (data.wallet_balance || 0);
+        document.getElementById('bond-amount').textContent = "KES " + (data.bond || 0);
+        document.getElementById('profit').textContent =
+          "KES " + ((parseFloat(data.wallet_balance || 0) + parseFloat(data.total_withdrawal || 0) - parseFloat(data.total_revenue || 0)) || 0);
+        document.getElementById('tasks-done').textContent = data.tasks_done || 0;
+        document.getElementById('referral-code').textContent = data.referral_code || "--";
+        document.getElementById('referred-by').textContent = data.referred_by || "--";
+      } catch (e) {
+        document.getElementById('profile-name').textContent = "Please log in";
+        document.getElementById('profile-phone').textContent = "";
+      }
+    }
+
+    // --- Logout + Exit ---
+    document.getElementById('logout-btn').onclick = function() {
+      localStorage.removeItem('token');
+      window.location.href = "index.html";
+    };
+    document.getElementById('exit-btn').onclick = function() {
+      localStorage.removeItem('token');
+      window.location.href = "index.html";
+    };
+
+    // --- Init ---
+    document.addEventListener("DOMContentLoaded", function() {
+      loadNotifications();
+      loadLanguage();
+      loadProfileData();
+    });
+  </script>
+</body>
+</html>
