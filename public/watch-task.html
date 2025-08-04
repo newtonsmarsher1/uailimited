@@ -92,9 +92,7 @@
     .requirements-row { display:flex;gap:8px;justify-content:center;margin:10px 0; }
     .req-block { background:#fff; border-radius:12px; box-shadow:0 1px 4px #2979ff22; padding:9px 18px; font-weight:600; color:#2979ff; font-size:1em; text-align:center; }
     .req-block.reward { color:#e32f2f; font-size:1.13em; }
-    .answer-section { margin:15px 0 0 0; }
-    .question-box { background:#fffbe6; border-radius:9px; padding:12px 10px; margin-bottom:9px; font-size:1.07em; font-weight:500; color:#2979ff; }
-    .answer-box { width:100%;padding:11px 8px;font-size:1.09em;border-radius:9px;border:1.5px solid #2979ff33;margin-bottom:10px; }
+
     .actions-row { display:flex;gap:14px;justify-content:center;margin-top:18px; }
     .action-btn { background:#2979ff; color:#fff; border:none; border-radius:19px; padding:12px 23px; font-size:1.09em; font-weight:600; cursor:pointer; box-shadow:0 2px 10px #2979ff18; transition:background 0.18s; }
     .action-btn:disabled { background:#a7c6ff; cursor:not-allowed;}
@@ -125,6 +123,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      -webkit-user-select: none;
       user-select: none;
       transition: color 0.3s;
       padding: 2px 4px;
@@ -178,14 +177,9 @@
       <div class="req-block" id="watch-timer-label">Watch for 15 seconds<br>Currently watched 0 seconds</div>
       <div class="req-block reward" id="reward-label">Reward price: KSh 0.00</div>
     </div>
-    <div class="answer-section" id="answer-section" style="display:none;">
-      <div class="question-box" id="question-text">What brand was advertised?</div>
-      <input class="answer-box" id="answer-input" type="text" placeholder="Your answer here..." />
-    </div>
+
     <div class="actions-row" id="actions-row">
       <button class="action-btn watch-later-btn" onclick="window.location.href='task.html'">Watch Later</button>
-      <button class="action-btn" id="start-answering-btn" disabled>Start Answering</button>
-      <button class="action-btn" id="submit-answer-btn" style="display:none;">Submit Answer</button>
     </div>
     <div class="success-msg" id="success-msg"></div>
     <div class="upgrade-msg" id="upgrade-msg" style="display:none;"></div>
@@ -225,8 +219,6 @@
         watch_for: "Watch for",
         currently_watched: "Currently watched",
         reward_price: "Reward price",
-        start_answering: "Start Answering",
-        submit_answer: "Submit Answer",
         watch_later: "Watch Later",
         completed: "Task completed! Reward credited.",
         failed: "Failed to complete task.",
@@ -242,8 +234,6 @@
         watch_for: "Tazama kwa",
         currently_watched: "Umetazama sasa",
         reward_price: "Bei ya zawadi",
-        start_answering: "Anza Kujibu",
-        submit_answer: "Tuma Jibu",
         watch_later: "Tazama Baadaye",
         completed: "Kazi imekamilika! Zawadi imeongezwa.",
         failed: "Imeshindikana kukamilisha kazi.",
@@ -259,8 +249,6 @@
         watch_for: "Regardez pour",
         currently_watched: "Regardé actuellement",
         reward_price: "Prix de la récompense",
-        start_answering: "Commencer à répondre",
-        submit_answer: "Soumettre la réponse",
         watch_later: "Regarder plus tard",
         completed: "Tâche terminée ! Récompense créditée.",
         failed: "Échec de la tâche.",
@@ -281,8 +269,6 @@
       document.getElementById("nav-team-label").textContent = trans.team_management;
       document.getElementById("nav-level-label").textContent = trans.level;
       document.getElementById("nav-profile-label").textContent = trans.profile;
-      document.getElementById("start-answering-btn").textContent = trans.start_answering;
-      document.getElementById("submit-answer-btn").textContent = trans.submit_answer;
       document.querySelector(".watch-later-btn").textContent = trans.watch_later;
     }
     document.addEventListener("DOMContentLoaded", function() {
@@ -323,7 +309,6 @@
       }
       document.getElementById('ad-intro').textContent = adData.description || adData.intro || "No description";
       document.getElementById('reward-label').textContent = `Reward price: KSh ${adData.reward || '0.00'}`;
-      document.getElementById('question-text').textContent = adData.question || "What brand was advertised?";
       document.getElementById('adVideo').src = adData.video_url || '';
       requiredSeconds = adData.required_seconds || 15;
 
@@ -360,31 +345,7 @@
       });
     }
 
-    // --- Start Answering ---
-    document.getElementById('start-answering-btn').onclick = function() {
-      document.getElementById('answer-section').style.display = "block";
-      this.style.display = "none";
-      document.getElementById('submit-answer-btn').style.display = "inline-block";
-      answered = true;
-    };
 
-    // --- Submit Answer ---
-    document.getElementById('submit-answer-btn').onclick = async function() {
-      const answer = document.getElementById('answer-input').value.trim();
-      if (!answer) { alert("Please provide an answer!"); return; }
-      const token = localStorage.getItem('token');
-      const res = await fetch('/api/complete-task', {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
-        body: JSON.stringify({ task_id: taskId, answer })
-      });
-      if (res.ok) {
-        document.getElementById('success-msg').textContent = translations[getLang()].completed;
-        setTimeout(() => { window.location.href = "profile.html"; }, 1800);
-      } else {
-        document.getElementById('success-msg').textContent = translations[getLang()].failed;
-      }
-    };
 
     document.addEventListener("DOMContentLoaded", function() {
       fetchTaskDetails();

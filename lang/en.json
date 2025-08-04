@@ -18,5 +18,17 @@
   "notification": "Notification",
   "withdraw": "Withdraw",
   "bind_details": "Bind Withdrawal Details",
-  "privacy_policy": "Privacy Policy"
+  "privacy_policy": "Privacy Policy",
+  "welcome": "Welcome to UAI",
+  "welcome_trial": "Welcome back! Trial Worker",
+  "start_msg": "Start your work journey",
+  "company_activities": "Company Activities",
+  "news": "News",
+  "benefits": "Member Benefits",
+  "positions": "Advertising Positions",
+  "team_expansion": "Team Expansion",
+  "financial_management": "UAI wealth fund",
+  "casino_enter": "Click here to enter the casino",
+  "team_management": "Team Management",
+  "level": "Level"
 }

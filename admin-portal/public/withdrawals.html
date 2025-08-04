@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manage Withdrawals - UAI Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: linear-gradient(to bottom, #2979ff 0%, #e3f0ff 100%); margin: 0; }
+    .container { max-width: 900px; margin: 40px auto; background: #fff; border-radius: 18px; box-shadow: 0 2px 16px #2979ff22; padding: 32px 24px; }
+    h1 { color: #2979ff; text-align: center; margin-bottom: 24px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    th, td { padding: 10px 8px; border-bottom: 1px solid #e3f0ff; text-align: left; }
+    th { background: #2979ff; color: #fff; font-weight: 600; }
+    tr:hover { background: #e3f0ff; }
+    .action-btn { background: #2979ff; color: #fff; border: none; border-radius: 8px; padding: 6px 14px; font-size: 1em; cursor: pointer; margin-right: 6px; }
+    .action-btn.reject { background: #e32f2f; }
+    .action-btn.reject:hover { background: #b71c1c; }
+    .action-btn:hover { background: #1565c0; }
+    .back-link { display: inline-block; margin-bottom: 18px; color: #2979ff; text-decoration: none; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <button onclick="window.location.href='dashboard.html'" style="margin-bottom:18px;background:#2979ff;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:1em;cursor:pointer;box-shadow:0 2px 8px #2979ff22;">&larr; Back</button>
+    <h1>Manage Withdrawals</h1>
+    <table id="withdrawalsTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>User ID</th>
+          <th>Amount</th>
+          <th>Status</th>
+          <th>Requested At</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <script>
+    async function fetchWithdrawals() {
+      const res = await fetch('/api/admin/withdrawals');
+      const withdrawals = await res.json();
+      return withdrawals;
+    }
+    function renderWithdrawals(withdrawals) {
+      const tbody = document.querySelector('#withdrawalsTable tbody');
+      tbody.innerHTML = '';
+      withdrawals.forEach(w => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${w.id}</td>
+          <td>${w.user_id}</td>
+          <td>${w.amount}</td>
+          <td>${w.status}</td>
+          <td>${w.requested_at || ''}</td>
+          <td>
+            ${w.status === 'pending' ? `<button class="action-btn" onclick="approveWithdrawal(${w.id})">Approve</button><button class="action-btn reject" onclick="rejectWithdrawal(${w.id})">Reject</button>` : ''}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+    async function loadWithdrawals() {
+      const withdrawals = await fetchWithdrawals();
+      renderWithdrawals(withdrawals);
+    }
+    function approveWithdrawal(id) {
+      fetch(`/api/admin/approve-withdrawal`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ withdrawal_id: id }) })
+        .then(() => loadWithdrawals());
+    }
+    function rejectWithdrawal(id) {
+      fetch(`/api/admin/reject-withdrawal`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ withdrawal_id: id }) })
+        .then(() => loadWithdrawals());
+    }
+    loadWithdrawals();
+  </script>
+</body>
+</html> 

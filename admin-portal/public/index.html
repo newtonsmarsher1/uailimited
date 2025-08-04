@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Login - UAI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: Arial, sans-serif; background: #2f7acf; }
+    .container { max-width: 350px; margin: 60px auto; background: #fff; border-radius: 12px; box-shadow: 0 2px 12px #2979ff22; padding: 32px 24px; }
+    h2, h3 { color: #2979ff; text-align: center; }
+    label { display: block; margin-top: 18px; }
+    select, input { width: 100%; padding: 10px; margin-top: 6px; border-radius: 6px; border: 1px solid #ccc; }
+    button { width: 100%; background: #2979ff; color: #fff; border: none; border-radius: 6px; padding: 12px; margin-top: 24px; font-size: 1em; cursor: pointer; }
+    .hidden { display: none; }
+    .error { color: #d32f2f; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Admin Portal Login</h2>
+    <form id="login-form">
+      <label for="position">Select Position</label>
+      <select id="position" required>
+        <option value="">-- Choose Position --</option>
+        <option value="CEO">CEO</option>
+        <option value="HR Manager">HR Manager</option>
+        <option value="Assistant Manager">Assistant Manager</option>
+        <option value="Worker">Worker</option>
+      </select>
+      <div id="username-group">
+        <label for="username">Username</label>
+        <input id="username" name="username" required>
+      </div>
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" required>
+      <button type="submit" id="login-btn">Login</button>
+      <div class="error" id="login-error"></div>
+    </form>
+    <div style="text-align:center;margin-top:18px;">
+      <a href="register.html" style="color:#2979ff;font-weight:600;text-decoration:none;">Need to register? Click here</a>
+    </div>
+  </div>
+  <script>
+    const positionSelect = document.getElementById('position');
+    const usernameInput = document.getElementById('username');
+    const loginForm = document.getElementById('login-form');
+    const loginError = document.getElementById('login-error');
+
+    // Dropdown logic for role selection
+    document.getElementById('position').addEventListener('change', function() {
+      const role = this.value;
+      usernameInput.value = '';
+      usernameInput.placeholder = '';
+      document.getElementById('password').value = '';
+      document.getElementById('password').placeholder = '';
+    });
+    document.getElementById('position').dispatchEvent(new Event('change'));
+
+    // Login form submit
+    loginForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      loginError.textContent = '';
+      const position = positionSelect.value;
+      const username = usernameInput.value;
+      const password = document.getElementById('password').value;
+
+      // CEO login
+      if (position === 'CEO') {
+        if (username === 'newton' && password === 'Caroline') {
+          localStorage.setItem('userRole', 'CEO');
+          window.location.href = 'dashboard.html';
+        } else {
+          loginError.textContent = 'Invalid CEO credentials';
+        }
+        return;
+      }
+
+      // Other positions: check with backend
+      const res = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password, role: position })
+      });
+      const data = await res.json();
+      if (res.ok && data.firstLogin) {
+        // First login: redirect to registration completion
+        localStorage.setItem('firstLogin', 'true');
+        localStorage.setItem('firstLoginUsername', username);
+        localStorage.setItem('firstLoginRole', position);
+        localStorage.setItem('firstLoginUserId', data.userId);
+        window.location.href = 'register.html';
+      } else if (res.ok) {
+        localStorage.setItem('userRole', position);
+        localStorage.setItem('userId', data.userId);
+        window.location.href = 'dashboard.html';
+      } else if (data.error === 'Not yet registered') {
+        loginError.textContent = 'You are not registered. Please contact the administrator.';
+      } else {
+        loginError.textContent = data.error || 'Login failed';
+      }
+    });
+  </script>
+</body>
+</html>

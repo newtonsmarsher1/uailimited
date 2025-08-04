@@ -75,6 +75,42 @@
       margin-bottom: 6px;
       display: block;
     }
+    textarea {
+      width: 100%; min-height: 62px; border-radius: 7px; border: 1px solid #ad7ce6;
+      padding: 9px; font-size: 1em; margin-bottom: 1em; box-sizing: border-box;
+      resize: none;
+    }
+    .pay-btn {
+      background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 15px 30px;
+      font-size: 1.1em;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .pay-btn:hover {
+      background: linear-gradient(135deg, #e55a2b 0%, #e0851a 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 107, 53, 0.6);
+    }
+    .pay-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 10px rgba(255, 107, 53, 0.4);
+    }
+    .pay-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
     .message { margin-top: 1.2em; color: #2979ff; font-weight: 600; min-height: 24px;}
     .recharge-note {
       color: #ad7ce6;
@@ -101,18 +137,69 @@
   <div class="label">Till Number:</div>
   <div class="info-block" id="till-block">
     654321
-    <button class="copy-btn" onclick="copyText('654321')">Copy</button>
+    <button type="button" class="copy-btn" onclick="copyText('654321')">Copy</button>
   </div>
   <div class="label">Business Name:</div>
   <div class="info-block" id="till-name-block">
     UAI COMPANY
-    <button class="copy-btn" onclick="copyText('UAI COMPANY')">Copy</button>
+    <button type="button" class="copy-btn" onclick="copyText('UAI COMPANY')">Copy</button>
   </div>
+  <div class="label">Paste Mpesa Payment Message Below:</div>
+  <form id="msgForm">
+    <textarea id="mpesa-message" placeholder="Paste your Mpesa message here"></textarea>
+    <button type="submit" class="pay-btn">
+      🔥 SUBMIT PAYMENT MESSAGE 🔥
+    </button>
+  </form>
+  <div class="message" id="message"></div>
 </div>
 <script>
   function copyText(text) {
     navigator.clipboard.writeText(text);
   }
+  const userToken = localStorage.getItem('token');
+  document.getElementById('msgForm').onsubmit = async function(e) {
+    e.preventDefault();
+    const mpesa_message = document.getElementById('mpesa-message').value.trim();
+    if (!mpesa_message) {
+      document.getElementById('message').style.color = "#c62828";
+      document.getElementById('message').textContent = "Please paste your Mpesa message.";
+      return;
+    }
+    document.getElementById('message').style.color = "#ad7ce6";
+    document.getElementById('message').textContent = "Processing...";
+    try {
+      console.log('🔍 Method 4 - Sending message:', mpesa_message);
+      const res = await fetch('/api/recharge-method4', {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + userToken
+        },
+        body: JSON.stringify({ mpesa_message })
+      });
+      const data = await res.json();
+      console.log('🔍 Method 4 - Response:', data);
+      
+      if (data.message && data.message.includes('confirmed')) {
+        document.getElementById('message').style.color = "#2979ff";
+        document.getElementById('message').textContent = data.message;
+      } else if (data.error) {
+        document.getElementById('message').style.color = "#c62828";
+        document.getElementById('message').textContent = data.error;
+      } else if (data.message) {
+        document.getElementById('message').style.color = "#2979ff";
+        document.getElementById('message').textContent = data.message;
+      } else {
+        document.getElementById('message').style.color = "#c62828";
+        document.getElementById('message').textContent = "Failed to fetch payments. Please check your message and try again.";
+      }
+    } catch (e) {
+      console.log('❌ Method 4 - Error:', e);
+      document.getElementById('message').style.color = "#c62828";
+      document.getElementById('message').textContent = "Failed to fetch payments. Please check your internet connection and try again.";
+    }
+  };
 </script>
 </body>
 </html>

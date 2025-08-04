@@ -99,7 +99,101 @@
       margin-bottom: 2px;
       fill: currentColor;
     }
-    @media (max-width: 720px) 
+    /* News Styles */
+    .news-container {
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .news-title {
+      color: #1a237e;
+      font-size: 2em;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 30px;
+      text-shadow: 0 2px 4px rgba(26,35,126,0.1);
+    }
+    
+    .news-article {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 12px rgba(41,121,255,0.1);
+      border: 1px solid #e3f0ff;
+    }
+    
+    .news-article h2 {
+      color: #1a237e;
+      font-size: 1.4em;
+      font-weight: 700;
+      margin-bottom: 10px;
+      line-height: 1.3;
+    }
+    
+    .news-meta {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+    
+    .news-date {
+      background: #2979ff;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85em;
+      font-weight: 600;
+    }
+    
+    .news-category {
+      background: #e3f0ff;
+      color: #1a237e;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85em;
+      font-weight: 600;
+    }
+    
+    .news-content {
+      color: #333;
+      line-height: 1.6;
+      margin-bottom: 15px;
+      font-size: 1em;
+    }
+    
+    .news-list {
+      margin: 15px 0;
+      padding-left: 20px;
+    }
+    
+    .news-list li {
+      color: #333;
+      line-height: 1.6;
+      margin-bottom: 8px;
+      font-size: 1em;
+    }
+    
+    @media (max-width: 720px) {
+      .news-container {
+        padding: 15px;
+      }
+      
+      .news-title {
+        font-size: 1.6em;
+      }
+      
+      .news-article {
+        padding: 20px;
+      }
+      
+      .news-article h2 {
+        font-size: 1.2em;
+      }
+    }
+    
     @media (max-width:540px) {
       main { margin-top: 64px; }
       .task-thumb { width: 54px; height: 54px;}
@@ -129,8 +223,97 @@
   </div>
 </div>
 <main>
-  <section class="level-box">
-  <ul class="task-list" id="task-list">
+  <div class="news-container">
+    <h1 class="news-title">UAI Company News</h1>
+    
+    <article class="news-article">
+      <h2>🎉 UAI Company Celebrates 5+ Years of Innovation</h2>
+      <div class="news-meta">
+        <span class="news-date">August 8, 2024</span>
+        <span class="news-category">Company Milestone</span>
+      </div>
+      <p class="news-content">
+        UAI (United American Investments) was founded on August 8th, 2019, in Florida, USA, with a vision to revolutionize the digital investment landscape. 
+        What started as a small startup has grown into a leading financial technology company serving thousands of users worldwide.
+      </p>
+      <p class="news-content">
+        Our journey began with a simple mission: to make investment opportunities accessible to everyone, regardless of their background or location. 
+        Over the past 5+ years, we've expanded our services to include wealth management, digital task systems, and innovative financial solutions.
+      </p>
+    </article>
+
+    <article class="news-article">
+      <h2>📈 UAI Wealth Fund Launch</h2>
+      <div class="news-meta">
+        <span class="news-date">July 2024</span>
+        <span class="news-category">Product Launch</span>
+      </div>
+      <p class="news-content">
+        We're excited to announce the launch of our UAI Wealth Fund platform, offering diverse investment opportunities including:
+      </p>
+      <ul class="news-list">
+        <li>UAI Starter Fund - Perfect for beginners</li>
+        <li>UAI Micro Fund - Small-scale investments</li>
+        <li>Agriculture Fund - Sustainable farming investments</li>
+        <li>Tech Growth Fund - Technology sector focus</li>
+        <li>Real Estate Fund - Property investments</li>
+        <li>Crypto Mining Fund - Digital currency mining</li>
+        <li>Wells Fargo & Citibank Partnerships</li>
+        <li>Gold Investment Fund - Precious metals</li>
+        <li>Diamond Elite Fund - Premium investment options</li>
+      </ul>
+    </article>
+
+    <article class="news-article">
+      <h2>🌍 Global Expansion</h2>
+      <div class="news-meta">
+        <span class="news-date">June 2024</span>
+        <span class="news-category">Company Growth</span>
+      </div>
+      <p class="news-content">
+        UAI has expanded its operations globally, now serving users in multiple countries. Our platform supports multiple languages and currencies, 
+        making it easier for international users to access our investment opportunities and task management systems.
+      </p>
+    </article>
+
+    <article class="news-article">
+      <h2>🔒 Enhanced Security Features</h2>
+      <div class="news-meta">
+        <span class="news-date">May 2024</span>
+        <span class="news-category">Technology</span>
+      </div>
+      <p class="news-content">
+        We've implemented advanced security measures to protect our users' investments and personal information. 
+        Our platform now features multi-factor authentication, encrypted transactions, and real-time fraud detection systems.
+      </p>
+    </article>
+
+    <article class="news-article">
+      <h2>💼 New Partnership Opportunities</h2>
+      <div class="news-meta">
+        <span class="news-date">April 2024</span>
+        <span class="news-category">Partnerships</span>
+      </div>
+      <p class="news-content">
+        UAI is actively seeking partnerships with financial institutions, technology companies, and investment firms worldwide. 
+        These partnerships will enable us to offer even more diverse investment opportunities and better services to our users.
+      </p>
+    </article>
+
+    <article class="news-article">
+      <h2>🎯 Mission & Vision</h2>
+      <div class="news-meta">
+        <span class="news-date">August 8, 2019 - Present</span>
+        <span class="news-category">Company Values</span>
+      </div>
+      <p class="news-content">
+        <strong>Our Mission:</strong> To democratize investment opportunities and create financial freedom for people worldwide through innovative technology and transparent financial services.
+      </p>
+      <p class="news-content">
+        <strong>Our Vision:</strong> To become the leading global platform for accessible, secure, and profitable investment opportunities, serving millions of users across all continents.
+      </p>
+    </article>
+  </div>
 </main>
 
  <nav class="bottom-nav" role="navigation" aria-label="Bottom Navigation">
@@ -142,7 +325,7 @@
       <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 10h8M8 14h4"/></svg>
       <span id="nav-task-label">Task</span>
     </a>
-    <a href="team-management.html" id="nav-team">
+    <a href="team management.html" id="nav-team">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3"/><path d="M12 15c-4 0-8 2-8 4v1h16v-1c0-2-4-4-8-4z"/></svg>
       <span id="nav-team-label">Team Management</span>
     </a>

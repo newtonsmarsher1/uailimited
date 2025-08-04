@@ -10,6 +10,10 @@
       font-family: 'Segoe UI', Arial, sans-serif;
       color: #222;
       margin: 0;
+      padding-bottom: 70px; /* Add space for bottom navigation */
+      overflow-x: hidden; /* Prevent horizontal scrolling */
+      width: 100%;
+      min-height: 100vh;
     }
     .level-header-card {
       background: linear-gradient(90deg, #041d49 60%, #82b1ff 100%);
@@ -82,6 +86,13 @@
       border-radius: 50%; background: #fff;
       box-shadow: 0 2px 10px #2979ff22;
       display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .level-badge-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
     }
     .level-info-box {
       display: flex;
@@ -243,222 +254,426 @@
       margin: 0 auto 2px auto;
       fill: currentColor;
     }
+    nav.bottom-nav a span {
+      font-size: 0.75em;
+      line-height: 1;
+    }
+    /* Modal styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 3000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-content {
+      background: #fff;
+      border-radius: 18px;
+      max-width: 320px;
+      width: 90%;
+      padding: 32px 20px;
+      text-align: center;
+      box-shadow: 0 4px 32px rgba(0,0,0,0.3);
+      margin: 20px;
+    }
+    .modal-emoji {
+      font-size: 3em;
+      margin-bottom: 15px;
+    }
+    .modal-title {
+      font-size: 1.3em;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .modal-message {
+      font-size: 1.1em;
+      margin-bottom: 20px;
+      line-height: 1.4;
+    }
+    .modal-button {
+      background: #2979ff;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 28px;
+      font-size: 1.1em;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .modal-button:hover {
+      background: #1565c0;
+    }
     @media (max-width:600px) {
       .level-header-card, .level-table, .level-section-title { max-width: 98vw; }
-      .level-badge-img { width: 50px; height: 50px;}
+      .level-badge-img { width: 60px; height: 60px;}
+      .level-title { font-size: 1.3em; }
+      .level-info-row { font-size: 1em; }
+      .level-carousel-step { font-size: 0.95em; }
+      .level-table th, .level-table td { font-size: 0.95em; padding: 8px 5px; }
+      .choose-level-btn { font-size: 1.1em; }
+      .modal-content { max-width: 280px; padding: 28px 16px; }
+      .modal-emoji { font-size: 2.5em; }
+      .modal-title { font-size: 1.2em; }
+      .modal-message { font-size: 1em; }
+    }
+    
+    /* Mobile-specific optimizations for Android */
+    @media (max-width: 480px) {
+      body { 
+        padding-bottom: 80px; 
+        font-size: 14px;
+      }
+      .level-header-card { 
+        margin: 8px 4px; 
+        padding: 12px 10px; 
+        min-height: 90px;
+        border-radius: 12px;
+      }
+      .level-arrow { 
+        width: 32px; 
+        height: 32px; 
+        font-size: 1.3em;
+      }
+      .level-arrow.left { left: -8px; }
+      .level-arrow.right { right: -8px; }
+      .level-title { 
+        font-size: 1.1em; 
+        gap: 8px;
+      }
+      .level-title span {
+        font-size: 0.6em;
+        padding: 1px 4px;
+      }
+      .level-info-row { 
+        font-size: 0.85em; 
+        gap: 8px; 
+      }
+      .level-badge-img { 
+        width: 45px; 
+        height: 45px; 
+        margin-left: 8px; 
+        margin-right: 6px;
+      }
+      .level-carousel-nav { 
+        gap: 12px; 
+        margin: 12px 0 0 0; 
+      }
+      .level-carousel-step { 
+        font-size: 0.8em; 
+        padding: 0 4px; 
+      }
+      .level-section-title { 
+        font-size: 1em; 
+        margin: 12px 0 6px 0; 
+      }
+      .level-table { 
+        margin-bottom: 10px; 
+        font-size: 0.8em;
+      }
+      .level-table th, .level-table td { 
+        font-size: 0.8em; 
+        padding: 5px 3px; 
+      }
+      .choose-level-btn { 
+        font-size: 0.95em; 
+        padding: 10px 0; 
+        margin: 16px auto 8px auto;
+        width: 92%;
+        border-radius: 18px;
+      }
+      .modal-content { 
+        max-width: 240px; 
+        padding: 20px 12px; 
+        margin: 12px;
+      }
+      .modal-emoji { font-size: 2em; }
+      .modal-title { font-size: 1em; }
+      .modal-message { font-size: 0.9em; }
+      .modal-button { 
+        padding: 8px 20px; 
+        font-size: 0.95em; 
+      }
+      nav.bottom-nav { height: 60px; }
+      nav.bottom-nav a { font-size: 0.85em; }
+      nav.bottom-nav a svg { width: 18px; height: 18px; }
+      nav.bottom-nav a span { font-size: 0.65em; }
+    }
+    
+    /* Extra small screens */
+    @media (max-width: 360px) {
+      body { font-size: 13px; }
+      .level-header-card { 
+        margin: 6px 3px; 
+        padding: 10px 8px; 
+        min-height: 80px;
+        border-radius: 10px;
+      }
+      .level-title { 
+        font-size: 1em; 
+        gap: 6px;
+      }
+      .level-title span {
+        font-size: 0.55em;
+        padding: 1px 3px;
+      }
+      .level-info-row { 
+        font-size: 0.8em; 
+        gap: 6px; 
+      }
+      .level-badge-img { 
+        width: 40px; 
+        height: 40px; 
+        margin-left: 6px; 
+        margin-right: 4px;
+      }
+      .level-carousel-nav { 
+        gap: 8px; 
+        margin: 10px 0 0 0; 
+      }
+      .level-carousel-step { 
+        font-size: 0.75em; 
+        padding: 0 3px; 
+      }
+      .level-section-title { 
+        font-size: 0.95em; 
+        margin: 10px 0 5px 0; 
+      }
+      .level-table { 
+        margin-bottom: 8px; 
+        font-size: 0.75em;
+      }
+      .level-table th, .level-table td { 
+        font-size: 0.75em; 
+        padding: 4px 2px; 
+      }
+      .choose-level-btn { 
+        font-size: 0.9em; 
+        padding: 8px 0; 
+        width: 90%;
+        border-radius: 16px;
+      }
+      nav.bottom-nav { height: 55px; }
+      nav.bottom-nav a { font-size: 0.8em; }
+      nav.bottom-nav a svg { width: 16px; height: 16px; }
+      nav.bottom-nav a span { font-size: 0.6em; }
     }
   </style>
 </head>
 <body>
   <div id="level-container"></div>
-  <nav class="bottom-nav" role="navigation" aria-label="Bottom Navigation">
-    <a href="home.html">
-      <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-      Home
+  <nav class="bottom-nav" aria-label="Bottom Navigation">
+    <a href="home.html" id="nav-home">
+      <svg viewBox="0 0 24 24"><path d="M3 21v-7.5l9-6.5 9 6.5V21H3z"/></svg>
+      <span id="nav-home-label">Home</span>
     </a>
-    <a href="task.html">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-      Task
+    <a href="task.html" id="nav-task">
+      <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 10h8M8 14h4"/></svg>
+      <span id="nav-task-label">Task</span>
     </a>
-    <a href="team-management.html">
-      <svg viewBox="0 0 24 24"><path d="M5 16v2a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-2"/><path d="M17 10V6a5 5 0 0 0-10 0v4"/><circle cx="12" cy="14" r="2"/></svg>
-      Team Management
+    <a href="team management.html" id="nav-team">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3"/><path d="M12 15c-4 0-8 2-8 4v1h16v-1c0-2-4-4-8-4z"/></svg>
+      <span id="nav-team-label">Team Management</span>
     </a>
-    <a href="level.html" class="active">
-      <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zm0 7l-10 5 10 5 10-5-10-5z"/></svg>
-      Level
+    <a href="level.html" class="active" aria-current="page" id="nav-level">
+      <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 7v10l10 5 10-5V7"/></svg>
+      <span id="nav-level-label">Level</span>
     </a>
-    <a href="profile.html">
-      <svg viewBox="0 0 24 24"><path d="M12 12c2.67 0 8 1.34 8 4v4H4v-4c0-2.66 5.33-4 8-4zm0-2a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/></svg>
-      My
+    <a href="profile.html" id="nav-profile">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M2 20v-2a8 8 0 0 1 16 0v2"/></svg>
+      <span id="nav-profile-label">Profile</span>
     </a>
   </nav>
+
+  <!-- Modal for notifications -->
+  <div id="notification-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div id="modal-emoji" class="modal-emoji">🎉</div>
+      <div id="modal-title" class="modal-title">Congratulations!</div>
+      <div id="modal-message" class="modal-message">You have successfully joined this level.</div>
+      <button id="modal-button" class="modal-button" type="button" onclick="hideModal()">OK</button>
+    </div>
+  </div>
+
   <script>
+    // Check authentication
+    function checkAuth() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = 'index.html';
+        return false;
+      }
+      return true;
+    }
+
     // Blue theme badges/icons (use any badge icon you wish)
     const badgeUrls = [
       "https://img.icons8.com/color/96/crown.png", // LV1
       "https://img.icons8.com/color/96/diamond.png", // LV2
       "https://img.icons8.com/color/96/medal.png",   // LV3
       "https://img.icons8.com/color/96/trophy.png",  // LV4
-      "https://w7.pngwing.com/pngs/198/217/png-transparent-award-service-award-service-resource-ppt-background-thumbnail.png",   // LV5
+      "https://img.icons8.com/color/96/star.png",    // LV5
       "https://img.icons8.com/color/96/star.png",    // LV6
       "https://img.icons8.com/color/96/lock--v2.png",// LV7
       "https://img.icons8.com/color/96/lock--v2.png",// LV8
       "https://img.icons8.com/color/96/lock--v2.png" // LV9
     ];
 
-    // Example data for all levels
-    const levels = [
-      {
-        level: 1,
-        badge: badgeUrls[0],
-        target: 2400,
-        remaining: 5,
-        completed: 0,
-        dailyTasks: 5,
-        dailyCommission: 80,
-        promotionMargin: [
-          { method: "Invite A to become a member", rate: "12%", amount: 292 },
-          { method: "A invite subordinate B to become a member", rate: "3%", amount: 73 },
-          { method: "B invite subordinates C to become member", rate: "1%", amount: 24 }
-        ],
-        commissionRatio: [
-          { from: "Subordinate A completes the task", ratio: "5%", amount: 4 },
-          { from: "Subordinate B completes the task", ratio: "2%", amount: 1.6 },
-          { from: "Subordinate C completes the task", ratio: "1%", amount: 0.8 }
-        ],
-        locked: false
-      },
-      {
-        level: 2,
-        badge: badgeUrls[1],
-        target: 8100,
-        remaining: 5,
-        completed: 0,
-        dailyTasks: 10,
-        dailyCommission: 250,
-        promotionMargin: [
-          { method: "Invite A to become a member", rate: "12%", amount: 972 },
-          { method: "A invite subordinate B to become a member", rate: "3%", amount: 243 },
-          { method: "B invite subordinates C to become member", rate: "1%", amount: 81 }
-        ],
-        commissionRatio: [
-          { from: "Subordinate A completes the task", ratio: "5%", amount: 12.5 },
-          { from: "Subordinate B completes the task", ratio: "2%", amount: 5 },
-          { from: "Subordinate C completes the task", ratio: "1%", amount: 2.5 }
-        ],
-        locked: false
-      },
-      {
-        level: 3,
-        badge: badgeUrls[2],
-        target: 22000,
-        remaining: 5,
-        completed: 0,
-        dailyTasks: 20,
-        dailyCommission: 800,
-        promotionMargin: [
-          { method: "Invite A to become a member", rate: "12%", amount: 2640 },
-          { method: "A invite subordinate B to become a member", rate: "3%", amount: 660 },
-          { method: "B invite subordinates C to become member", rate: "1%", amount: 220 }
-        ],
-        commissionRatio: [
-          { from: "Subordinate A completes the task", ratio: "5%", amount: 40 },
-          { from: "Subordinate B completes the task", ratio: "2%", amount: 16 },
-          { from: "Subordinate C completes the task", ratio: "1%", amount: 8 }
-        ],
-        locked: false
-      },
-      {
-        level: 4,
-        badge: badgeUrls[3],
-        target: 61000,
-        remaining: 5,
-        completed: 0,
-        dailyTasks: 40,
-        dailyCommission: 2720,
-        promotionMargin: [
-          { method: "Invite A to become a member", rate: "12%", amount: 7320 },
-          { method: "A invite subordinate B to become a member", rate: "3%", amount: 1830 },
-          { method: "B invite subordinates C to become member", rate: "1%", amount: 610 }
-        ],
-        commissionRatio: [
-          { from: "Subordinate A completes the task", ratio: "5%", amount: 136 },
-          { from: "Subordinate B completes the task", ratio: "2%", amount: 54.4 },
-          { from: "Subordinate C completes the task", ratio: "1%", amount: 27.2 }
-        ],
-        locked: false
-      },
-      {
-        level: 5,
-        badge: badgeUrls[4],
-        target: 153000,
-        remaining: 5,
-        completed: 0,
-        dailyTasks: 60,
-        dailyCommission: 117,
-        promotionMargin: [
-          { method: "Invite A to become a member", rate: "12%", amount: 18360 },
-          { method: "A invite subordinate B to become a member", rate: "3%", amount: 4590 },
-          { method: "B invite subordinates C to become member", rate: "1%", amount: 1530 }
-        ],
-        commissionRatio: [
-          { from: "Subordinate A completes the task", ratio: "5%", amount: 117 },
-          { from: "Subordinate B completes the task", ratio: "2%", amount: 46.8 },
-          { from: "Subordinate C completes the task", ratio: "1%", amount: 23.4 }
-        ],
-        locked: false
-      },
-      {
-        level: 6,
-        badge: badgeUrls[5],
-        target: 380000,
-        remaining: 5,
-        completed: 0,
-        dailyTasks: 100,
-        dailyCommission: 15000,
-        promotionMargin: [
-          { method: "Invite A to become a member", rate: "12%", amount: 45600 },
-          { method: "A invite subordinate B to become a member", rate: "3%", amount: 11400 },
-          { method: "B invite subordinates C to become member", rate: "1%", amount: 3800 }
-        ],
-        commissionRatio: [
-          { from: "Subordinate A completes the task", ratio: "5%", amount: 750 },
-          { from: "Subordinate B completes the task", ratio: "2%", amount: 300 },
-          { from: "Subordinate C completes the task", ratio: "1%", amount: 150 }
-        ],
-        locked: false
-      },
-      {
-        level: 7,
-        badge: badgeUrls[6],
-        target: 860000,
-        remaining: 0,
-        completed: 0,
-        dailyTasks: 160,
-        dailyCommission: 219,
-        promotionMargin: [],
-        commissionRatio: [],
-        locked: true
-      },
-      {
-        level: 8,
-        badge: badgeUrls[7],
-        target: 1720000,
-        remaining: 0,
-        completed: 0,
-        dailyTasks: 240,
-        dailyCommission: 417,
-        promotionMargin: [],
-        commissionRatio: [],
-        locked: true
-      },
-      {
-        level: 9,
-        badge: badgeUrls[8],
-        target: 3600000,
-        remaining: 0,
-        completed: 0,
-        dailyTasks: 400,
-        dailyCommission: 3500,
-        promotionMargin: [],
-        commissionRatio: [],
-        locked: true
-      }
-    ];
+    // Level costs will be fetched from database
+    let levelCosts = {};
 
+    let levels = [];
     let currentIndex = 0;
+    let userLevel = 1;
 
-    function renderLevel(index) {
+    // Load levels data from backend
+    async function loadLevelsData() {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+      
+      try {
+        const res = await fetch('/api/levels', {
+          headers: { Authorization: "Bearer " + token }
+        });
+        if (!res.ok) throw new Error('Failed to load levels data');
+        
+        const data = await res.json();
+        userLevel = data.currentLevel || 1;
+        
+        // Original cost system (hardcoded)
+        const originalCosts = {
+          0: 0,        // Temporary worker
+          1: 2600,     // Level 1
+          2: 7500,     // Level 2
+          3: 23500,    // Level 3
+          4: 20000,    // Level 4
+          5: 177000,   // Level 5
+          6: 482000,   // Level 6
+          7: 1084000,  // Level 7
+          8: 2257000,  // Level 8
+          9: 4270000   // Level 9
+        };
+        
+        // Build level costs object from original data
+        Object.keys(originalCosts).forEach(level => {
+          levelCosts[level] = originalCosts[level];
+        });
+        
+        // Transform backend data to frontend format with original costs
+        levels = data.levelData.map((level, index) => {
+          // Lock levels 7, 8, and 9
+          const isLocked = level.level >= 7;
+          
+          return {
+            level: level.level,
+            cost: originalCosts[level.level] || 0, // Use original costs
+            badge: badgeUrls[index] || badgeUrls[0],
+            target: level.target,
+            remaining: level.dailyTasks - data.completedToday,
+            completed: data.completedToday,
+            dailyTasks: level.dailyTasks,
+            dailyCommission: level.dailyCommission,
+            rewardPerTask: level.rewardPerTask || 17,
+            promotionMargin: [
+              { method: "Invite A to become a member", rate: `${level.invitation_rate_a || 12}%`, amount: Math.round(level.target * (level.invitation_rate_a || 12) / 100) },
+              { method: "A invite subordinate B to become a member", rate: `${level.invitation_rate_b || 3}%`, amount: Math.round(level.target * (level.invitation_rate_b || 3) / 100) },
+              { method: "B invite subordinates C to become member", rate: `${level.invitation_rate_c || 1}%`, amount: Math.round(level.target * (level.invitation_rate_c || 1) / 100) }
+            ],
+            commissionRatio: [
+              { from: "Subordinate A completes the task", ratio: `${level.task_commission_rate_a || 5}%`, amount: Math.round(level.dailyCommission * (level.task_commission_rate_a || 5) / 100) },
+              { from: "Subordinate B completes the task", ratio: `${level.task_commission_rate_b || 2}%`, amount: Math.round(level.dailyCommission * (level.task_commission_rate_b || 2) / 100) },
+              { from: "Subordinate C completes the task", ratio: `${level.task_commission_rate_c || 1}%`, amount: Math.round(level.dailyCommission * (level.task_commission_rate_c || 1) / 100) }
+            ],
+            locked: isLocked
+          };
+        });
+        
+        await renderLevel(currentIndex);
+        
+        // Start real-time wallet balance updates
+        startRealTimeWalletUpdates();
+      } catch (error) {
+        console.error('Error loading levels data:', error);
+      }
+    }
+
+    // Fetch wallet balance from the same API as profile.html
+    async function fetchWalletBalance() {
+      const token = localStorage.getItem('token');
+      if (!token) return 0;
+      
+      try {
+        const res = await fetch('/api/user-stats', {
+          headers: { Authorization: "Bearer " + token }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          return parseFloat(data.wallet_balance || 0);
+        }
+      } catch (error) {
+        console.error('Error fetching wallet balance:', error);
+      }
+      return 0;
+    }
+
+    // Real-time wallet balance updates
+    function startRealTimeWalletUpdates() {
+      // Update wallet balance every 15 seconds
+      setInterval(async () => {
+        const newBalance = await fetchWalletBalance();
+        updateWalletBalanceDisplay(newBalance);
+      }, 15000);
+      
+      // Also update when page becomes visible
+      document.addEventListener('visibilitychange', async () => {
+        if (!document.hidden) {
+          const newBalance = await fetchWalletBalance();
+          updateWalletBalanceDisplay(newBalance);
+        }
+      });
+      
+      // Update when user returns to the tab
+      window.addEventListener('focus', async () => {
+        const newBalance = await fetchWalletBalance();
+        updateWalletBalanceDisplay(newBalance);
+      });
+    }
+
+    // Update wallet balance display
+    function updateWalletBalanceDisplay(balance) {
+      const walletDisplay = document.getElementById('wallet-balance-display');
+      if (walletDisplay) {
+        walletDisplay.textContent = `KES ${balance.toLocaleString()}`;
+      }
+    }
+
+    async function renderLevel(index) {
+      if (!levels.length) return;
+      
       const l = levels[index];
+      const cost = l.cost || 0;
+      // Calculate total commission as number of tasks * reward per task
+      const rewardPerTask = l.rewardPerTask || 17; // fallback to 17 if not present
+      const totalCommission = l.dailyTasks * rewardPerTask;
+      
+      // Fetch user wallet balance using the same method as profile.html
+      const walletBalance = await fetchWalletBalance();
+      
       document.getElementById('level-container').innerHTML = `
         <div class="level-header-card" style="position:relative;">
-          <span class="level-arrow left" onclick="moveLevel(-1)" ${index===0?'style="visibility:hidden;"':''}>&lt;</span>
+          <span class="level-arrow left" onclick="moveLevel(-1)" ${index===0?'style=\"visibility:hidden;\"':''}>&lt;</span>
           <div class="level-main">
             <div>
               <div class="level-title">
                 <span class="level-logo">UAI</span>
                 Lv${l.level}
+                ${l.level === 1 ? '<span style="background:#ff6b35;color:#fff;font-size:0.7em;padding:2px 6px;border-radius:8px;margin-left:8px;font-weight:600;">MOST POPULAR</span>' : ''}
+                ${l.level === 2 ? '<span style="background:#2979ff;color:#fff;font-size:0.7em;padding:2px 6px;border-radius:8px;margin-left:8px;font-weight:600;">POPULAR</span>' : ''}
               </div>
               <div class="level-info-box">
                 <div class="level-info-row"><span class="label">Remaining tasks:</span> ${l.remaining}</div>
@@ -472,15 +687,22 @@
               <img src="${l.badge}" style="width:100%;height:100%;" alt="Badge" />
             </div>
             <div style="text-align:right;">
-              <div style="font-weight:600;font-size:1.07em;color:#fff;margin-bottom:9px;">Target amount</div>
-              <div style="font-size:1.23em;font-weight:700;color:#fff;">${l.target}</div>
+              <div style="font-weight:600;font-size:1.07em;color:#fff;margin-bottom:9px;">Cost</div>
+              <div style="font-size:1.23em;font-weight:700;color:#fff;">KES ${cost.toLocaleString()}</div>
             </div>
           </div>
-          <span class="level-arrow right" onclick="moveLevel(1)" ${index===levels.length-1?'style="visibility:hidden;"':''}>&gt;</span>
-          ${l.locked ? `<div class="locked-overlay">Level Locked</div>` : ""}
+          <span class="level-arrow right" onclick="moveLevel(1)" ${index===levels.length-1?'style=\"visibility:hidden;\"':''}>&gt;</span>
+          ${l.locked ? `<div class="locked-overlay">Level Locked 🔒</div>` : ""}
         </div>
+        
+        <!-- Wallet Balance Display -->
+        <div style="background:#fff;margin:8px;padding:12px;border-radius:12px;box-shadow:0 2px 8px #2979ff22;text-align:center;">
+          <div style="font-size:0.9em;color:#666;margin-bottom:4px;">Your Wallet Balance</div>
+          <div style="font-size:1.4em;font-weight:700;color:#2979ff;" id="wallet-balance-display">KES ${walletBalance.toLocaleString()}</div>
+        </div>
+        
         <div class="level-carousel-nav">
-          ${levels.map((lv, i) => `<button class="level-carousel-step${i===index?' active':''}${lv.locked?' locked':''}" onclick="moveLevel(${i-currentIndex})" ${lv.locked?'disabled':''}>LV${lv.level}</button>`).join('')}
+          ${levels.map((lv, i) => `<button class="level-carousel-step${i===index?' active':''}${lv.locked?' locked':''}" onclick="moveLevel(${i-currentIndex})" ${lv.locked?'disabled':''}>LV${lv.level}${lv.locked?' 🔒':''}</button>`).join('')}
         </div>
         <div class="level-section-title">Lv${l.level}</div>
         <div style="padding:0 8px;">
@@ -494,7 +716,7 @@
             <tr>
               <td>Daily</td>
               <td>${l.dailyTasks}</td>
-              <td>${l.dailyCommission}</td>
+              <td>${totalCommission.toLocaleString()}</td>
             </tr>
           </table>
           <div class="level-section-title" style="color:#2979ff;">Invitation commission profit margin</div>
@@ -504,7 +726,7 @@
               <th>Invitation commission rate</th>
               <th>Income amount</th>
             </tr>
-            ${l.promotionMargin.length ? l.promotionMargin.map(pm => `<tr><td>${pm.method}</td><td>${pm.rate}</td><td>${pm.amount}</td></tr>`).join('') : `<tr><td colspan="3" style="color:#bdbdbd;">Locked</td></tr>`}
+            ${l.promotionMargin.length ? l.promotionMargin.map(pm => `<tr><td>${pm.method}</td><td>${pm.rate}</td><td>${pm.amount.toLocaleString()}</td></tr>`).join('') : `<tr><td colspan=\"3\" style=\"color:#bdbdbd;\">Locked</td></tr>`}
           </table>
           <div class="level-section-title" style="color:#2979ff;">Task commission income ratio</div>
           <table class="level-table">
@@ -513,29 +735,132 @@
               <th>Task commission ratio</th>
               <th>Income amount</th>
             </tr>
-            ${l.commissionRatio.length ? l.commissionRatio.map(cr => `<tr><td>${cr.from}</td><td>${cr.ratio}</td><td>${cr.amount}</td></tr>`).join('') : `<tr><td colspan="3" style="color:#bdbdbd;">Locked</td></tr>`}
+            ${l.commissionRatio.length ? l.commissionRatio.map(cr => `<tr><td>${cr.from}</td><td>${cr.ratio}</td><td>${cr.amount.toLocaleString()}</td></tr>`).join('') : `<tr><td colspan=\"3\" style=\"color:#bdbdbd;\">Locked</td></tr>`}
           </table>
-          <button class="choose-level-btn${l.locked?' locked':''}" ${l.locked?'disabled':''} onclick="chooseLevel(${l.level})">
-            Choose this level
+          <button class="choose-level-btn${l.locked?' locked':''}" ${l.locked?'disabled':''} onclick="chooseLevel(${l.level}, ${cost})">
+            ${l.locked ? 'Level Locked 🔒' : `Choose this level (KES ${cost.toLocaleString()})`}
           </button>
         </div>
       `;
     }
-    function moveLevel(step) {
+
+    async function moveLevel(step) {
       currentIndex += step;
       if (currentIndex < 0) currentIndex = 0;
       if (currentIndex > levels.length-1) currentIndex = levels.length-1;
-      renderLevel(currentIndex);
+      await renderLevel(currentIndex);
     }
-    function chooseLevel(level) {
-      alert('You have chosen UAI Level ' + level);
-      // You can replace this with your backend call/redirect logic
+
+    function showModal(type, message) {
+      const modal = document.getElementById('notification-modal');
+      const emoji = document.getElementById('modal-emoji');
+      const title = document.getElementById('modal-title');
+      const msg = document.getElementById('modal-message');
+      const button = document.getElementById('modal-button');
+      
+      if (type === 'error') {
+        emoji.textContent = '😢';
+        title.textContent = 'Sorry!';
+        title.style.color = '#e53935';
+        button.style.background = '#e53935';
+      } else {
+        emoji.textContent = '🎉';
+        title.textContent = 'Congratulations!';
+        title.style.color = '#2979ff';
+        button.style.background = '#2979ff';
+      }
+      
+      msg.textContent = message;
+      modal.style.display = 'flex';
     }
+
+    function hideModal() {
+      document.getElementById('notification-modal').style.display = 'none';
+    }
+
+    async function chooseLevel(level, cost) {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        showModal('error', 'Please log in first');
+        return;
+      }
+
+      // Check if level is locked (7, 8, 9)
+      if (level >= 7) {
+        showModal('error', 'This level is currently locked and unavailable for selection.');
+        return;
+      }
+
+      try {
+        // Pre-check user balance using the same method as profile.html
+        const userBalance = await fetchWalletBalance();
+        
+        if (userBalance < cost) {
+          showModal('error', `Insufficient funds! You need KES ${cost.toLocaleString()} but your balance is KES ${userBalance.toLocaleString()}`);
+          return;
+        }
+
+        const res = await fetch('/api/choose-level', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token 
+          },
+          body: JSON.stringify({ level: level })
+        });
+
+        const data = await res.json();
+        
+        if (!res.ok) {
+          showModal('error', data.error || 'Failed to choose level');
+          return;
+        }
+
+        // Success message with formatted costs
+        let successMessage = `🎉 Congratulations! You have successfully joined Level ${level}!`;
+        
+        if (data.refundAmount && data.refundAmount > 0) {
+          successMessage += `\n\n💰 Refund: KES ${data.refundAmount.toLocaleString()} from previous level`;
+          successMessage += `\n💳 Net cost: KES ${data.netCost.toLocaleString()}`;
+        } else {
+          successMessage += `\n\n💳 Cost: KES ${cost.toLocaleString()}`;
+        }
+        
+        showModal('success', successMessage);
+        // Reload levels data to reflect changes
+        await loadLevelsData();
+        
+        // Update wallet balance display after level selection
+        const newBalance = await fetchWalletBalance();
+        updateWalletBalanceDisplay(newBalance);
+        
+      } catch (error) {
+        console.error('Error choosing level:', error);
+        showModal('error', 'Network error! Please try again.');
+      }
+    }
+
     window.moveLevel = moveLevel;
     window.chooseLevel = chooseLevel;
+    window.hideModal = hideModal;
 
     document.addEventListener("DOMContentLoaded", function() {
-      renderLevel(currentIndex);
+      if (!checkAuth()) return;
+      loadLevelsData();
+      
+      // Update wallet balance when page becomes visible
+      document.addEventListener('visibilitychange', async () => {
+        if (!document.hidden) {
+          const newBalance = await fetchWalletBalance();
+          updateWalletBalanceDisplay(newBalance);
+        }
+      });
+      
+      // Update wallet balance when user returns to the tab
+      window.addEventListener('focus', async () => {
+        const newBalance = await fetchWalletBalance();
+        updateWalletBalanceDisplay(newBalance);
+      });
     });
   </script>
 </body>

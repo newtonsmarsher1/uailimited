@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-  <title>UAI Task List</title>
+  <title>UAI company activities</title>
   <style>
     body {
       margin: 0; padding: 0;
@@ -99,7 +99,175 @@
       margin-bottom: 2px;
       fill: currentColor;
     }
-    @media (max-width: 720px) 
+    /* Activities Styles */
+    .activities-container {
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .activities-title {
+      color: #1a237e;
+      font-size: 2em;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 30px;
+      text-shadow: 0 2px 4px rgba(26,35,126,0.1);
+    }
+    
+    .timeline {
+      position: relative;
+      margin-bottom: 40px;
+    }
+    
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 20px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: #2979ff;
+    }
+    
+    .timeline-item {
+      position: relative;
+      margin-bottom: 30px;
+      padding-left: 60px;
+    }
+    
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: 12px;
+      top: 8px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #2979ff;
+      border: 3px solid white;
+      box-shadow: 0 2px 4px rgba(41,121,255,0.3);
+    }
+    
+    .timeline-date {
+      background: #2979ff;
+      color: white;
+      padding: 6px 15px;
+      border-radius: 20px;
+      font-size: 0.9em;
+      font-weight: 600;
+      display: inline-block;
+      margin-bottom: 10px;
+    }
+    
+    .timeline-content {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(41,121,255,0.1);
+      border: 1px solid #e3f0ff;
+    }
+    
+    .timeline-content h3 {
+      color: #1a237e;
+      font-size: 1.3em;
+      font-weight: 700;
+      margin-bottom: 10px;
+      line-height: 1.3;
+    }
+    
+    .timeline-content p {
+      color: #333;
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+    
+    .activities-list {
+      margin: 15px 0;
+      padding-left: 20px;
+    }
+    
+    .activities-list li {
+      color: #333;
+      line-height: 1.6;
+      margin-bottom: 8px;
+    }
+    
+    .stats-section {
+      margin-top: 40px;
+    }
+    
+    .stats-section h2 {
+      color: #1a237e;
+      font-size: 1.6em;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 25px;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 20px;
+    }
+    
+    .stat-card {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(41,121,255,0.1);
+      border: 1px solid #e3f0ff;
+    }
+    
+    .stat-number {
+      color: #2979ff;
+      font-size: 2em;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    
+    .stat-label {
+      color: #1a237e;
+      font-size: 0.9em;
+      font-weight: 600;
+    }
+    
+    @media (max-width: 720px) {
+      .activities-container {
+        padding: 15px;
+      }
+      
+      .activities-title {
+        font-size: 1.6em;
+      }
+      
+      .timeline-item {
+        padding-left: 50px;
+      }
+      
+      .timeline-content {
+        padding: 15px;
+      }
+      
+      .timeline-content h3 {
+        font-size: 1.1em;
+      }
+      
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+      }
+      
+      .stat-card {
+        padding: 20px;
+      }
+      
+      .stat-number {
+        font-size: 1.6em;
+      }
+    }
+    
     @media (max-width:540px) {
       main { margin-top: 64px; }
       .task-thumb { width: 54px; height: 54px;}
@@ -109,28 +277,133 @@
 </head>
 <body>
 <div class="top-bar">
-  <div class="task-header-title">team expansion</div>
+  <div class="task-header-title">Company Activities</div>
   <div class="logo-row">
     <div class="hexagon">
       <span class="hexagon-text">UAI</span>
     </div>
   </div>
   <div class="company-logo-box">
-    <svg class="uai-logo" viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" aria-label="UAI Creative Logo">
+    <svg class="uai-logo" viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" aria-label="UAI Company Activities Logo">
       <defs>
         <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
           <stop offset="0%" style="stop-color:#2979ff;stop-opacity:1" />
           <stop offset="100%" style="stop-color:#90caf9;stop-opacity:1" />
         </linearGradient>
       </defs>
-      <polygon points="50,5 90,50 50,95 10,50" fill="url(#grad1)" />
-      <text x="110" y="65" font-family="Segoe UI, Arial" font-size="50" fill="#2979ff" font-weight="700">UAI</text>
+      <!-- Building/Company Icon -->
+      <rect x="20" y="60" width="40" height="35" fill="url(#grad1)" rx="2"/>
+      <rect x="25" y="65" width="8" height="8" fill="white"/>
+      <rect x="47" y="65" width="8" height="8" fill="white"/>
+      <rect x="25" y="78" width="8" height="8" fill="white"/>
+      <rect x="47" y="78" width="8" height="8" fill="white"/>
+      <rect x="35" y="85" width="10" height="10" fill="white"/>
+      <!-- Timeline/Activity Lines -->
+      <line x1="80" y1="30" x2="120" y2="30" stroke="#2979ff" stroke-width="3"/>
+      <line x1="80" y1="45" x2="120" y2="45" stroke="#2979ff" stroke-width="3"/>
+      <line x1="80" y1="60" x2="120" y2="60" stroke="#2979ff" stroke-width="3"/>
+      <line x1="80" y1="75" x2="120" y2="75" stroke="#2979ff" stroke-width="3"/>
+      <!-- Activity Dots -->
+      <circle cx="85" cy="30" r="3" fill="#2979ff"/>
+      <circle cx="85" cy="45" r="3" fill="#2979ff"/>
+      <circle cx="85" cy="60" r="3" fill="#2979ff"/>
+      <circle cx="85" cy="75" r="3" fill="#2979ff"/>
+      <text x="130" y="65" font-family="Segoe UI, Arial" font-size="24" fill="#2979ff" font-weight="700">Activities</text>
     </svg>
   </div>
 </div>
 <main>
-  <section class="level-box">
-  <ul class="task-list" id="task-list">
+  <div class="activities-container">
+    <h1 class="activities-title">UAI Company Activities</h1>
+    
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-date">August 8, 2019</div>
+        <div class="timeline-content">
+          <h3>🏢 Company Founded</h3>
+          <p>UAI (United American Investments) was officially founded in Florida, USA. The company began with a vision to democratize investment opportunities and create financial freedom for people worldwide.</p>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-date">2019 - 2020</div>
+        <div class="timeline-content">
+          <h3>🚀 Initial Development Phase</h3>
+          <p>Developed core investment platform and established first partnerships with financial institutions. Launched basic investment products and began building our user base.</p>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-date">2021</div>
+        <div class="timeline-content">
+          <h3>📱 Digital Platform Launch</h3>
+          <p>Launched our comprehensive digital platform featuring task management systems, user authentication, and basic investment tracking capabilities.</p>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-date">2022</div>
+        <div class="timeline-content">
+          <h3>🌍 Global Expansion</h3>
+          <p>Expanded operations internationally, supporting multiple languages and currencies. Established partnerships with banks and financial institutions worldwide.</p>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-date">2023</div>
+        <div class="timeline-content">
+          <h3>🔒 Security Enhancements</h3>
+          <p>Implemented advanced security measures including multi-factor authentication, encrypted transactions, and real-time fraud detection systems to protect user investments.</p>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-date">2024</div>
+        <div class="timeline-content">
+          <h3>💎 UAI Wealth Fund Launch</h3>
+          <p>Launched our comprehensive wealth management platform featuring 9 different investment funds including UAI Starter Fund, Micro Fund, Agriculture Fund, Tech Growth Fund, Real Estate Fund, Crypto Mining Fund, Wells Fargo & Citibank partnerships, Gold Investment Fund, and Diamond Elite Fund.</p>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-date">Present</div>
+        <div class="timeline-content">
+          <h3>🎯 Current Activities</h3>
+          <ul class="activities-list">
+            <li>Managing thousands of active user accounts worldwide</li>
+            <li>Processing millions in investment transactions</li>
+            <li>Expanding partnership network with major financial institutions</li>
+            <li>Developing new investment products and services</li>
+            <li>Enhancing platform security and user experience</li>
+            <li>Supporting multiple languages and currencies</li>
+            <li>Providing 24/7 customer support</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-section">
+      <h2>📊 Company Statistics</h2>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number">5+</div>
+          <div class="stat-label">Years of Operation</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">Global</div>
+          <div class="stat-label">Market Presence</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">9</div>
+          <div class="stat-label">Investment Funds</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">24/7</div>
+          <div class="stat-label">Customer Support</div>
+        </div>
+      </div>
+    </div>
+  </div>
 </main>
 
  <nav class="bottom-nav" role="navigation" aria-label="Bottom Navigation">
@@ -142,7 +415,7 @@
       <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 10h8M8 14h4"/></svg>
       <span id="nav-task-label">Task</span>
     </a>
-    <a href="team-management.html" id="nav-team">
+    <a href="team management.html" id="nav-team">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3"/><path d="M12 15c-4 0-8 2-8 4v1h16v-1c0-2-4-4-8-4z"/></svg>
       <span id="nav-team-label">Team Management</span>
     </a>

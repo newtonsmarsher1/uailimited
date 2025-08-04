@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-  <title>UAI </title>
+  <title>UAI Career Opportunities</title>
   <style>
     body {
       margin: 0; padding: 0;
@@ -54,12 +54,12 @@
     main {
       margin-top: 70px;
       padding-bottom: 80px;
-      max-width: 600px;
+      max-width: 800px;
       margin-left: auto;
       margin-right: auto;
     }
     
-     /* Bottom nav */
+    /* Bottom nav */
     nav.bottom-nav {
       position: fixed;
       bottom: 0;
@@ -99,68 +99,690 @@
       margin-bottom: 2px;
       fill: currentColor;
     }
-    @media (max-width: 720px) 
+
+    /* Advertising Page Styles */
+    .hero-section {
+      background: linear-gradient(135deg, #2979ff 0%, #1565c0 100%);
+      color: white;
+      padding: 40px 20px;
+      text-align: center;
+      border-radius: 0 0 20px 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 20px rgba(41,121,255,0.3);
+    }
+
+    .hero-title {
+      font-size: 2.5em;
+      font-weight: 700;
+      margin-bottom: 15px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .hero-subtitle {
+      font-size: 1.2em;
+      margin-bottom: 25px;
+      opacity: 0.9;
+      line-height: 1.5;
+    }
+
+    .cta-button {
+      background: #ff6b35;
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 25px;
+      font-size: 1.1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 15px rgba(255,107,53,0.4);
+    }
+
+    .cta-button:hover {
+      background: #e55a2b;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255,107,53,0.5);
+    }
+
+    .career-table-container {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      margin: 20px;
+      box-shadow: 0 8px 25px rgba(41,121,255,0.15);
+      border: 1px solid #e3f0ff;
+    }
+
+    .table-title {
+      color: #1a237e;
+      font-size: 1.8em;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 25px;
+      text-shadow: 0 2px 4px rgba(26,35,126,0.1);
+    }
+
+    .career-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: #f8f9ff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(41,121,255,0.1);
+    }
+
+    .career-table th {
+      background: #2979ff;
+      color: white;
+      padding: 15px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.95em;
+    }
+
+    .career-table td {
+      padding: 15px;
+      border-bottom: 1px solid #e3f0ff;
+      font-size: 0.9em;
+      line-height: 1.4;
+    }
+
+    .career-table tr:nth-child(even) {
+      background: #f0f4ff;
+    }
+
+    .career-table tr:hover {
+      background: #e8f2ff;
+      transition: background 0.3s;
+    }
+
+    .salary-cell {
+      font-weight: 700;
+      color: #2979ff;
+      text-align: right;
+    }
+
+    .benefits-section {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      margin: 20px;
+      box-shadow: 0 8px 25px rgba(41,121,255,0.15);
+      border: 1px solid #e3f0ff;
+    }
+
+    .benefits-title {
+      color: #1a237e;
+      font-size: 1.6em;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .benefit-card {
+      background: linear-gradient(135deg, #f8f9ff 0%, #e3f0ff 100%);
+      border-radius: 12px;
+      padding: 20px;
+      border: 1px solid #e3f0ff;
+      transition: transform 0.3s;
+    }
+
+    .benefit-card:hover {
+      transform: translateY(-3px);
+    }
+
+    .benefit-icon {
+      font-size: 2em;
+      margin-bottom: 10px;
+      color: #2979ff;
+    }
+
+    .benefit-title {
+      color: #1a237e;
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 1.1em;
+    }
+
+    .benefit-description {
+      color: #666;
+      font-size: 0.9em;
+      line-height: 1.5;
+    }
+
+    .join-section {
+      background: linear-gradient(135deg, #ff6b35 0%, #e55a2b 100%);
+      color: white;
+      border-radius: 15px;
+      padding: 30px;
+      margin: 20px;
+      text-align: center;
+      box-shadow: 0 8px 25px rgba(255,107,53,0.3);
+    }
+
+    .join-title {
+      font-size: 1.8em;
+      font-weight: 700;
+      margin-bottom: 15px;
+    }
+
+    .join-description {
+      font-size: 1.1em;
+      margin-bottom: 25px;
+      opacity: 0.9;
+    }
+
+    .join-button {
+      background: white;
+      color: #ff6b35;
+      border: none;
+      padding: 15px 40px;
+      border-radius: 25px;
+      font-size: 1.1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 15px rgba(255,255,255,0.3);
+    }
+
+    .join-button:hover {
+      background: #f8f9ff;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255,255,255,0.4);
+    }
+
+    @media (max-width: 720px) {
+      .hero-title {
+        font-size: 2em;
+      }
+      
+      .career-table {
+        font-size: 0.8em;
+      }
+      
+      .career-table th,
+      .career-table td {
+        padding: 10px;
+      }
+      
+      .benefits-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
     @media (max-width:540px) {
       main { margin-top: 64px; }
       .task-thumb { width: 54px; height: 54px;}
       .company-logo-box { display: none; }
     }
+
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+      backdrop-filter: blur(5px);
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      animation: modalSlideIn 0.3s ease-out;
+    }
+
+    @keyframes modalSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .modal-icon {
+      font-size: 4em;
+      margin-bottom: 20px;
+    }
+
+    .modal-title {
+      color: #1a237e;
+      font-size: 1.5em;
+      font-weight: 700;
+      margin-bottom: 15px;
+    }
+
+    .modal-message {
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 25px;
+    }
+
+    .modal-button {
+      background: #2979ff;
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 25px;
+      font-size: 1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 15px rgba(41,121,255,0.3);
+    }
+
+    .modal-button:hover {
+      background: #1565c0;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(41,121,255,0.4);
+    }
+
+    .join-button.disabled {
+      background: #ccc;
+      color: #666;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .join-button.disabled:hover {
+      background: #ccc;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .requirements-check {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 15px;
+      margin: 20px 0;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .requirement-item {
+      display: flex;
+      align-items: center;
+      margin: 8px 0;
+      font-size: 0.9em;
+    }
+
+    .requirement-icon {
+      margin-right: 10px;
+      font-size: 1.2em;
+    }
+
+    .requirement-met {
+      color: #4caf50;
+    }
+
+    .requirement-not-met {
+      color: #ff9800;
+    }
   </style>
 </head>
 <body>
 <div class="top-bar">
-  <div class="task-header-title">team expansion</div>
+  <div class="task-header-title">Career Opportunities</div>
   <div class="logo-row">
     <div class="hexagon">
       <span class="hexagon-text">UAI</span>
     </div>
   </div>
   <div class="company-logo-box">
-    <svg class="uai-logo" viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" aria-label="UAI Creative Logo">
+    <svg class="uai-logo" viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" aria-label="UAI Career Logo">
       <defs>
         <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
           <stop offset="0%" style="stop-color:#2979ff;stop-opacity:1" />
           <stop offset="100%" style="stop-color:#90caf9;stop-opacity:1" />
         </linearGradient>
       </defs>
-      <polygon points="50,5 90,50 50,95 10,50" fill="url(#grad1)" />
-      <text x="110" y="65" font-family="Segoe UI, Arial" font-size="50" fill="#2979ff" font-weight="700">UAI</text>
+      <!-- Career/Job Icon -->
+      <rect x="20" y="40" width="30" height="40" fill="url(#grad1)" rx="3"/>
+      <rect x="25" y="45" width="8" height="8" fill="white"/>
+      <rect x="37" y="45" width="8" height="8" fill="white"/>
+      <rect x="25" y="58" width="8" height="8" fill="white"/>
+      <rect x="37" y="58" width="8" height="8" fill="white"/>
+      <rect x="30" y="70" width="10" height="10" fill="white"/>
+      <!-- Growth Arrow -->
+      <path d="M80 30 L100 10 L120 30" stroke="#2979ff" stroke-width="3" fill="none"/>
+      <path d="M100 10 L100 70" stroke="#2979ff" stroke-width="3" fill="none"/>
+      <text x="130" y="65" font-family="Segoe UI, Arial" font-size="20" fill="#2979ff" font-weight="700">Careers</text>
     </svg>
   </div>
 </div>
+
 <main>
-  <h1>WELCOME TO UAI ADVERTISING POSITION<h1>
-  <h4>Apply for available position when you meet the minimum requirements ...</h4>
+  <div class="hero-section">
+    <h1 class="hero-title">🚀 Join UAI Team</h1>
+    <p class="hero-subtitle">Build your career with us and earn up to KSh 545,000 monthly!<br>
+    Start your journey today and grow with our expanding team.</p>
+    <button class="cta-button" onclick="scrollToTable()">View Career Opportunities</button>
+  </div>
 
+  <div class="career-table-container">
+    <h2 class="table-title">📊 Career Progression & Salary Structure</h2>
+    <table class="career-table">
+      <thead>
+        <tr>
+          <th>Job Grade</th>
+          <th>Conditional Requirements</th>
+          <th>Fixed Monthly Salary (KSh)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Internship Assistant</strong></td>
+          <td>Team of 15 A-level subordinates who become regular employees</td>
+          <td class="salary-cell">4,500</td>
+        </tr>
+        <tr>
+          <td><strong>Formal Assistant</strong></td>
+          <td>Team of 25 A-level subordinates who become regular employees</td>
+          <td class="salary-cell">9,000</td>
+        </tr>
+        <tr>
+          <td><strong>Senior Associate</strong></td>
+          <td>Team of 100 ABC-level people</td>
+          <td class="salary-cell">18,000</td>
+        </tr>
+        <tr>
+          <td><strong>Junior Supervisor</strong></td>
+          <td>Team of 300 ABC-level people</td>
+          <td class="salary-cell">90,000</td>
+        </tr>
+        <tr>
+          <td><strong>Mid-level Supervisor</strong></td>
+          <td>Team of 600 ABC-level people</td>
+          <td class="salary-cell">270,000</td>
+        </tr>
+        <tr>
+          <td><strong>Senior Executive</strong></td>
+          <td>Team of 3,000 ABC-level subordinates</td>
+          <td class="salary-cell">545,000</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
-  <h1>COMING SOON!....</h1>
-  
-  <!-- Additional content can be added here -->
-  
+  <div class="benefits-section">
+    <h2 class="benefits-title">🌟 Why Join UAI?</h2>
+    <div class="benefits-grid">
+      <div class="benefit-card">
+        <div class="benefit-icon">💰</div>
+        <div class="benefit-title">Competitive Salaries</div>
+        <div class="benefit-description">Earn up to KSh 545,000 monthly with our progressive salary structure based on team performance.</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">📈</div>
+        <div class="benefit-title">Career Growth</div>
+        <div class="benefit-description">Clear career progression path from Internship Assistant to Senior Executive with increasing responsibilities.</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">🌍</div>
+        <div class="benefit-title">Global Opportunities</div>
+        <div class="benefit-description">Work with a global team and expand your network across different markets and cultures.</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">🎯</div>
+        <div class="benefit-title">Performance Based</div>
+        <div class="benefit-description">Your success is directly tied to your team's performance, creating unlimited earning potential.</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">🏆</div>
+        <div class="benefit-title">Leadership Development</div>
+        <div class="benefit-description">Develop leadership skills by managing and mentoring teams of various sizes.</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">💼</div>
+        <div class="benefit-title">Professional Training</div>
+        <div class="benefit-description">Access to comprehensive training programs to enhance your skills and knowledge.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="join-section">
+    <h2 class="join-title">Ready to Start Your Journey?</h2>
+    <p class="join-description">Join thousands of successful professionals who have built their careers with UAI.<br>
+    Take the first step towards financial freedom and career growth!</p>
+    
+    <div class="requirements-check">
+      <h3 style="margin-bottom: 15px; font-size: 1.1em;">📋 Requirements Check</h3>
+      <div class="requirement-item">
+        <span class="requirement-icon" id="auth-status">⏳</span>
+        <span id="auth-text">Checking authentication...</span>
+      </div>
+      <div class="requirement-item">
+        <span class="requirement-icon" id="level-status">⏳</span>
+        <span id="level-text">Checking level requirements...</span>
+      </div>
+      <div class="requirement-item">
+        <span class="requirement-icon" id="team-status">⏳</span>
+        <span id="team-text">Checking team size...</span>
+      </div>
+    </div>
+    
+    <button class="join-button" id="join-button" onclick="checkRequirementsAndJoin()" disabled>Join UAI Team Now</button>
+  </div>
+
+  <!-- Modal Popup -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-icon">🎉</div>
+      <div class="modal-title">We Are Amazed!</div>
+      <div class="modal-message">
+        Congratulations! You've met all the requirements to join our team.<br><br>
+        Please contact our HR Manager for further assistance and next steps.<br><br>
+        <strong>HR Manager Contact:</strong><br>
+        📧 hr@uai.com<br>
+        📱 +254 700 000 000
+      </div>
+      <button class="modal-button" onclick="closeModal()">Got It!</button>
+    </div>
+  </div>
 </main>
 
- <nav class="bottom-nav" role="navigation" aria-label="Bottom Navigation">
-    <a href="home.html" class="active" aria-current="page" id="nav-home">
-      <svg viewBox="0 0 24 24"><path d="M3 21v-7.5l9-6.5 9 6.5V21H3z"/></svg>
-      <span id="nav-home-label">Home</span>
-    </a>
-    <a href="task.html" id="nav-task">
-      <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 10h8M8 14h4"/></svg>
-      <span id="nav-task-label">Task</span>
-    </a>
-    <a href="team-management.html" id="nav-team">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3"/><path d="M12 15c-4 0-8 2-8 4v1h16v-1c0-2-4-4-8-4z"/></svg>
-      <span id="nav-team-label">Team Management</span>
-    </a>
-    <a href="level.html" id="nav-level">
-      <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 7v10l10 5 10-5V7"/></svg>
-      <span id="nav-level-label">Level</span>
-    </a>
-    <a href="profile.html" id="nav-profile">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M2 20v-2a8 8 0 0 1 16 0v2"/></svg>
-      <span id="nav-profile-label">Profile</span>
-    </a>
-  </nav>
+<nav class="bottom-nav" role="navigation" aria-label="Bottom Navigation">
+  <a href="home.html" id="nav-home">
+    <svg viewBox="0 0 24 24"><path d="M3 21v-7.5l9-6.5 9 6.5V21H3z"/></svg>
+    <span id="nav-home-label">Home</span>
+  </a>
+  <a href="task.html" id="nav-task">
+    <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 10h8M8 14h4"/></svg>
+    <span id="nav-task-label">Task</span>
+  </a>
+  <a href="team management.html" id="nav-team">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3"/><path d="M12 15c-4 0-8 2-8 4v1h16v-1c0-2-4-4-8-4z"/></svg>
+    <span id="nav-team-label">Team Management</span>
+  </a>
+  <a href="level.html" id="nav-level">
+    <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 7v10l10 5 10-5V7"/></svg>
+    <span id="nav-level-label">Level</span>
+  </a>
+  <a href="profile.html" id="nav-profile">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M2 20v-2a8 8 0 0 1 16 0v2"/></svg>
+    <span id="nav-profile-label">Profile</span>
+  </a>
+</nav>
+
 <script>
+// Check authentication
+function checkAuth() {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    window.location.href = 'index.html';
+    return false;
+  }
+  return true;
+}
+
+// Get user data
+async function getUserData() {
+  const token = localStorage.getItem('token');
+  if (!token) return null;
+  
+  try {
+    const res = await fetch('/api/user', {
+      headers: { Authorization: "Bearer " + token }
+    });
+    
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch (error) {
+    console.error('Error fetching user data:', error);
+  }
+  return null;
+}
+
+// Check requirements and update UI
+async function checkRequirements() {
+  const authStatus = document.getElementById('auth-status');
+  const authText = document.getElementById('auth-text');
+  const levelStatus = document.getElementById('level-status');
+  const levelText = document.getElementById('level-text');
+  const teamStatus = document.getElementById('team-status');
+  const teamText = document.getElementById('team-text');
+  const joinButton = document.getElementById('join-button');
+  
+  // Check authentication
+  if (!checkAuth()) {
+    authStatus.textContent = '❌';
+    authText.textContent = 'Not authenticated';
+    authStatus.className = 'requirement-icon requirement-not-met';
+    return false;
+  } else {
+    authStatus.textContent = '✅';
+    authText.textContent = 'Authenticated';
+    authStatus.className = 'requirement-icon requirement-met';
+  }
+  
+  // Get user data
+  const userData = await getUserData();
+  if (!userData) {
+    levelStatus.textContent = '❌';
+    levelText.textContent = 'Unable to fetch user data';
+    teamStatus.textContent = '❌';
+    teamText.textContent = 'Unable to fetch team data';
+    levelStatus.className = 'requirement-icon requirement-not-met';
+    teamStatus.className = 'requirement-icon requirement-not-met';
+    return false;
+  }
+  
+  // Check level requirements (minimum level 3)
+  const userLevel = userData.level || 0;
+  if (userLevel >= 3) {
+    levelStatus.textContent = '✅';
+    levelText.textContent = `Level ${userLevel} (Minimum: 3)`;
+    levelStatus.className = 'requirement-icon requirement-met';
+  } else {
+    levelStatus.textContent = '❌';
+    levelText.textContent = `Level ${userLevel} (Minimum: 3)`;
+    levelStatus.className = 'requirement-icon requirement-not-met';
+  }
+  
+  // Check team size requirements (minimum 15 team members)
+  const teamSize = userData.team_size || 0;
+  if (teamSize >= 15) {
+    teamStatus.textContent = '✅';
+    teamText.textContent = `${teamSize} team members (Minimum: 15)`;
+    teamStatus.className = 'requirement-icon requirement-met';
+  } else {
+    teamStatus.textContent = '❌';
+    teamText.textContent = `${teamSize} team members (Minimum: 15)`;
+    teamStatus.className = 'requirement-icon requirement-not-met';
+  }
+  
+  // Enable button if all requirements are met
+  const allRequirementsMet = userLevel >= 3 && teamSize >= 15;
+  if (allRequirementsMet) {
+    joinButton.disabled = false;
+    joinButton.classList.remove('disabled');
+    joinButton.textContent = 'Join UAI Team Now';
+  } else {
+    joinButton.disabled = true;
+    joinButton.classList.add('disabled');
+    joinButton.textContent = 'Requirements Not Met';
+  }
+  
+  return allRequirementsMet;
+}
+
+// Show modal
+function showModal() {
+  const modal = document.getElementById('modal-overlay');
+  modal.style.display = 'flex';
+}
+
+// Close modal
+function closeModal() {
+  const modal = document.getElementById('modal-overlay');
+  modal.style.display = 'none';
+}
+
+// Check requirements and join
+async function checkRequirementsAndJoin() {
+  const requirementsMet = await checkRequirements();
+  
+  if (requirementsMet) {
+    showModal();
+  } else {
+    alert('Please meet all requirements before joining the team.');
+  }
+}
+
+function scrollToTable() {
+  const table = document.querySelector('.career-table-container');
+  table.scrollIntoView({ behavior: 'smooth' });
+}
+
+// Close modal when clicking outside
+document.addEventListener('click', function(event) {
+  const modal = document.getElementById('modal-overlay');
+  if (event.target === modal) {
+    closeModal();
+  }
+});
+
+// Initialize page
+document.addEventListener('DOMContentLoaded', function() {
+  if (!checkAuth()) return;
+  
+  // Check requirements on page load
+  setTimeout(() => {
+    checkRequirements();
+  }, 1000);
+  
+  // Add smooth scrolling for all internal links
+  const links = document.querySelectorAll('a[href^="#"]');
+  links.forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  });
+});
+</script>
 </body>
-</html>
+</html> 

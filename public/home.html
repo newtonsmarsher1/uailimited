@@ -187,64 +187,250 @@
       margin-top: 0;
       letter-spacing: .02em;
     }
-    /* Lottery and promo section */
-    .lottery-section {
+    /* Casino Wheel Section */
+    .casino-section {
       margin: 18px 0 0 0;
       width: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;
     }
-    .lottery-banner {
+    .casino-banner {
       width: 100%;
       max-width: 720px;
-      position: relative;
-      margin-bottom: 6px;
+      margin: 0 auto;
       border-radius: 24px;
       overflow: hidden;
-      box-shadow: 0 4px 18px rgba(224, 184, 0, 0.19);
-      background: linear-gradient(135deg, #1373cc 60%, #fff 100%);
+      box-shadow: 0 4px 18px rgba(41, 121, 255, 0.3);
+      background: linear-gradient(135deg, #2979ff 60%, #1565c0 100%);
       display: flex;
       flex-direction: column;
       align-items: center;
+      padding: 8px;
     }
-    .lottery-banner .lottery-wheel {
-      margin: 16px auto 0 auto;
-      width: 150px;
-      height: 150px;
-      display: block;
-      animation: spinwheel 2s linear infinite;
-    }
-    @keyframes spinwheel {
-      to { transform: rotate(360deg);}
-    }
-    .lottery-banner .lottery-text {
+    .casino-wheel-container {
       position: relative;
-      font-size: 1.5em;
-      font-weight: 800;
-      color: #e32f2f;
-      text-align: center;
-      margin: 8px 0 18px 0;
-      text-shadow: 1px 1px 0 #fff, 2px 2px 0 #e3b800;
-      background: none;
-      padding: 0;
+      width: 300px;
+      height: 300px;
+      margin: 10px auto;
     }
-    .casio-promo {
+    .casino-wheel {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: conic-gradient(
+        from 0deg,
+        #ff4444 0deg 30deg,
+        #ffdd44 30deg 60deg,
+        #ff4444 60deg 90deg,
+        #ffdd44 90deg 120deg,
+        #ff4444 120deg 150deg,
+        #ffdd44 150deg 180deg,
+        #ff4444 180deg 210deg,
+        #ffdd44 210deg 240deg,
+        #ff4444 240deg 270deg,
+        #ffdd44 270deg 300deg,
+        #ff4444 300deg 330deg,
+        #ffdd44 330deg 360deg
+      );
+      position: relative;
+      transition: transform 3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Light buttons around circumference */
+    .casino-lights {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      pointer-events: none;
+      animation: rotateLights 2s linear infinite;
+    }
+    
+    .casino-light {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 12px;
+      height: 12px;
+      background: radial-gradient(circle, #fff 40%, #ffdd44 80%);
+      border-radius: 50%;
+      transform-origin: 50% 0%;
+      margin-left: -6px;
+      margin-top: -6px;
+      box-shadow: 
+        0 0 15px rgba(255,255,255,1), 
+        0 0 25px rgba(255, 221, 68, 0.8),
+        0 0 35px rgba(255, 221, 68, 0.4);
+      animation: lightPulse 0.6s ease-in-out infinite alternate;
+    }
+    
+    @keyframes rotateLights {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    
+    @keyframes lightPulse {
+      0% { 
+        opacity: 0.7; 
+        transform: scale(1); 
+        box-shadow: 
+          0 0 15px rgba(255,255,255,1), 
+          0 0 25px rgba(255, 221, 68, 0.8),
+          0 0 35px rgba(255, 221, 68, 0.4);
+      }
+      100% { 
+        opacity: 1; 
+        transform: scale(1.4); 
+        box-shadow: 
+          0 0 25px rgba(255,255,255,1), 
+          0 0 40px rgba(255, 221, 68, 1),
+          0 0 55px rgba(255, 221, 68, 0.6);
+      }
+    }
+    .casino-wheel-segments {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+    }
+    .casino-wheel-segment {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 2px;
+      height: 50%;
+      background: #333;
+      transform-origin: 50% 0%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: bold;
+      color: #fff;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    }
+    .casino-wheel-segment span {
+      position: absolute;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%) rotate(90deg);
+      white-space: nowrap;
+      font-size: 12px;
+    }
+    .casino-wheel-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #ffd700, #ffed4e);
+      border-radius: 50%;
+      border: 4px solid #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: #333;
+      font-size: 16px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      z-index: 10;
+    }
+    .casino-pointer {
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 15px solid transparent;
+      border-right: 15px solid transparent;
+      border-top: 25px solid #ff4444;
+      z-index: 15;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    }
+    .casino-wheel-pointer::after {
+      content: '';
+      position: absolute;
+      top: -20px;
+      left: -8px;
+      width: 0;
+      height: 0;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-top: 16px solid white;
+    }
+    .casino-wheel-segment:nth-child(odd) {
+      background: linear-gradient(45deg, #dc143c, #b22222);
+    }
+    .casino-wheel-segment:nth-child(even) {
+      background: linear-gradient(45deg, #ffd700, #ffed4e);
+    }
+    .casino-text {
+      font-size: 1.4em;
+      font-weight: 800;
+      color: #ffd700;
+      text-align: center;
+      margin: 15px 0 10px 0;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+      background: linear-gradient(135deg, #ffd700, #ffed4e);
+      padding: 12px 24px;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 3px solid #fff;
+      box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+      display: inline-block;
+      position: relative;
+      overflow: hidden;
+    }
+    .casino-text:hover {
+      color: #333;
+      transform: scale(1.05);
+      box-shadow: 0 6px 20px rgba(255, 215, 0, 0.6);
+      background: linear-gradient(135deg, #fff, #ffd700);
+    }
+    .casino-text:active {
+      transform: scale(0.95);
+    }
+    .casino-text::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      transition: left 0.5s;
+    }
+    .casino-text:hover::before {
+      left: 100%;
+    }
+    .casino-promo {
       width: 100%;
       max-width: 720px;
-      margin: 8px auto 0 auto;
+      margin: 4px auto 0 auto;
       border-radius: 18px;
       overflow: hidden;
-      box-shadow: 0 4px 16px rgba(41,121,255,0.13);
+      box-shadow: 0 4px 16px rgba(41, 121, 255, 0.2);
       background: #fff;
       display: flex;
       justify-content: center;
       align-items: center;
     }
-    .casio-promo img {
+    .casino-promo img {
       display: block;
       width: 100%;
       height: auto;
+      max-height: 200px;
+      object-fit: cover;
     }
     /* Bottom nav */
     nav.bottom-nav {
@@ -288,19 +474,33 @@
     }
     @media (max-width: 720px) {
       .icon-grid { max-width: 100vw; gap: 18px 0; }
-      .lottery-banner, .casio-promo { max-width: 100vw; }
+      .casino-banner, .casino-promo { max-width: 100vw; }
     }
     @media (max-width: 420px) {
       .icon-grid { grid-template-columns: 1fr 1fr; }
       .welcome-msg, .brand-title { font-size: 1.1em; }
-      .lottery-banner .lottery-text { font-size: 1.05em; }
+      .casino-text { font-size: 1.05em; }
     }
   </style>
 </head>
 <body>
+    <script>
+      // Clear all task-related localStorage data
+      console.log('🧹 Clearing localStorage data...');
+      localStorage.removeItem('completedTasks');
+      localStorage.removeItem('todaysEarnings');
+      localStorage.removeItem('totalEarnings');
+      localStorage.removeItem('lastResetDate');
+      localStorage.removeItem('tasksDone');
+      localStorage.removeItem('walletBalance');
+      localStorage.removeItem('monthEarning');
+      localStorage.removeItem('dashboardStats');
+      console.log('✅ localStorage cleared');
+    </script>
+
   <div class="top-section">
     <div class="lang-bell-row">
-      <select id="language-chooser" aria-label="Change Language">
+      <select id="language-chooser" aria-label="Change Language" onchange="changeLanguage(this.value)">
         <option value="en">English</option>
         <option value="sw">Swahili</option>
         <option value="fr">French</option>
@@ -312,8 +512,8 @@
     <div class="logo-title-row">
       <span class="brand-title">UAI</span>
     </div>
-    <div class="welcome-msg" id="welcome-msg">Welcome to UAI</div>
-    <div class="start-msg" id="start-msg">Start your work journey</div>
+    <div class="welcome-msg" id="welcome-msg" data-translate="welcome-msg">Welcome to UAI</div>
+    <div class="start-msg" id="start-msg" data-translate="start-msg">Start your work journey</div>
     <div class="bond-row">
       <span class="bond-badge">
         <img class="bond-badge-icon" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f48e.svg" alt="Badge" />
@@ -326,191 +526,560 @@
       <a class="icon-btn" href="company activities.html" id="company-activities-btn" title="Company Activities">
         <svg viewBox="0 0 24 24"><path d="M7 4v16l13-8-13-8z"/></svg>
       </a>
-      <span class="icon-label" id="company-activities-label">Company Activities</span>
+      <span class="icon-label" id="company-activities-label" data-translate="company-activities-label">Company Activities</span>
     </div>
     <div class="icon-col">
       <a class="icon-btn" href="news.html" id="news-btn" title="News">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#282828"/><text x="12" y="16" font-size="8" text-anchor="middle" fill="#ffe600">NEWS</text></svg>
       </a>
-      <span class="icon-label" id="news-label">News</span>
+      <span class="icon-label" id="news-label" data-translate="news-label">News</span>
     </div>
     <div class="icon-col">
       <a class="icon-btn" href="benefits.html" id="benefits-btn" title="Member Benefits">
         <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
       </a>
-      <span class="icon-label" id="benefits-label">Member Benefits</span>
+      <span class="icon-label" id="benefits-label" data-translate="benefits-label">Member Benefits</span>
     </div>
     <div class="icon-col">
       <a class="icon-btn" href="positions.html" id="positions-btn" title="Advertising Positions">
         <svg viewBox="0 0 24 24"><path d="M15 6V4H9v2H4v2h16V6z"/><circle cx="12" cy="14" r="4"/></svg>
       </a>
-      <span class="icon-label" id="positions-label">Advertising Positions</span>
+      <span class="icon-label" id="positions-label" data-translate="positions-label">Advertising Positions</span>
     </div>
     <div class="icon-col">
       <a class="icon-btn" href="team-expansion.html" id="team-expansion-btn" title="Team Expansion">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3"/><path d="M12 15c-4 0-8 2-8 4v1h16v-1c0-2-4-4-8-4z"/></svg>
       </a>
-      <span class="icon-label" id="team-expansion-label">Team Expansion</span>
+      <span class="icon-label" id="team-expansion-label" data-translate="team-expansion-label">Team Expansion</span>
     </div>
     <div class="icon-col">
       <a class="icon-btn" href="financial-management-fund.html" id="financial-management-btn" title="Financial Management Fund">
         <svg viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="8" rx="2"/><path d="M2 8V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v2"/></svg>
       </a>
-      <span class="icon-label" id="financial-management-label">Financial management fund</span>
+      <span class="icon-label" id="financial-management-label" data-translate="financial-management-label">UAI wealth fund</span>
     </div>
   </div>
-  <section class="lottery-section">
-    <div class="lottery-banner">
-      <svg class="lottery-wheel" viewBox="0 0 150 150">
-        <circle cx="75" cy="75" r="70" fill="#ffe600" stroke="#e3b800" stroke-width="8"/>
-        <g>
-          <!-- Segments -->
-          <g>
-            <path d="M75,75 L75,15 A60,60 0 0,1 135,75 Z" fill="#fff" />
-            <path d="M75,75 L135,75 A60,60 0 0,1 75,135 Z" fill="#ff6659" />
-            <path d="M75,75 L75,135 A60,60 0 0,1 15,75 Z" fill="#43e97b" />
-            <path d="M75,75 L15,75 A60,60 0 0,1 75,15 Z" fill="#2979ff" />
-          </g>
-          <circle cx="75" cy="75" r="28" fill="#fff" stroke="#e3b800" stroke-width="2"/>
-          <circle cx="75" cy="75" r="10" fill="#e32f2f"/>
-          <text x="75" y="80" text-anchor="middle" font-size="22" font-weight="bold" fill="#e32f2f">GO</text>
-        </g>
-      </svg>
-      <div class="lottery-text" id="lottery-btn-label" onclick="window.location.href='lottery.html'">
-        Click here to enter the lottery tour
+  <section class="casino-section">
+    <div class="casino-banner">
+      <div class="casino-wheel-container">
+        <div class="casino-wheel"></div>
+        <div class="casino-lights"></div>
+      </div>
+      <div class="casino-text" id="casino-btn-label" data-translate="casino-btn-label" onclick="window.location.href='casino.html'">
+        Click here to enter the casino
       </div>
     </div>
-    <div class="casio-promo">
+    <div class="casino-promo">
       <img src="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=900&q=80" alt="CASIO Promo">
     </div>
   </section>
   <nav class="bottom-nav" role="navigation" aria-label="Bottom Navigation">
     <a href="home.html" class="active" aria-current="page" id="nav-home">
       <svg viewBox="0 0 24 24"><path d="M3 21v-7.5l9-6.5 9 6.5V21H3z"/></svg>
-      <span id="nav-home-label">Home</span>
+      <span id="nav-home-label" data-translate="nav-home-label">Home</span>
     </a>
     <a href="task.html" id="nav-task">
       <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 10h8M8 14h4"/></svg>
-      <span id="nav-task-label">Task</span>
+      <span id="nav-task-label" data-translate="nav-task-label">Task</span>
     </a>
     <a href="team management.html" id="nav-team">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3"/><path d="M12 15c-4 0-8 2-8 4v1h16v-1c0-2-4-4-8-4z"/></svg>
-      <span id="nav-team-label">Team Management</span>
+      <span id="nav-team-label" data-translate="nav-team-label">Team Management</span>
     </a>
     <a href="level.html" id="nav-level">
       <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 7v10l10 5 10-5V7"/></svg>
-      <span id="nav-level-label">Level</span>
+      <span id="nav-level-label" data-translate="nav-level-label">Level</span>
     </a>
     <a href="profile.html" id="nav-profile">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M2 20v-2a8 8 0 0 1 16 0v2"/></svg>
-      <span id="nav-profile-label">Profile</span>
+      <span id="nav-profile-label" data-translate="nav-profile-label">Profile</span>
     </a>
   </nav>
+  <script src="js/language-manager.js"></script>
   <script>
-    const translations = {
-      en: {
-        brand_title: "UAI",
-        welcome_message: "Welcome to UAI",
-        start_msg: "Start your work journey",
-        company_activities: "Company Activities",
-        news: "News",
-        benefits: "Member Benefits",
-        positions: "Advertising Positions",
-        team_expansion: "Team Expansion",
-        financial_management: "Financial management fund",
-        lottery_btn: "Click here to enter the lottery tour",
-        home: "Home",
-        task: "Task",
-        team_management: "Team Management",
-        level: "Level",
-        profile: "Profile",
-        bond_level_label: "Lv1"
-      },
-      sw: {
-        brand_title: "UAI",
-        welcome_message: "Karibu UAI",
-        start_msg: "Anza safari yako ya kazi",
-        company_activities: "Shughuli za Kampuni",
-        news: "Habari",
-        benefits: "Faida za Wanachama",
-        positions: "Nafasi za Matangazo",
-        team_expansion: "Upanuzi wa Timu",
-        financial_management: "Mfuko wa Usimamizi wa Fedha",
-        lottery_btn: "Bonyeza hapa kuingia kwenye bahati nasibu",
-        home: "Nyumbani",
-        task: "Kazi",
-        team_management: "Usimamizi wa Timu",
-        level: "Kiwango",
-        profile: "Wasifu",
-        bond_level_label: "Lv1"
-      },
-      fr: {
-        brand_title: "UAI",
-        welcome_message: "Bienvenue à UAI",
-        start_msg: "Commencez votre parcours professionnel",
-        company_activities: "Activités de l'entreprise",
-        news: "Actualités",
-        benefits: "Avantages des membres",
-        positions: "Postes publicitaires",
-        team_expansion: "Expansion de l'équipe",
-        financial_management: "Fonds de gestion financière",
-        lottery_btn: "Cliquez ici pour entrer dans la loterie",
-        home: "Accueil",
-        task: "Tâche",
-        team_management: "Gestion d'équipe",
-        level: "Niveau",
-        profile: "Profil",
-        bond_level_label: "Lv1"
+    // Check authentication
+    function checkAuth() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = 'index.html';
+        return false;
       }
-    };
-    function getLang() {
-      return localStorage.getItem("lang") || "en";
+      return true;
     }
-    function setLang(lang) {
-      localStorage.setItem("lang", lang);
-      updateLabels();
-      // Optionally persist to backend:
-      // fetch('/api/set-lang', { method: "POST", headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token }, body: JSON.stringify({ lang }) });
+
+    // Load notifications
+    async function loadNotifications() {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+      
+      try {
+        const res = await fetch('/api/notifications', {
+          headers: { Authorization: "Bearer " + token }
+        });
+        if (!res.ok) return;
+        
+        const notes = await res.json();
+        if (notes.length > 0) {
+          // Show notification in a banner or popup
+          const notification = notes[0];
+          console.log('Notification:', notification.message);
+        }
+      } catch (error) {
+        console.error('Error loading notifications:', error);
+      }
     }
-    function updateLabels() {
-      const lang = getLang();
-      const trans = translations[lang] || translations.en;
-      document.querySelector('.brand-title').textContent = trans.brand_title;
-      document.getElementById("welcome-msg").textContent = trans.welcome_message;
-      document.getElementById("start-msg").textContent = trans.start_msg;
-      document.getElementById("company-activities-label").textContent = trans.company_activities;
-      document.getElementById("news-label").textContent = trans.news;
-      document.getElementById("benefits-label").textContent = trans.benefits;
-      document.getElementById("positions-label").textContent = trans.positions;
-      document.getElementById("team-expansion-label").textContent = trans.team_expansion;
-      document.getElementById("financial-management-label").textContent = trans.financial_management;
-      document.getElementById("lottery-btn-label").textContent = trans.lottery_btn;
-      document.getElementById("nav-home-label").textContent = trans.home;
-      document.getElementById("nav-task-label").textContent = trans.task;
-      document.getElementById("nav-team-label").textContent = trans.team_management;
-      document.getElementById("nav-level-label").textContent = trans.level;
-      document.getElementById("nav-profile-label").textContent = trans.profile;
-      document.getElementById("bond-level-label").textContent = trans.bond_level_label;
+
+    // Use the global language manager
+    async function changeLanguage(lang) {
+      if (window.languageManager) {
+        await window.languageManager.changeLanguage(lang);
+      }
     }
-    document.addEventListener("DOMContentLoaded", function() {
-      updateLabels();
-      document.getElementById("language-chooser").value = getLang();
-      document.getElementById("language-chooser").addEventListener("change", function() {
-        setLang(this.value);
+
+    // Load user data and level information
+    async function loadUserData() {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+      
+      try {
+        // Fetch user stats (includes level data)
+        const res = await fetch('/api/user-stats', {
+          headers: { Authorization: "Bearer " + token }
+        });
+        if (!res.ok) throw new Error('Failed to load user data');
+        
+        const data = await res.json();
+        
+        // Display correct user level (0 for temp workers, actual level for others)
+        const userLevel = data.is_temporary_worker ? 0 : (data.level || 1);
+        document.getElementById('bond-level-label').textContent = "Lv" + userLevel;
+        
+        // Store trial worker status for language system
+        localStorage.setItem('is_trial_worker', data.is_temporary_worker ? 'true' : 'false');
+        
+                // Store trial start date from MySQL for accurate countdown
+        if (data.temp_worker_start_date) {
+          localStorage.setItem('trialStartDate', data.temp_worker_start_date);
+        }
+        
+        // Add trial worker countdown badge if temporary worker
+        if (data.is_temporary_worker) {
+          // Get trial start date from MySQL data (stored in localStorage)
+          const trialStartDateStr = localStorage.getItem('trialStartDate');
+          const trialStartDate = trialStartDateStr ? new Date(trialStartDateStr) : new Date();
+          const totalTrialTime = 5 * 24 * 60 * 60 * 1000; // 5 days
+
+          // Create or update the countdown badge
+          let countdownBadge = document.getElementById('trial-countdown-badge');
+          if (!countdownBadge) {
+            countdownBadge = document.createElement('div');
+            countdownBadge.id = 'trial-countdown-badge';
+            countdownBadge.style.cssText = `
+              background: linear-gradient(90deg, #ff6b35, #f7931e);
+              color: white;
+              padding: 6px 12px;
+              border-radius: 8px;
+              font-size: 0.8em;
+              font-weight: 600;
+              margin: 8px 18px 0 18px;
+              display: block;
+              text-align: center;
+              box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
+            `;
+            const langBellRow = document.querySelector('.lang-bell-row');
+            if (langBellRow) {
+              langBellRow.parentNode.insertBefore(countdownBadge, langBellRow);
+            }
+          }
+          
+          // Check if countdown timer is already running
+          if (!window.countdownTimerRunning) {
+            window.countdownTimerRunning = true;
+            
+            function updateCountdown() {
+              const now = new Date();
+              const elapsedTime = now - trialStartDate;
+              const remainingTime = Math.max(0, totalTrialTime - elapsedTime);
+
+              const daysLeft = Math.floor(remainingTime / (24 * 60 * 60 * 1000));
+              const hoursLeft = Math.floor((remainingTime % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+              const minutesLeft = Math.floor((remainingTime % (60 * 60 * 1000)) / (60 * 1000));
+              const secondsLeft = Math.floor((remainingTime % (60 * 1000)) / 1000);
+
+              if (remainingTime <= 0) {
+                countdownBadge.style.background = 'linear-gradient(90deg, #ff4444, #cc0000)';
+                countdownBadge.textContent = `⏰ Trial Period Expired! Upgrade to Level 1 to continue earning`;
+              } else {
+                countdownBadge.textContent = `🎯 Trial Worker - Task 1/5 (4 tasks remaining) | ${daysLeft}d ${hoursLeft}h ${minutesLeft}m ${secondsLeft}s`;
+              }
+            }
+
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+          }
+        } else {
+          // Remove badge if not temporary worker
+          const countdownBadge = document.getElementById('trial-countdown-badge');
+          if (countdownBadge) {
+            countdownBadge.remove();
+          }
+        }
+        
+        // Set welcome message based on user type
+        const welcomeMsg = document.getElementById("welcome-msg");
+        if (welcomeMsg) {
+          if (data.is_temporary_worker) {
+            welcomeMsg.textContent = "Welcome back! Trial Worker";
+          } else {
+            welcomeMsg.textContent = `Welcome to UAI, ${data.first_name || ''} ${data.last_name || ''}`;
+          }
+        }
+
+        // Update balance display with real-time data
+        updateBalanceDisplay(data.wallet_balance || 0);
+        
+        // Start real-time balance updates
+        startRealTimeBalanceUpdates();
+      } catch (error) {
+        console.error('Error loading user data:', error);
+      }
+    }
+
+    // Real-time balance update functions
+    function updateBalanceDisplay(balance) {
+      const balanceElement = document.getElementById('balance-amount');
+      if (balanceElement) {
+        balanceElement.textContent = `KES ${parseFloat(balance).toFixed(2)}`;
+      }
+    }
+
+    function startRealTimeBalanceUpdates() {
+      // Update balance every 15 seconds with automatic notification
+      setInterval(async () => {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+        
+        try {
+          const res = await fetch('/api/user-stats', {
+            headers: { Authorization: "Bearer " + token }
+          });
+          if (res.ok) {
+            const data = await res.json();
+            
+            // Update all home page data, not just balance
+            updateBalanceDisplay(data.wallet_balance || 0);
+            
+            // Update level display
+            const levelElement = document.getElementById('user-level');
+            if (levelElement) {
+              levelElement.textContent = `Level ${data.level || 0}`;
+            }
+            
+            // Update task count
+            const tasksElement = document.getElementById('tasks-completed');
+            if (tasksElement) {
+              tasksElement.textContent = data.tasks_done || 0;
+            }
+            
+            // Update earnings displays
+            const todayEarningsElement = document.getElementById('today-earnings');
+            if (todayEarningsElement) {
+              todayEarningsElement.textContent = `KES ${parseFloat(data.today_earning || 0).toFixed(2)}`;
+            }
+            
+            const monthEarningsElement = document.getElementById('month-earnings');
+            if (monthEarningsElement) {
+              monthEarningsElement.textContent = `KES ${parseFloat(data.month_earning || 0).toFixed(2)}`;
+            }
+            
+            console.log('🔄 Home page auto-updated:', {
+              balance: data.wallet_balance,
+              level: data.level,
+              tasks: data.tasks_done,
+              todayEarnings: data.today_earning
+            });
+            
+            // Always show update notification every 15 seconds
+            showUpdateNotification();
+            
+            // Check for recent payments and show notifications
+            if (data.recentPayments && data.recentPayments.length > 0) {
+              const latestPayment = data.recentPayments[0];
+              const paymentTime = new Date(latestPayment.created_at);
+              const now = new Date();
+              const timeDiff = now - paymentTime;
+              
+              // Show notification for payments made in the last 5 minutes
+              if (timeDiff < 5 * 60 * 1000) {
+                showPaymentNotification(latestPayment);
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Error updating home page data:', error);
+        }
+      }, 15000); // Update every 15 seconds with automatic notification
+      
+      // Also update immediately when page becomes visible
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) {
+          loadHomeData();
+        }
       });
-      // System: get user bond level
-      async function loadBondLevel() {
-        // Example API call:
-        // const token = localStorage.getItem('token');
-        // const res = await fetch('/api/home', { headers: { Authorization: 'Bearer ' + token } });
-        // if (res.ok) {
-        //   const data = await res.json();
-        //   document.getElementById('bond-level-label').textContent = "Lv" + (data.bond_level || "1");
-        // }
-        // Demo only
-        document.getElementById('bond-level-label').textContent = "Lv1";
+      
+      // Update when user returns to the tab
+      window.addEventListener('focus', () => {
+        loadHomeData();
+      });
+    }
+
+    function showPaymentNotification(payment) {
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(90deg, #4caf50, #45a049);
+        color: white;
+        padding: 15px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+        z-index: 10000;
+        font-weight: 600;
+        max-width: 300px;
+        animation: slideIn 0.3s ease-out;
+      `;
+      
+      notification.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 1.2em;">💰</span>
+          <div>
+            <div style="font-size: 1.1em;">Payment Confirmed!</div>
+            <div style="font-size: 0.9em; opacity: 0.9;">KES ${parseFloat(payment.amount).toFixed(2)} received</div>
+            <div style="font-size: 0.8em; opacity: 0.7;">Receipt: ${payment.mpesa_code}</div>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(notification);
+      
+      // Remove notification after 5 seconds
+      setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease-in';
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+          }
+        }, 300);
+      }, 5000);
+    }
+
+    function showUpdateNotification() {
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        background: linear-gradient(90deg, #2979ff, #1565c0);
+        color: white;
+        padding: 12px 18px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(41, 121, 255, 0.3);
+        z-index: 10000;
+        font-weight: 600;
+        max-width: 300px;
+        animation: slideInLeft 0.3s ease-out;
+        font-size: 0.9em;
+      `;
+      
+      notification.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 1.1em;">🔄</span>
+          <div>
+            <div style="font-size: 1em;">Data Updated</div>
+            <div style="font-size: 0.8em; opacity: 0.9;">Latest information loaded</div>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(notification);
+      
+      // Remove notification after 3 seconds
+      setTimeout(() => {
+        notification.style.animation = 'slideOutLeft 0.3s ease-in';
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+          }
+        }, 300);
+      }, 3000);
+    }
+
+    // Add CSS animations for notifications
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
       }
-      loadBondLevel();
+      @keyframes slideOut {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+      }
+      @keyframes slideInLeft {
+        from { transform: translateX(-100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+      }
+      @keyframes slideOutLeft {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(-100%); opacity: 0; }
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Check trial status (works even when logged out)
+    function checkTrialStatus() {
+      const trialStartDate = localStorage.getItem('trialStartDate');
+      const isTrialWorker = localStorage.getItem('is_trial_worker');
+      
+      if (trialStartDate && isTrialWorker === 'true') {
+        const startDate = new Date(trialStartDate);
+        const today = new Date();
+        const totalTrialTime = 5 * 24 * 60 * 60 * 1000; // 5 days
+        const elapsedTime = today - startDate;
+        const remainingTime = Math.max(0, totalTrialTime - elapsedTime);
+        
+        // Create or update the countdown badge
+        let countdownBadge = document.getElementById('trial-countdown-badge');
+        if (!countdownBadge) {
+          countdownBadge = document.createElement('div');
+          countdownBadge.id = 'trial-countdown-badge';
+          countdownBadge.style.cssText = `
+            background: linear-gradient(90deg, #ff6b35, #f7931e);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.8em;
+            font-weight: 600;
+            margin: 8px 18px 0 18px;
+            display: block;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
+          `;
+          const langBellRow = document.querySelector('.lang-bell-row');
+          if (langBellRow) {
+            langBellRow.parentNode.insertBefore(countdownBadge, langBellRow);
+          }
+        }
+        
+        function updateCountdown() {
+          const now = new Date();
+          const elapsedTime = now - startDate;
+          const remainingTime = Math.max(0, totalTrialTime - elapsedTime);
+          
+          const daysLeft = Math.floor(remainingTime / (24 * 60 * 60 * 1000));
+          const hoursLeft = Math.floor((remainingTime % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+          const minutesLeft = Math.floor((remainingTime % (60 * 60 * 1000)) / (60 * 1000));
+          const secondsLeft = Math.floor((remainingTime % (60 * 1000)) / 1000);
+          
+          if (remainingTime <= 0) {
+            countdownBadge.style.background = 'linear-gradient(90deg, #ff4444, #cc0000)';
+            countdownBadge.textContent = `⏰ Trial Period Expired! Upgrade to Level 1 to continue earning`;
+          } else {
+            countdownBadge.textContent = `🎯 Trial Worker - Task 1/5 (4 tasks remaining) | ${daysLeft}d ${hoursLeft}h ${minutesLeft}m ${secondsLeft}s`;
+          }
+        }
+        
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+      }
+    }
+
+    // Initialize
+    function init() {
+      checkTrialStatus(); // Check trial status first
+      if (checkAuth()) {
+        loadUserData();
+        loadNotifications();
+      }
+    }
+
+    // Run initialization
+    init();
+
+    // Casino wheel rotation animation (smooth, continuous, always clockwise)
+    const wheel = document.querySelector('.casino-wheel');
+    if (wheel) {
+      let angle = 0;
+      function rotateWheel() {
+        angle = (angle + 1.2) % 360; // Faster, always clockwise
+        wheel.style.transform = `rotate(${angle}deg)`;
+        requestAnimationFrame(rotateWheel);
+      }
+      rotateWheel();
+    }
+
+    // Add colorful glowing light buttons around the wheel, closer to circumference
+    const lightsContainer = document.querySelector('.casino-lights');
+    if (lightsContainer) {
+      const lightsCount = 32;
+      const radius = 135; // px, closer to edge
+      // Array of vibrant colors (gold, blue, red, green, purple, cyan, etc.)
+      const colors = [
+        '#FFD700', // gold
+        '#2979FF', // blue
+        '#FF4444', // red
+        '#00FF66', // green
+        '#FF00FF', // magenta
+        '#00FFFF', // cyan
+        '#FFDD44', // yellow
+        '#FF8800', // orange
+        '#AA00FF', // purple
+        '#00FFCC', // teal
+        '#FF66CC', // pink
+        '#66FF00', // lime
+        '#FF2222', // bright red
+        '#2222FF', // bright blue
+        '#44FFDD', // aqua
+        '#FFB300', // amber
+      ];
+      for (let i = 0; i < lightsCount; i++) {
+        const angle = (i / lightsCount) * 2 * Math.PI;
+        const x = Math.cos(angle) * radius;
+        const y = Math.sin(angle) * radius;
+        const light = document.createElement('div');
+        light.className = 'casino-light';
+        // Cycle through colors for RGB effect
+        const color = colors[i % colors.length];
+        light.style.background = `radial-gradient(circle, #fff 40%, ${color} 80%)`;
+        light.style.left = `calc(50% + ${x}px)`;
+        light.style.top = `calc(50% + ${y}px)`;
+        lightsContainer.appendChild(light);
+      }
+    }
+
+    // Add this script at the end of the body if there is a password field
+    document.querySelectorAll('input[type="password"]').forEach(function(pwdInput) {
+      // Create toggle button
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = '👁';
+      btn.style.background = 'none';
+      btn.style.border = 'none';
+      btn.style.cursor = 'pointer';
+      btn.style.fontSize = '1.2em';
+      btn.style.marginLeft = '8px';
+      // Insert after password input
+      pwdInput.parentNode.insertBefore(btn, pwdInput.nextSibling);
+      btn.addEventListener('click', function() {
+        if (pwdInput.type === 'password') {
+          pwdInput.type = 'text';
+          btn.textContent = '��';
+        } else {
+          pwdInput.type = 'password';
+          btn.textContent = '👁';
+        }
+      });
     });
   </script>
 </body>

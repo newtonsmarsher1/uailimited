@@ -101,11 +101,73 @@
       font-size: 1.01em;
       font-style: italic;
     }
+    .forgot-pin-link {
+      color: #ad7ce6;
+      text-decoration: underline;
+      font-size: 0.9em;
+      cursor: pointer;
+      margin-top: 10px;
+      display: block;
+    }
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 3000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-content {
+      background: #fff;
+      border-radius: 18px;
+      max-width: 320px;
+      width: 90%;
+      padding: 32px 20px;
+      text-align: center;
+      box-shadow: 0 4px 32px rgba(0,0,0,0.3);
+      margin: 20px;
+    }
+    .modal-emoji {
+      font-size: 3em;
+      margin-bottom: 15px;
+    }
+    .modal-title {
+      font-size: 1.3em;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .modal-message {
+      font-size: 1.1em;
+      margin-bottom: 20px;
+      line-height: 1.4;
+    }
+    .modal-button {
+      background: #2979ff;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 28px;
+      font-size: 1.1em;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .modal-button:hover {
+      background: #1565c0;
+    }
     @media (max-width:600px) {
       .container { padding: 23px 5vw 19px 5vw; }
       .uai-logo { width: 48px; height: 48px; top: -28px; }
       .uai-logo span { font-size: 1.15em;}
       h2 { font-size: 1.1em;}
+      .modal-content { max-width: 280px; padding: 28px 16px; }
+      .modal-emoji { font-size: 2.5em; }
+      .modal-title { font-size: 1.2em; }
+      .modal-message { font-size: 1em; }
     }
   </style>
 </head>
@@ -113,24 +175,184 @@
   <div class="container">
     <div class="uai-logo"><span>UAI</span></div>
     <h2>Withdraw Funds</h2>
-    <a href="bind-details.html" class="bind-details-link">🔒 Bind Withdrawal Details</a>
+    <a href="binddetails.html" class="bind-details-link">⚠️ Bind Withdrawal Details</a>
     <div class="withdraw-note">Select your withdrawal amount and enter your withdrawal PIN to proceed.</div>
     <form id="withdrawForm">
       <div class="amount-grid" id="amountGrid"></div>
       <div class="input-group">
         <label for="withdraw-pin">Withdrawal PIN</label>
-        <input type="password" id="withdraw-pin" maxlength="6" pattern="\d*" placeholder="Enter your withdrawal PIN" required>
+        <input type="password" id="withdraw-pin" maxlength="4" pattern="\d*" placeholder="Enter your withdrawal PIN" required>
       </div>
       <button type="submit" class="withdraw-btn">Withdraw</button>
     </form>
     <div class="message" id="message"></div>
+    <a class="forgot-pin-link" onclick="showForgotPinModal()">🔐 Forgot PIN?</a>
   </div>
+
+  <!-- Modal for notifications -->
+  <div id="notification-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div id="modal-emoji" class="modal-emoji">🎉</div>
+      <div id="modal-title" class="modal-title">Success!</div>
+      <div id="modal-message" class="modal-message">Your withdrawal request has been submitted.</div>
+      <button id="modal-button" class="modal-button" onclick="hideModal()">OK</button>
+    </div>
+  </div>
+
+  <!-- Forgot PIN Modal -->
+  <div id="forgot-pin-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-emoji">🔐</div>
+      <div class="modal-title">Reset Withdrawal PIN</div>
+      <div class="modal-message">Enter your account password to reset your withdrawal PIN.</div>
+      <div class="input-group">
+        <label for="accountPassword">Account Password</label>
+        <input type="password" id="accountPassword" placeholder="Enter your account password">
+      </div>
+      <div class="input-group">
+        <label for="newPin">New Withdrawal PIN</label>
+        <input type="password" id="newPin" maxlength="4" pattern="\d*" placeholder="Enter new 4-digit PIN">
+      </div>
+      <button class="modal-button" onclick="resetPin()">Reset PIN</button>
+      <button class="modal-button" onclick="hideForgotPinModal()" style="background: #e53935; margin-top: 10px;">Cancel</button>
+    </div>
+  </div>
+
   <script>
     const withdrawalOptions = [300, 600, 1000, 4000, 7000, 10000, 24000, 54000, 100000];
     const userToken = localStorage.getItem('token');
     const amountGrid = document.getElementById('amountGrid');
     let selectedAmount = null;
     let selectedBtn = null;
+
+    // Check authentication
+    function checkAuth() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = 'index.html';
+        return false;
+      }
+      return true;
+    }
+
+    // Check binding status and update UI
+    async function checkBindingStatus() {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await fetch('/api/binding-status', {
+          headers: { Authorization: "Bearer " + token }
+        });
+        
+        if (res.ok) {
+          const data = await res.json();
+          const bindLink = document.querySelector('.bind-details-link');
+          
+          if (data.isBound) {
+            // Update the link text to show details are bound
+            bindLink.textContent = '✅ Details Bound';
+            bindLink.style.background = '#e8f5e8';
+            bindLink.style.color = '#2e7d32';
+            bindLink.style.borderColor = '#2e7d32';
+          } else {
+            // Show warning if details not bound
+            bindLink.textContent = '⚠️ Bind Withdrawal Details';
+            bindLink.style.background = '#fff3cd';
+            bindLink.style.color = '#856404';
+            bindLink.style.borderColor = '#856404';
+          }
+        }
+      } catch (error) {
+        console.error('Error checking binding status:', error);
+      }
+    }
+
+    function showModal(type, message) {
+      const modal = document.getElementById('notification-modal');
+      const emoji = document.getElementById('modal-emoji');
+      const title = document.getElementById('modal-title');
+      const msg = document.getElementById('modal-message');
+      const button = document.getElementById('modal-button');
+      
+      if (type === 'error') {
+        emoji.textContent = '😢';
+        title.textContent = 'Error!';
+        title.style.color = '#e53935';
+        button.style.background = '#e53935';
+      } else {
+        emoji.textContent = '🎉';
+        title.textContent = 'Success!';
+        title.style.color = '#2979ff';
+        button.style.background = '#2979ff';
+      }
+      
+      msg.textContent = message;
+      modal.style.display = 'flex';
+    }
+
+    function hideModal() {
+      document.getElementById('notification-modal').style.display = 'none';
+    }
+
+    function showForgotPinModal() {
+      document.getElementById('forgot-pin-modal').style.display = 'flex';
+    }
+
+    function hideForgotPinModal() {
+      document.getElementById('forgot-pin-modal').style.display = 'none';
+      document.getElementById('accountPassword').value = '';
+      document.getElementById('newPin').value = '';
+    }
+
+    async function resetPin() {
+      const password = document.getElementById('accountPassword').value;
+      const newPin = document.getElementById('newPin').value;
+      
+      console.log('🔐 Reset PIN request:', { 
+        password: password ? '***' : 'missing', 
+        newPin: newPin ? '***' : 'missing' 
+      });
+      
+      if (!password || !newPin) {
+        showModal('error', 'Please enter both password and new PIN');
+        return;
+      }
+      
+      if (newPin.length !== 4 || !/^\d+$/.test(newPin)) {
+        showModal('error', 'PIN must be 4 digits');
+        return;
+      }
+
+      try {
+        const token = localStorage.getItem('token');
+        console.log('🔑 Token available:', !!token);
+        
+        const res = await fetch('/api/reset-withdrawal-pin', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify({ password, newPin })
+        });
+
+        const data = await res.json();
+        console.log('📡 Response status:', res.status);
+        console.log('📄 Response data:', data);
+        
+        if (!res.ok) {
+          showModal('error', data.error || 'Failed to reset PIN');
+          return;
+        }
+
+        showModal('success', 'Withdrawal PIN reset successfully!');
+        hideForgotPinModal();
+        
+      } catch (error) {
+        console.error('❌ Error resetting PIN:', error);
+        showModal('error', 'Network error! Please try again.');
+      }
+    }
+
     withdrawalOptions.forEach(amount => {
       const btn = document.createElement('button');
       btn.type = "button";
@@ -145,21 +367,18 @@
       amountGrid.appendChild(btn);
     });
 
-    document.getElementById('withdrawForm').onsubmit = async function(e) {
+    document.getElementById('withdrawForm').addEventListener('submit', async function(e) {
       e.preventDefault();
       if (!selectedAmount) {
-        document.getElementById('message').style.color = "#c62828";
-        document.getElementById('message').textContent = "Please select a withdrawal amount.";
+        showModal('error', 'Please select a withdrawal amount.');
         return;
       }
       const pin = document.getElementById('withdraw-pin').value.trim();
       if (!pin) {
-        document.getElementById('message').style.color = "#c62828";
-        document.getElementById('message').textContent = "Please enter your withdrawal PIN.";
+        showModal('error', 'Please enter your withdrawal PIN.');
         return;
       }
-      document.getElementById('message').style.color = "#ad7ce6";
-      document.getElementById('message').textContent = "Processing...";
+      
       try {
         const res = await fetch('/api/withdraw', {
           method: "POST",
@@ -170,13 +389,28 @@
           body: JSON.stringify({ amount: selectedAmount, pin })
         });
         const data = await res.json();
-        document.getElementById('message').style.color = data.message ? "#2979ff" : "#c62828";
-        document.getElementById('message').textContent = data.message || data.error;
-      } catch (e) {
-        document.getElementById('message').style.color = "#c62828";
-        document.getElementById('message').textContent = "An error occurred.";
+        
+        if (!res.ok) {
+          showModal('error', data.error || 'Withdrawal failed');
+          return;
+        }
+
+        showModal('success', data.message || 'Withdrawal request submitted successfully!');
+        document.getElementById('withdraw-pin').value = '';
+        if (selectedBtn) selectedBtn.classList.remove('selected');
+        selectedAmount = null;
+        selectedBtn = null;
+        
+      } catch (error) {
+        console.error('Error:', error);
+        showModal('error', 'Network error! Please try again.');
       }
-    };
+    });
+
+    document.addEventListener("DOMContentLoaded", function() {
+      if (!checkAuth()) return;
+      checkBindingStatus();
+    });
   </script>
 </body>
 </html>

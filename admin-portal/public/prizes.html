@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manage Prizes - UAI Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: linear-gradient(to bottom, #2979ff 0%, #e3f0ff 100%); margin: 0; }
+    .container { max-width: 900px; margin: 40px auto; background: #fff; border-radius: 18px; box-shadow: 0 2px 16px #2979ff22; padding: 32px 24px; }
+    h1 { color: #2979ff; text-align: center; margin-bottom: 24px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    th, td { padding: 10px 8px; border-bottom: 1px solid #e3f0ff; text-align: left; }
+    th { background: #2979ff; color: #fff; font-weight: 600; }
+    tr:hover { background: #e3f0ff; }
+    .back-link { display: inline-block; margin-bottom: 18px; color: #2979ff; text-decoration: none; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <button onclick="window.location.href='dashboard.html'" style="margin-bottom:18px;background:#2979ff;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:1em;cursor:pointer;box-shadow:0 2px 8px #2979ff22;">&larr; Back</button>
+    <h1>Manage Prizes</h1>
+    <table id="prizesTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>User ID</th>
+          <th>Prize</th>
+          <th>Amount</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <script>
+    async function fetchPrizes() {
+      const res = await fetch('/api/admin/prizes');
+      const prizes = await res.json();
+      return prizes;
+    }
+    function renderPrizes(prizes) {
+      const tbody = document.querySelector('#prizesTable tbody');
+      tbody.innerHTML = '';
+      prizes.forEach(p => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${p.id}</td>
+          <td>${p.user_id}</td>
+          <td>${p.prize}</td>
+          <td>${p.amount}</td>
+          <td>${p.date || ''}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+    async function loadPrizes() {
+      const prizes = await fetchPrizes();
+      renderPrizes(prizes);
+    }
+    loadPrizes();
+  </script>
+</body>
+</html> 

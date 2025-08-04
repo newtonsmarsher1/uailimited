@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <title>Task List</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <style>
     body {
       background: #fffbe6;
       font-family: 'Segoe UI', Arial, sans-serif;
       margin: 0;
       color: #222;
+      padding-bottom: 70px;
     }
     .header {
       background: #1175d3;
@@ -184,6 +185,16 @@
       from { transform: scale(0.96);}
       to { transform: scale(1);}
     }
+    
+    /* Notification animations */
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideOut {
+      from { transform: translateX(0); opacity: 1; }
+      to { transform: translateX(100%); opacity: 0; }
+    }
     .modal-header {
       background: #1175d3;
       border-top-left-radius: 20px;
@@ -195,8 +206,8 @@
       color: #fff;
       letter-spacing: 1px;
     }
-    .modal-video-box {
-      background: #333;
+    .modal-app-box {
+      background: #f8f9fa;
       width: 100%;
       height: 190px;
       display: flex;
@@ -205,13 +216,59 @@
       border-radius: 0 0 15px 15px;
       position: relative;
       overflow: hidden;
+      flex-direction: column;
+      padding: 20px;
     }
-    .modal-video-box video {
-      width: 100%;
-      height: 100%;
-      background: #222;
-      border-radius: 0 0 15px 15px;
-      object-fit: cover;
+    .app-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 16px;
+      background: #fff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 15px;
+      border: 2px solid #e9ecef;
+    }
+    .app-icon img {
+      width: 60px;
+      height: 60px;
+      object-fit: contain;
+    }
+    .app-info {
+      text-align: center;
+      color: #333;
+    }
+    .app-name {
+      font-size: 1.2em;
+      font-weight: 700;
+      margin-bottom: 5px;
+      color: #1175d3;
+    }
+    .app-description {
+      font-size: 0.9em;
+      color: #666;
+      margin-bottom: 10px;
+    }
+    .download-btn {
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 25px;
+      padding: 10px 25px;
+      font-size: 1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s;
+      box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+    }
+    .download-btn:hover {
+      background: #218838;
+    }
+    .download-btn:disabled {
+      background: #6c757d;
+      cursor: not-allowed;
     }
     .modal-section {
       margin: 17px 18px 0 18px;
@@ -243,27 +300,27 @@
       flex: 1;
     }
     .modal-req-block.reward { color: #e32f2f; font-size: 1.13em;}
-    .modal-answer-section {
-      margin: 16px 0 0 0;
-      display: flex;
-      flex-direction: column;
+    .modal-req-block.download-status { 
+      color: #28a745; 
+      font-size: 1.13em;
+      background: #f8fff8;
+      border: 1px solid #d4edda;
     }
-    .modal-question-box {
-      background: #fffbe6;
-      border-radius: 9px;
-      padding: 12px 10px;
-      margin-bottom: 9px;
-      font-size: 1.07em;
-      font-weight: 500;
-      color: #2979ff;
-    }
-    .modal-answer-box {
+    .download-progress {
       width: 100%;
-      padding: 11px 8px;
-      font-size: 1.09em;
-      border-radius: 9px;
-      border: 1.5px solid #2979ff33;
-      margin-bottom: 10px;
+      height: 4px;
+      background: #e9ecef;
+      border-radius: 2px;
+      margin-top: 8px;
+      overflow: hidden;
+      display: none;
+    }
+    .download-progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #28a745, #20c997);
+      border-radius: 2px;
+      width: 0%;
+      transition: width 0.1s ease;
     }
     .modal-actions-row {
       display: flex;
@@ -312,37 +369,107 @@
     }
     nav.bottom-nav {
       position: fixed;
-      left: 0; right: 0; bottom: 0;
-      height: 58px;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 56px;
       background: #fff;
       display: flex;
       justify-content: space-around;
       align-items: center;
-      box-shadow: 0 -2px 8px #ffe60022;
+      border-top: 1px solid #e3f0ff;
       z-index: 1000;
-      border-top: 1.5px solid #ffe60044;
     }
     nav.bottom-nav a {
-      color: #333;
-      font-size: 0.98em;
+      background: transparent;
+      border: none;
+      color: #282828;
+      font-size: 0.85em;
       font-weight: 600;
-      text-align: center;
-      padding: 2px 2px 0 2px;
-      border-radius: 7px;
-      display: flex; flex-direction: column; align-items: center;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      -webkit-user-select: none;
+      user-select: none;
+      transition: color 0.3s;
+      padding: 2px 4px;
+      flex-shrink: 0;
       text-decoration: none;
-      flex: 1;
-      transition: background 0.2s, color 0.2s;
     }
-    nav.bottom-nav a.active, nav.bottom-nav a:focus {
-      background: #fffbe6;
-      color: #1f10ad;
-      font-weight: 700;
+    nav.bottom-nav a.active,
+    nav.bottom-nav a:focus {
+      color: #2979ff;
     }
     nav.bottom-nav a svg {
-      width: 23px; height: 23px;
-      margin: 0 auto 2px auto;
+      width: 22px;
+      height: 22px;
+      margin-bottom: 2px;
       fill: currentColor;
+    }
+    .summary-card {
+      background: linear-gradient(180deg, #1175d3 0%, #2979ff 100%);
+      border-radius: 18px;
+      margin: 18px 8px 0 8px;
+      padding: 18px 0 10px 0;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      box-shadow: 0 2px 8px #2979ff22;
+    }
+    .summary-card-col {
+      flex: 1;
+      text-align: center;
+    }
+    .summary-card-col .summary-card-value {
+      font-size: 2em;
+      font-weight: bold;
+      color: #fff;
+    }
+    .summary-card-col .summary-card-label {
+      color: #e3f0ff;
+      font-size: 1em;
+    }
+    .summary-card-progress {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto;
+      position: relative;
+    }
+    .summary-card-progress-text {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1em;
+      font-weight: 700;
+      color: #fff;
+    }
+    .tab-nav {
+      display: flex;
+      justify-content: center;
+      gap: 18px;
+      margin: 18px 0 0 0;
+    }
+    .tab-btn {
+      background: #e3f0ff;
+      color: #1175d3;
+      border: none;
+      font-weight: 700;
+      font-size: 1.1em;
+      border-radius: 20px;
+      padding: 6px 22px;
+      transition: background 0.2s, color 0.2s;
+      outline: none;
+      cursor: pointer;
+    }
+    .tab-btn.active {
+      background: #1175d3;
+      color: #fff;
     }
     @media (max-width:600px) {
       .level-card,
@@ -351,380 +478,3176 @@
       .task-thumb { width: 54px; height: 54px;}
       .modal-video-box { height: 140px;}
     }
+    .task-download-progress-container {
+      width: 100%;
+      margin-top: 8px;
+      display: block;
+    }
+    .task-download-progress-bar-container {
+      width: 100%;
+      height: 6px;
+      background: #e3f0ff;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .task-download-progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #28a745, #20c997);
+      border-radius: 3px;
+      width: 0%;
+      transition: width 0.1s ease;
+    }
+    .task-download-status-text {
+      text-align: center;
+      margin-top: 5px;
+      font-size: 0.9em;
+      color: #666;
+    }
+    .task-success-msg {
+      color: #43e97b;
+      font-weight: 700;
+      text-align: center;
+      margin: 8px 0 0 0;
+      font-size: 1.08em;
+    }
+    .task-error-msg {
+      color: #e32f2f;
+      font-weight: 700;
+      text-align: center;
+      margin: 8px 0 0 0;
+      font-size: 1.08em;
+    }
+
+    .level-requirements {
+      background: linear-gradient(90deg, #1175d3, #1565c0);
+      color: white;
+      margin: 18px 8px 0 8px;
+      padding: 12px 15px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(17, 117, 211, 0.2);
+      display: none;
+    }
+    .level-requirements-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .level-requirements-title {
+      font-weight: 700;
+      font-size: 1.1em;
+      margin-bottom: 4px;
+    }
+    .level-requirements-text {
+      font-size: 0.9em;
+      opacity: 0.9;
+    }
+    .level-progress-container {
+      text-align: right;
+    }
+    .level-progress-value {
+      font-weight: 700;
+      font-size: 1.2em;
+    }
+    .level-progress-label {
+      font-size: 0.8em;
+      opacity: 0.8;
+    }
   </style>
 </head>
 <body>
-  <div class="header">Task list</div>
-  <div class="level-card" id="level-card">
-    <div class="level-row">
-      <span class="level-icon">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-          <path d="M12 2L15 8H21L16.5 12L18 19L12 15L6 19L7.5 12L3 8H9L12 2Z" stroke="#1175d3" stroke-width="2" fill="none"/>
+    <script>
+      // Clear all task-related localStorage data
+      console.log('🧹 Clearing localStorage data...');
+      localStorage.removeItem('completedTasks');
+      localStorage.removeItem('todaysEarnings');
+      localStorage.removeItem('totalEarnings');
+      localStorage.removeItem('lastResetDate');
+      localStorage.removeItem('tasksDone');
+      localStorage.removeItem('walletBalance');
+      localStorage.removeItem('monthEarning');
+      localStorage.removeItem('dashboardStats');
+      console.log('✅ localStorage cleared');
+    </script>
+
+  <script src="js/language-manager.js"></script>
+  <div class="header" data-translate="task-list-title">Task list</div>
+  <!-- Summary Card -->
+  <div class="summary-card">
+    <div class="summary-card-col">
+      <div class="summary-card-value" id="summary-ongoing">5</div>
+      <div class="summary-card-label">Ongoing</div>
+    </div>
+    <div class="summary-card-col">
+      <div class="summary-card-progress">
+        <svg width="60" height="60">
+          <circle cx="30" cy="30" r="28" stroke="#e3f0ff" stroke-width="4" fill="none"/>
+          <circle cx="30" cy="30" r="28" stroke="#fff" stroke-width="4" fill="none" stroke-dasharray="176" stroke-dashoffset="176" id="progress-circle"/>
         </svg>
-      </span>
-      <span class="level-title">
-        <img class="bond-logo" src="https://img.icons8.com/ios-filled/50/000000/r.png" alt="Bond" />
-        Lv<span id="user-level">1</span>
-      </span>
+        <div class="summary-card-progress-text" id="summary-progress-text">0%</div>
+      </div>
+      <div class="summary-card-label">Progress</div>
     </div>
-    <div class="level-progress-label">Tasks remaining today: <span id="tasks-remaining">0</span></div>
-    <div class="level-progress-label-complete">Tasks completed today: <span id="tasks-completed">0</span></div>
-    <div class="level-progress-bar-bg">
-      <div class="level-progress-bar-fg" id="level-progress-bar"></div>
+    <div class="summary-card-col">
+      <div class="summary-card-value" id="summary-completed">0</div>
+      <div class="summary-card-label">Completed</div>
     </div>
+  </div>
+
+  <!-- Level Requirements Info -->
+  <div id="level-requirements" class="level-requirements">
+    <div class="level-requirements-content">
+      <div>
+        <div class="level-requirements-title">Level Requirements</div>
+        <div class="level-requirements-text" id="level-requirements-text">Complete tasks to earn rewards</div>
+      </div>
+      <div class="level-progress-container">
+        <div class="level-progress-value" id="level-progress">0/0</div>
+        <div class="level-progress-label">Daily Progress</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab Navigation -->
+  <div class="tab-nav">
+    <button id="tab-ongoing" class="tab-btn active" type="button" data-translate="ongoing-label">Ongoing</button>
+    <button id="tab-all" class="tab-btn" type="button" data-translate="all-label">All</button>
+    <button id="tab-completed" class="tab-btn" type="button" data-translate="completed-label">Completed</button>
   </div>
   <div class="tasks-section">
     <ul class="task-list" id="task-list"></ul>
   </div>
-  <!-- Modal for single task -->
-  <div class="modal-bg" id="modal-bg">
-    <div class="modal-card" id="modal-card">
-      <button class="modal-close-btn" id="modal-close-btn">&times;</button>
-      <div class="modal-header">Task details</div>
-      <div class="modal-video-box">
-        <video id="modal-video" controls preload="auto" playsinline></video>
-      </div>
-      <div class="modal-section">
-        <div class="modal-intro" id="modal-intro"></div>
-        <div class="modal-req-row">
-          <div class="modal-req-block" id="modal-watch-timer-label">Watch for 15 seconds<br>Currently watched 0 seconds</div>
-          <div class="modal-req-block reward" id="modal-reward-label">Reward price: KSh 0.00</div>
-        </div>
-        <div class="modal-answer-section" id="modal-answer-section" style="display:none;">
-          <div class="modal-question-box" id="modal-question-text"></div>
-          <input class="modal-answer-box" id="modal-answer-input" type="text" placeholder="Your answer here..." />
-        </div>
-        <div class="modal-actions-row" id="modal-actions-row">
-          <button class="modal-action-btn modal-watch-later-btn" id="modal-watch-later-btn">Watch later</button>
-          <button class="modal-action-btn" id="modal-start-answering-btn" disabled>Start Answering</button>
-          <button class="modal-action-btn" id="modal-submit-answer-btn" style="display:none;">Submit Answer</button>
-        </div>
-        <div class="modal-success-msg" id="modal-success-msg"></div>
-        <div class="modal-error-msg" id="modal-error-msg"></div>
-      </div>
-    </div>
-  </div>
-  <nav class="bottom-nav" role="navigation" aria-label="Bottom Navigation">
-    <a href="home.html">
-      <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-      Home
+  <nav class="bottom-nav" aria-label="Bottom Navigation">
+    <a href="home.html" id="nav-home">
+      <svg viewBox="0 0 24 24"><path d="M3 21v-7.5l9-6.5 9 6.5V21H3z"/></svg>
+      <span id="nav-home-label" data-translate="nav-home-label">Home</span>
     </a>
-    <a href="task.html" class="active">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-      Task
+    <a href="task.html" class="active" aria-current="page" id="nav-task">
+      <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 10h8M8 14h4"/></svg>
+      <span id="nav-task-label" data-translate="nav-task-label">Task</span>
     </a>
-    <a href="team-management.html">
-      <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2 0-6 1-6 3v2h12v-2c0-2-4-3-6-3zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45v2h6v-2c0-2-4-3-6-3z"/></svg>
-      Team Management
+    <a href="team management.html" id="nav-team">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3"/><path d="M12 15c-4 0-8 2-8 4v1h16v-1c0-2-4-4-8-4z"/></svg>
+      <span id="nav-team-label" data-translate="nav-team-label">Team Management</span>
     </a>
-    <a href="level.html">
-      <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zm0 7l-10 5 10 5 10-5-10-5z"/></svg>
-      Level
+    <a href="level.html" id="nav-level">
+      <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 7v10l10 5 10-5V7"/></svg>
+      <span id="nav-level-label" data-translate="nav-level-label">Level</span>
     </a>
-    <a href="profile.html">
-      <svg viewBox="0 0 24 24"><path d="M12 12c2.67 0 8 1.34 8 4v4H4v-4c0-2.66 5.33-4 8-4zm0-2a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/></svg>
-      My
+    <a href="profile.html" id="nav-profile">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M2 20v-2a8 8 0 0 1 16 0v2"/></svg>
+      <span id="nav-profile-label" data-translate="nav-profile-label">Profile</span>
     </a>
   </nav>
   <script>
-    // --- Fetch bond/user info from backend (simulate with localStorage) ---
-    function getProfileData() {
-      let profile = localStorage.getItem('profile');
-      if (profile) return JSON.parse(profile);
-      // Default profile
-      profile = {
-        bondLevel: 1,
-        completedToday: 0,
-        maxTasksPerDay: 5,
-        // Can add more user info here
-      };
-      localStorage.setItem('profile', JSON.stringify(profile));
-      return profile;
-    }
-    function setProfileData(profile) {
-      localStorage.setItem('profile', JSON.stringify(profile));
-    }
-    // --- Save/retrieve task records ---
-    function getTaskRecords() {
-      let rec = localStorage.getItem('taskRecords');
-      if (rec) return JSON.parse(rec);
-      rec = {};
-      localStorage.setItem('taskRecords', JSON.stringify(rec));
-      return rec;
-    }
-    function setTaskRecords(rec) {
-      localStorage.setItem('taskRecords', JSON.stringify(rec));
-    }
-
-    // --- Diverse ads and creative questions/answers ---
-    const diverseTasks = [
-      {
-        id: 1,
-        thumb: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=200&q=80",
-        video: "https://www.w3schools.com/html/mov_bbb.mp4",
-        intro: "Samsung introduces the Galaxy S Ultra with advanced camera features.",
-        question: "Which phone brand is featured in this ad?",
-        answer: "Samsung",
-        reward: 16.0,
-        required_seconds: 17,
-        level: 1,
-      },
-      {
-        id: 2,
-        thumb: "https://images.unsplash.com/photo-1424746219973-8fe3bd07d8e3?auto=format&fit=crop&w=200&q=80",
-        video: "https://www.w3schools.com/html/movie.mp4",
-        intro: "Coca-Cola refreshes your moments with a new taste.",
-        question: "What drink is promoted here?",
-        answer: "Coca-Cola",
-        reward: 16.0,
-        required_seconds: 15,
-        level: 1,
-      },
-      {
-        id: 3,
-        thumb: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=200&q=80",
-        video: "https://www.w3schools.com/html/mov_bbb.mp4",
-        intro: "Apple launches the latest iPhone with revolutionary features.",
-        question: "Which company is advertising the iPhone?",
-        answer: "Apple",
-        reward: 16.0,
-        required_seconds: 18,
-        level: 1,
-      },
-      {
-        id: 4,
-        thumb: "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=200&q=80",
-        video: "https://www.w3schools.com/html/movie.mp4",
-        intro: "Pepsi brings fun to your party. Recognize the brand.",
-        question: "Which drink brand is shown in this ad?",
-        answer: "Pepsi",
-        reward: 16.0,
-        required_seconds: 15,
-        level: 1,
-      },
-      {
-        id: 5,
-        thumb: "https://images.unsplash.com/photo-1581291519195-ef11498d1cf5?auto=format&fit=crop&w=200&q=80",
-        video: "https://www.w3schools.com/html/mov_bbb.mp4",
-        intro: "Gucci presents its latest designer clothing line.",
-        question: "What designer brand is being advertised?",
-        answer: "Gucci",
-        reward: 16.0,
-        required_seconds: 20,
-        level: 1,
-      },
-      {
-        id: 6,
-        thumb: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=200&q=80",
-        video: "https://www.w3schools.com/html/movie.mp4",
-        intro: "Nike ads often attract consumers through emotional resonance.",
-        question: "Which sports brand is advertised in this video?",
-        answer: "Nike",
-        reward: 16.0,
-        required_seconds: 15,
-        level: 1,
-      },
-      {
-        id: 7,
-        thumb: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=200&q=80",
-        video: "https://www.w3schools.com/html/mov_bbb.mp4",
-        intro: "Huawei launches its creative ad for the P Series.",
-        question: "What mobile brand is featured?",
-        answer: "Huawei",
-        reward: 16.0,
-        required_seconds: 16,
-        level: 1,
-      },
-      {
-        id: 8,
-        thumb: "https://images.unsplash.com/photo-1581291519195-ef11498d1cf5?auto=format&fit=crop&w=200&q=80",
-        video: "https://www.w3schools.com/html/movie.mp4",
-        intro: "Fanta brings joy to every sip in its colorful ad.",
-        question: "Which beverage is highlighted?",
-        answer: "Fanta",
-        reward: 16.0,
-        required_seconds: 15,
-        level: 1,
-      },
-      {
-        id: 9,
-        thumb: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=200&q=80",
-        video: "https://www.w3schools.com/html/mov_bbb.mp4",
-        intro: "Adidas inspires athletes with new sports gear.",
-        question: "Which company makes the gear in this ad?",
-        answer: "Adidas",
-        reward: 16.0,
-        required_seconds: 17,
-        level: 1,
-      },
-      {
-        id: 10,
-        thumb: "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=200&q=80",
-        video: "https://www.w3schools.com/html/movie.mp4",
-        intro: "Sprite refreshes you instantly. What's the brand?",
-        question: "Which soft drink is this ad for?",
-        answer: "Sprite",
-        reward: 16.0,
-        required_seconds: 15,
-        level: 1,
-      },
-    ];
-
-    // RXM table for task reward and number of tasks by level
-    const rxmTable = {
-      1: {tasks: 5, income: 16.0},
-      2: {tasks: 10, income: 25.0},
-      3: {tasks: 20, income: 40.0},
-      4: {tasks: 40, income: 68.0},
-      5: {tasks: 60, income: 117.0},
-      6: {tasks: 100, income: 150.0},
-      7: {tasks: 160, income: 219.0},
-      8: {tasks: 240, income: 417.0},
-      9: {tasks: 400, income: 3500.0}
-    };
-
-    let userInfo = getProfileData();
-    // Use RXM for maxTasksPerDay and reward per task
-    if (rxmTable[userInfo.bondLevel]) {
-      userInfo.maxTasksPerDay = rxmTable[userInfo.bondLevel].tasks;
-    } else {
-      userInfo.maxTasksPerDay = 5;
-    }
-
-    let taskRecords = getTaskRecords();
-    // Compute reward with +1.5 per level
-    function rewardForLevel(base, level) {
-      return (parseFloat(base) + 1.5 * (level - 1)).toFixed(2);
-    }
-    let tasks = diverseTasks.map((task, idx) => {
-      // For demo: assign each task a level (cycle through available levels)
-      const tlevel = userInfo.bondLevel;
-      return {
-        ...task,
-        level: tlevel,
-        reward: rewardForLevel(rxmTable[tlevel]?.income || task.reward, tlevel),
-        completed: taskRecords[task.id] ? true : false
-      };
-    });
-
+    // Global variables
+    let userInfo = {};
+    let tasks = [];
     let currentModalTask = null;
-    let watchSeconds = 0, requiredSeconds = 15, timerInterval = null, answered = false;
+    let downloadCompleted = false, answered = false;
+    let isDownloading = false; // Track if a download is in progress
+    let currentDate = new Date().toDateString(); // Track current date for daily reset
+    let todaysEarnings = 0; // Track today's earnings
 
-    function updateUserInfo() {
-      document.getElementById("user-level").textContent = userInfo.bondLevel;
-      const completed = Object.keys(taskRecords).length;
-      document.getElementById("tasks-completed").textContent = completed;
-      document.getElementById("tasks-remaining").textContent = Math.max(0, userInfo.maxTasksPerDay - completed);
-      const percent = (completed / userInfo.maxTasksPerDay) * 100;
-      document.getElementById("level-progress-bar").style.width = Math.min(percent, 100) + "%";
-      setProfileData(userInfo);
+    // Load user data and level information (same as home.html)
+    async function loadUserData() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        // Fallback for demo/development
+        userInfo = {
+          bondLevel: 1,
+          balance: 0,
+          phone: "Demo User",
+          tasksDone: 0,
+          completedToday: 0,
+          is_temporary_worker: false,
+          trial_expired: false
+        };
+        return;
+      }
+      
+      try {
+        // Fetch user stats (includes level data)
+        const res = await fetch('/api/user-stats', {
+          headers: { Authorization: "Bearer " + token }
+        });
+        if (!res.ok) throw new Error('Failed to load user data');
+        
+        const data = await res.json();
+        
+        // Display correct user level (0 for temp workers, actual level for others)
+        const userLevel = data.is_temporary_worker ? 0 : (data.level || 1);
+        
+        // Check if trial period has expired for temporary workers
+        let trial_expired = false;
+        if (data.is_temporary_worker && data.temp_worker_start_date) {
+          const trialStartDate = new Date(data.temp_worker_start_date);
+          const totalTrialTime = 5 * 24 * 60 * 60 * 1000; // 5 days
+          const now = new Date();
+          const elapsedTime = now - trialStartDate;
+          trial_expired = elapsedTime >= totalTrialTime;
+        }
+        
+        userInfo = {
+          bondLevel: userLevel,
+          balance: data.balance || 0,
+          phone: data.phone || "User",
+          tasksDone: data.tasks_done || 0,
+          completedToday: data.completed_today || 0,
+          is_temporary_worker: data.is_temporary_worker || false,
+          trial_expired: trial_expired,
+          userId: data.id // Assuming 'id' is the user's unique identifier
+        };
+        
+        console.log("User data loaded:", userInfo);
+        
+      } catch (error) {
+        console.error('Error loading user data:', error);
+        // Fallback for demo/development
+        userInfo = {
+          bondLevel: 1,
+          balance: 0,
+          phone: "Demo User",
+          tasksDone: 0,
+          completedToday: 0,
+          is_temporary_worker: false,
+          trial_expired: false
+        };
+      }
     }
-    function renderTasks() {
+
+    // Mark tasks as completed based on backend data
+    async function markCompletedTasksFromBackend() {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        // Fetch completed tasks for today from backend
+        const response = await fetch('/api/tasks', {
+          headers: { Authorization: "Bearer " + token }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          
+          // Mark tasks as completed based on backend data
+          if (data.tasks && tasks) {
+            data.tasks.forEach(backendTask => {
+              const localTask = tasks.find(t => t.id === backendTask.id);
+              if (localTask && backendTask.completedToday) {
+                localTask.completedToday = true;
+                console.log(`✅ Marked task as completed: ${localTask.title}`);
+              }
+            });
+          }
+          
+          console.log('📊 Tasks marked as completed from backend');
+          
+          // Update summary card after marking completed tasks
+          updateSummaryCard();
+        }
+      } catch (error) {
+        console.error('Error marking completed tasks:', error);
+      }
+    }
+
+    // Database-driven task completion and stats management
+    // All stats and completed tasks are fetched from the database, not localStorage
+    
+    // Load completed tasks from database
+    async function loadCompletedTasksFromDatabase() {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return [];
+
+        const response = await fetch('/api/tasks', {
+          headers: { Authorization: "Bearer " + token }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          const completedTasks = data.tasks ? data.tasks.filter(task => task.completedToday).map(task => task.id) : [];
+          console.log(`📋 Loaded ${completedTasks.length} completed tasks from database`);
+          return completedTasks;
+        }
+      } catch (error) {
+        console.error('Error loading completed tasks from database:', error);
+      }
+        return [];
+      }
+      
+    // Load user stats from database
+    async function loadUserStatsFromDatabase() {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return {};
+
+        const response = await fetch('/api/user-stats', {
+          headers: { Authorization: "Bearer " + token }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          console.log('📊 Loaded user stats from database:', data);
+          return {
+            completedToday: data.tasks_completed_today || 0,
+            todayEarnings: data.today_earning || 0,
+            monthEarnings: data.month_earning || 0,
+            totalEarnings: data.total_revenue || 0,
+            walletBalance: data.wallet_balance || 0,
+            tasksDone: data.tasks_done || 0
+          };
+        }
+        } catch (error) {
+        console.error('Error loading user stats from database:', error);
+      }
+      return {};
+    }
+
+    // Check if task is completed (from database)
+    async function isTaskCompletedFromDatabase(taskId) {
+      const completedTasks = await loadCompletedTasksFromDatabase();
+      return completedTasks.includes(taskId);
+    }
+
+    // Save user preferences only (not stats)
+    function saveUserPreferences(preferences) {
+      localStorage.setItem('userPreferences', JSON.stringify(preferences));
+    }
+
+    // Load user preferences only
+    function loadUserPreferences() {
+      const stored = localStorage.getItem('userPreferences');
+      if (stored) {
+        try {
+          return JSON.parse(stored);
+        } catch (error) {
+          console.error('Error parsing user preferences:', error);
+          return {};
+        }
+      }
+      return {};
+    }
+
+    // Database-driven state management
+    function setupDatabaseStateManagement() {
+      // Refresh from database when page becomes visible
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) {
+          console.log('🔄 Page became visible, refreshing from database...');
+          refreshFromDatabase();
+        }
+      });
+
+      // Refresh from database periodically (every 2 minutes)
+      setInterval(() => {
+        refreshFromDatabase();
+      }, 120000); // 2 minutes
+
+      console.log('🔒 Database-driven state management setup complete');
+    }
+
+    // Refresh all data from database
+    async function refreshFromDatabase() {
+      try {
+        // Refresh user stats from database
+        await refreshUserStatsFromDatabase();
+        
+        // Refresh completed tasks from database
+        const completedTaskIds = await loadCompletedTasksFromDatabase();
+        
+        // Mark tasks as completed based on database
+        tasks.forEach(task => {
+          task.completedToday = completedTaskIds.includes(task.id);
+        });
+
+        // Re-render tasks with fresh database data
+        renderTasks(currentFilter);
+        updateSummaryCard();
+
+        console.log('🔄 All data refreshed from database');
+      } catch (error) {
+        console.error('Error refreshing from database:', error);
+      }
+    }
+
+    // Database-driven initialization
+    function initializeWithDatabase() {
+      console.log('🚀 Initializing with database-driven state management...');
+      
+      // Setup database-driven state management
+      setupDatabaseStateManagement();
+      
+      // Handle logout while preserving database state
+      setupLogoutHandling();
+      
+      // Initial database refresh
+      setTimeout(() => {
+        refreshFromDatabase();
+      }, 1000); // Refresh after 1 second to ensure page is loaded
+      
+      console.log('✅ Database-driven initialization complete');
+    }
+
+    // Handle logout while preserving database state
+    function setupLogoutHandling() {
+      // Listen for logout events (if any logout buttons exist)
+      document.addEventListener('click', (e) => {
+        if (e.target && (e.target.textContent.toLowerCase().includes('logout') || 
+                        e.target.textContent.toLowerCase().includes('sign out'))) {
+          console.log('🚪 Logout detected, database state preserved automatically');
+        }
+      });
+
+      // Database state is automatically preserved, no need to save anything
+      console.log('🔒 Database state preservation enabled');
+    }
+
+    // Load total earnings from database (not localStorage)
+    async function loadTotalEarningsFromDatabase() {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return 0;
+
+        const response = await fetch('/api/user-stats', {
+          headers: { Authorization: "Bearer " + token }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          return parseFloat(data.total_revenue || 0);
+        }
+      } catch (error) {
+        console.error('Error loading total earnings from database:', error);
+      }
+      return 0;
+    }
+
+    // Level-based reward configuration
+    function getRewardForLevel(userLevel) {
+      const levelRewards = {
+        1: 17,      // Level 1: 17 shillings (default)
+        2: 26.5,    // Level 2: 26.5 shillings
+        3: 42,      // Level 3: 42 shillings
+        4: 70.5,    // Level 4: 70.5 shillings
+        5: 118,     // Level 5: 118 shillings
+        6: 155,     // Level 6: 155 shillings
+        7: 220,     // Level 7: 220 shillings
+        8: 430,     // Level 8: 430 shillings
+        9: 480      // Level 9: 480 shillings
+      };
+      
+      return levelRewards[userLevel] || levelRewards[1]; // Default to level 1 if level not found
+    }
+
+    // Get daily task limit for user's level
+    function getDailyTaskLimit(userLevel) {
+      const dailyLimits = {
+        1: 5,   // Level 1: 5 tasks
+        2: 10,  // Level 2: 10 tasks
+        3: 17,  // Level 3: 17 tasks
+        4: 30,  // Level 4: 30 tasks
+        5: 53,  // Level 5: 53 tasks
+        6: 70,  // Level 6: 70 tasks
+        7: 85,  // Level 7: 85 tasks
+        8: 95,  // Level 8: 95 tasks
+        9: 115  // Level 9: 115 tasks
+      };
+      
+      return dailyLimits[userLevel] || dailyLimits[1];
+    }
+
+    // Generate random app tasks with daily shuffle (database-driven)
+    async function getSampleAppTasks() {
+      console.log('🔄 Starting getSampleAppTasks...');
+      
+      const allApps = [
+        {
+          id: 1,
+          app_name: "TikTok",
+          app_description: "Create and share short videos with millions of users worldwide",
+          app_icon: "https://upload.wikimedia.org/wikipedia/en/thumb/a/a9/TikTok_logo.svg/1200px-TikTok_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.zhiliaoapp.musically",
+          reward: 17, // Base reward, will be adjusted by level
+          title: "Download TikTok",
+          description: "Join TikTok and discover trending videos, music, and creative content"
+        },
+        {
+          id: 2,
+          app_name: "Instagram",
+          app_description: "Share photos and videos with friends and family",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Instagram_logo_2016.svg/1200px-Instagram_logo_2016.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.instagram.android",
+          reward: 17, // Base reward, will be adjusted by level
+          bond_level_required: 1,
+          title: "Download Instagram",
+          description: "Connect with friends, share moments, and explore amazing photos"
+        },
+        {
+          id: 3,
+          app_name: "WhatsApp",
+          app_description: "Free messaging and calling app with end-to-end encryption",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/1200px-WhatsApp.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.whatsapp",
+          reward: 17, // Base reward, will be adjusted by level
+          bond_level_required: 1,
+          title: "Download WhatsApp",
+          description: "Stay connected with friends and family through secure messaging"
+        },
+        {
+          id: 4,
+          app_name: "Spotify",
+          app_description: "Stream millions of songs, podcasts, and playlists",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Spotify_icon.svg/1200px-Spotify_icon.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.spotify.music",
+          reward: 17, // Base reward, will be adjusted by level
+          bond_level_required: 2,
+          title: "Download Spotify",
+          description: "Listen to your favorite music and discover new artists",
+          question: "Did you successfully install Spotify?",
+          expected_answer: "yes"
+        },
+        {
+          id: 5,
+          app_name: "Netflix",
+          app_description: "Watch TV shows, movies, and original content",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Netflix_2015_logo.svg/1200px-Netflix_2015_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.netflix.mediaclient",
+          reward: 17, // Base reward, will be adjusted by level
+          bond_level_required: 2,
+          title: "Download Netflix",
+          description: "Enjoy unlimited movies, TV shows, and documentaries",
+          question: "Did you successfully install Netflix?",
+          expected_answer: "yes"
+        },
+        {
+          id: 6,
+          app_name: "YouTube",
+          app_description: "Watch and share videos from around the world",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/YouTube_logo_%282017%29.svg/1200px-YouTube_logo_%282017%29.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.google.android.youtube",
+          reward: 17, // Base reward, will be adjusted by level
+          bond_level_required: 1,
+          title: "Download YouTube",
+          description: "Discover videos, music, and content from creators worldwide",
+          question: "Did you successfully install YouTube?",
+          expected_answer: "yes"
+        },
+        {
+          id: 7,
+          app_name: "Facebook",
+          app_description: "Connect with friends and share your life",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Facebook_Logo_%282019%29.svg/1200px-Facebook_Logo_%282019%29.svg.png",
+          reward: 17, // Base reward, will be adjusted by level
+          bond_level_required: 1,
+          title: "Download Facebook",
+        },
+        {
+          id: 8,
+          app_name: "Snapchat",
+          app_description: "Share moments with friends through photos and videos",
+          app_icon: "https://upload.wikimedia.org/wikipedia/en/thumb/c/c4/Snapchat_logo.svg/1200px-Snapchat_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.snapchat.android",
+          reward: 17, // Base reward, will be adjusted by level
+          bond_level_required: 1,
+          title: "Download Snapchat",
+          description: "Capture and share moments that disappear, connect with friends",
+          question: "Did you successfully install Snapchat?",
+          expected_answer: "yes"
+        },
+        {
+          id: 9,
+          app_name: "Twitter",
+          app_description: "See what's happening in the world right now",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Logo_of_Twitter.svg/1200px-Logo_of_Twitter.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.twitter.android",
+          reward: 17, // Base reward, will be adjusted by level
+          bond_level_required: 1,
+          title: "Download Twitter",
+          description: "Stay updated with the latest news and trends",
+          question: "Did you successfully install Twitter?",
+          expected_answer: "yes"
+        },
+        {
+          id: 10,
+          app_name: "Telegram",
+          app_description: "Fast and secure messaging app",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Telegram_2019_Logo.svg/1200px-Telegram_2019_Logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=org.telegram.messenger",
+          reward: 17, // Base reward, will be adjusted by level
+          bond_level_required: 1,
+          title: "Download Telegram",
+          description: "Send messages, photos, videos and files",
+          question: "Did you successfully install Telegram?",
+          expected_answer: "yes"
+        },
+        {
+          id: 11,
+          app_name: "LinkedIn",
+          app_description: "Professional networking and job opportunities",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/LinkedIn_logo_initials.png/1200px-LinkedIn_logo_initials.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.linkedin.android",
+          reward: 17,
+          bond_level_required: 2,
+          title: "Download LinkedIn",
+          description: "Build your professional network and discover career opportunities",
+          question: "Did you successfully install LinkedIn?",
+          expected_answer: "yes"
+        },
+        {
+          id: 12,
+          app_name: "Uber",
+          app_description: "Request rides and food delivery",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Uber_logo_2018.svg/1200px-Uber_logo_2018.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.ubercab",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Uber",
+          description: "Get rides and food delivered to your doorstep",
+          question: "Did you successfully install Uber?",
+          expected_answer: "yes"
+        },
+        {
+          id: 13,
+          app_name: "Google Maps",
+          app_description: "Navigate and explore the world",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Google_Maps_logo_%282020%29.svg/1200px-Google_Maps_logo_%282020%29.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.google.android.apps.maps",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Google Maps",
+          description: "Find directions, explore places, and navigate with ease",
+          question: "Did you successfully install Google Maps?",
+          expected_answer: "yes"
+        },
+        {
+          id: 14,
+          app_name: "Gmail",
+          app_description: "Professional email communication",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Gmail_icon_%282020%29.svg/1200px-Gmail_icon_%282020%29.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.google.android.gm",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Gmail",
+          description: "Manage your emails efficiently with Google's email service",
+          question: "Did you successfully install Gmail?",
+          expected_answer: "yes"
+        },
+        {
+          id: 15,
+          app_name: "Microsoft Teams",
+          app_description: "Collaborate with your team remotely",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Microsoft_Office_Teams_%282018%E2%80%93present%29.svg/1200px-Microsoft_Office_Teams_%282018%E2%80%93present%29.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.microsoft.teams",
+          reward: 17,
+          bond_level_required: 2,
+          title: "Download Microsoft Teams",
+          description: "Work together with chat, video calls, and file sharing",
+          question: "Did you successfully install Microsoft Teams?",
+          expected_answer: "yes"
+        },
+        {
+          id: 16,
+          app_name: "Zoom",
+          app_description: "Video conferencing and online meetings",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Zoom_logo.svg/1200px-Zoom_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=us.zoom.videomeetings",
+          reward: 17,
+          bond_level_required: 2,
+          title: "Download Zoom",
+          description: "Join video meetings and webinars from anywhere",
+          question: "Did you successfully install Zoom?",
+          expected_answer: "yes"
+        },
+        {
+          id: 17,
+          app_name: "Discord",
+          app_description: "Gaming chat and community platform",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Discord_logo.svg/1200px-Discord_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.discord",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Discord",
+          description: "Connect with gamers and communities through voice and text chat",
+          question: "Did you successfully install Discord?",
+          expected_answer: "yes"
+        },
+        {
+          id: 18,
+          app_name: "Reddit",
+          app_description: "Discover communities and discussions",
+          app_icon: "https://upload.wikimedia.org/wikipedia/en/thumb/8/82/Reddit_logo_and_wordmark.svg/1200px-Reddit_logo_and_wordmark.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.reddit.frontpage",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Reddit",
+          description: "Join communities and discussions on any topic",
+          question: "Did you successfully install Reddit?",
+          expected_answer: "yes"
+        },
+        {
+          id: 19,
+          app_name: "Pinterest",
+          app_description: "Discover and save creative ideas",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Pinterest-logo.png/1200px-Pinterest-logo.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.pinterest",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Pinterest",
+          description: "Find inspiration for your next project or hobby",
+          question: "Did you successfully install Pinterest?",
+          expected_answer: "yes"
+        },
+        {
+          id: 20,
+          app_name: "Tinder",
+          app_description: "Meet new people and find relationships",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Tinder_logo.svg/1200px-Tinder_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.tinder",
+          reward: 17,
+          bond_level_required: 2,
+          title: "Download Tinder",
+          description: "Swipe to match with people nearby",
+          question: "Did you successfully install Tinder?",
+          expected_answer: "yes"
+        },
+        {
+          id: 21,
+          app_name: "Shopee",
+          app_description: "Online shopping and marketplace",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Shopee_logo.svg/1200px-Shopee_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.shopee.lite",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Shopee",
+          description: "Shop online with great deals and fast delivery",
+          question: "Did you successfully install Shopee?",
+          expected_answer: "yes"
+        },
+        {
+          id: 22,
+          app_name: "Jumia",
+          app_description: "Online shopping for electronics and more",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Jumia_logo.svg/1200px-Jumia_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.jumia.android",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Jumia",
+          description: "Buy electronics, fashion, and home goods online",
+          question: "Did you successfully install Jumia?",
+          expected_answer: "yes"
+        },
+        {
+          id: 23,
+          app_name: "Booking.com",
+          app_description: "Find and book hotels worldwide",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Booking.com_logo.svg/1200px-Booking.com_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.booking",
+          reward: 17,
+          bond_level_required: 2,
+          title: "Download Booking.com",
+          description: "Book hotels, flights, and travel experiences",
+          question: "Did you successfully install Booking.com?",
+          expected_answer: "yes"
+        },
+        {
+          id: 24,
+          app_name: "Airbnb",
+          app_description: "Find unique places to stay",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Airbnb_Logo_B%C3%A9lo.svg/1200px-Airbnb_Logo_B%C3%A9lo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.airbnb.android",
+          reward: 17,
+          bond_level_required: 2,
+          title: "Download Airbnb",
+          description: "Book unique accommodations and experiences",
+          question: "Did you successfully install Airbnb?",
+          expected_answer: "yes"
+        },
+        {
+          id: 25,
+          app_name: "Duolingo",
+          app_description: "Learn languages for free",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Duolingo_logo.svg/1200px-Duolingo_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.duolingo",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Duolingo",
+          description: "Learn new languages with fun, bite-sized lessons",
+          question: "Did you successfully install Duolingo?",
+          expected_answer: "yes"
+        },
+        {
+          id: 26,
+          app_name: "Coursera",
+          app_description: "Learn from top universities online",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Coursera_logo.svg/1200px-Coursera_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=org.coursera.android",
+          reward: 17,
+          bond_level_required: 2,
+          title: "Download Coursera",
+          description: "Access courses from world-class universities",
+          question: "Did you successfully install Coursera?",
+          expected_answer: "yes"
+        },
+        {
+          id: 27,
+          app_name: "Khan Academy",
+          app_description: "Free educational content and courses",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Khan_Academy_logo.svg/1200px-Khan_Academy_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=org.khanacademy.android",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Khan Academy",
+          description: "Learn math, science, and more for free",
+          question: "Did you successfully install Khan Academy?",
+          expected_answer: "yes"
+        },
+        {
+          id: 28,
+          app_name: "MyFitnessPal",
+          app_description: "Track your nutrition and fitness",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/MyFitnessPal_logo.svg/1200px-MyFitnessPal_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.myfitnesspal.android",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download MyFitnessPal",
+          description: "Track calories, exercise, and achieve your health goals",
+          question: "Did you successfully install MyFitnessPal?",
+          expected_answer: "yes"
+        },
+        {
+          id: 29,
+          app_name: "Strava",
+          app_description: "Track your runs and cycling activities",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Strava_logo.svg/1200px-Strava_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.strava",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Strava",
+          description: "Track your fitness activities and connect with athletes",
+          question: "Did you successfully install Strava?",
+          expected_answer: "yes"
+        },
+        {
+          id: 30,
+          app_name: "Headspace",
+          app_description: "Meditation and mindfulness app",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Headspace_logo.svg/1200px-Headspace_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.getsomeheadspace.android",
+          reward: 17,
+          bond_level_required: 2,
+          title: "Download Headspace",
+          description: "Learn meditation and mindfulness techniques",
+          question: "Did you successfully install Headspace?",
+          expected_answer: "yes"
+        },
+        {
+          id: 31,
+          app_name: "Adobe Lightroom",
+          app_description: "Professional photo editing and organization",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Adobe_Photoshop_Lightroom_CC_logo.svg/1200px-Adobe_Photoshop_Lightroom_CC_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.adobe.lrmobile",
+          reward: 17,
+          bond_level_required: 2,
+          title: "Download Adobe Lightroom",
+          description: "Edit and organize your photos like a professional",
+          question: "Did you successfully install Adobe Lightroom?",
+          expected_answer: "yes"
+        },
+        {
+          id: 32,
+          app_name: "Canva",
+          app_description: "Design graphics and presentations",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Canva_icon_2021.svg/1200px-Canva_icon_2021.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.canva.creativestudio",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Canva",
+          description: "Create beautiful designs, presentations, and graphics",
+          question: "Did you successfully install Canva?",
+          expected_answer: "yes"
+        },
+        {
+          id: 33,
+          app_name: "Grammarly",
+          app_description: "Writing assistant and grammar checker",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Grammarly_logo.svg/1200px-Grammarly_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.grammarly.android.keyboard",
+          reward: 17,
+          bond_level_required: 2,
+          title: "Download Grammarly",
+          description: "Improve your writing with AI-powered suggestions",
+          question: "Did you successfully install Grammarly?",
+          expected_answer: "yes"
+        },
+        {
+          id: 34,
+          app_name: "Notion",
+          app_description: "All-in-one workspace for notes and collaboration",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Notion_app_logo.png/1200px-Notion_app_logo.png",
+          download_url: "https://play.google.com/store/apps/details?id=notion.id",
+          reward: 17,
+          bond_level_required: 2,
+          title: "Download Notion",
+          description: "Organize your work and life in one place",
+          question: "Did you successfully install Notion?",
+          expected_answer: "yes"
+        },
+        {
+          id: 35,
+          app_name: "Trello",
+          app_description: "Project management and team collaboration",
+          app_icon: "https://upload.wikimedia.org/wikipedia/en/thumb/7/7c/Trello-logo-blue.svg/1200px-Trello-logo-blue.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.trello",
+          reward: 17,
+          bond_level_required: 2,
+          title: "Download Trello",
+          description: "Organize projects with boards, lists, and cards",
+          question: "Did you successfully install Trello?",
+          expected_answer: "yes"
+        },
+        {
+          id: 36,
+          app_name: "Slack",
+          app_description: "Team communication and collaboration platform",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Slack_icon_2019.svg/1200px-Slack_icon_2019.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.Slack",
+          reward: 17,
+          bond_level_required: 2,
+          title: "Download Slack",
+          description: "Connect with your team through messaging and calls",
+          question: "Did you successfully install Slack?",
+          expected_answer: "yes"
+        },
+        {
+          id: 37,
+          app_name: "Asana",
+          app_description: "Project management and team organization",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Asana_logo.svg/1200px-Asana_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.asana.app",
+          reward: 17,
+          bond_level_required: 2,
+          title: "Download Asana",
+          description: "Manage projects and track team progress",
+          question: "Did you successfully install Asana?",
+          expected_answer: "yes"
+        },
+        {
+          id: 38,
+          app_name: "Dropbox",
+          app_description: "Cloud storage and file sharing",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Dropbox_icon.svg/1200px-Dropbox_icon.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.dropbox.android",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Dropbox",
+          description: "Store and share files securely in the cloud",
+          question: "Did you successfully install Dropbox?",
+          expected_answer: "yes"
+        },
+        {
+          id: 39,
+          app_name: "Google Drive",
+          app_description: "Cloud storage and file collaboration",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Google_Drive_icon.svg/1200px-Google_Drive_icon.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.google.android.apps.docs.editors.docs",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Google Drive",
+          description: "Store, share, and collaborate on files",
+          question: "Did you successfully install Google Drive?",
+          expected_answer: "yes"
+        },
+        {
+          id: 40,
+          app_name: "OneDrive",
+          app_description: "Microsoft's cloud storage solution",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/OneDrive_logo.svg/1200px-OneDrive_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.microsoft.skydrive",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download OneDrive",
+          description: "Access your files from anywhere with Microsoft cloud",
+          question: "Did you successfully install OneDrive?",
+          expected_answer: "yes"
+        },
+        {
+          id: 41,
+          app_name: "Evernote",
+          app_description: "Note-taking and organization app",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Evernote_logo.svg/1200px-Evernote_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.evernote",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Evernote",
+          description: "Capture ideas and organize your thoughts",
+          question: "Did you successfully install Evernote?",
+          expected_answer: "yes"
+        },
+        {
+          id: 42,
+          app_name: "Microsoft Word",
+          app_description: "Word processing and document creation",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Microsoft_Office_Word_%282019%E2%80%93present%29.svg/1200px-Microsoft_Office_Word_%282019%E2%80%93present%29.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.microsoft.office.word",
+          reward: 17,
+          bond_level_required: 2,
+          title: "Download Microsoft Word",
+          description: "Create and edit professional documents",
+          question: "Did you successfully install Microsoft Word?",
+          expected_answer: "yes"
+        },
+        {
+          id: 43,
+          app_name: "Microsoft Excel",
+          app_description: "Spreadsheet and data analysis",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg/1200px-Microsoft_Office_Excel_%282019%E2%80%93present%29.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.microsoft.office.excel",
+          reward: 17,
+          bond_level_required: 2,
+          title: "Download Microsoft Excel",
+          description: "Create spreadsheets and analyze data",
+          question: "Did you successfully install Microsoft Excel?",
+          expected_answer: "yes"
+        },
+        {
+          id: 44,
+          app_name: "Microsoft PowerPoint",
+          app_description: "Presentation creation and editing",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Microsoft_Office_PowerPoint_%282019%E2%80%93present%29.svg/1200px-Microsoft_Office_PowerPoint_%282019%E2%80%93present%29.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.microsoft.office.powerpoint",
+          reward: 17,
+          bond_level_required: 2,
+          title: "Download Microsoft PowerPoint",
+          description: "Create stunning presentations and slideshows",
+          question: "Did you successfully install Microsoft PowerPoint?",
+          expected_answer: "yes"
+        },
+        {
+          id: 45,
+          app_name: "Google Docs",
+          app_description: "Online document creation and collaboration",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/Google_Docs_logo_%282020%29.svg/1200px-Google_Docs_logo_%282020%29.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.google.android.apps.docs.editors.docs",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Google Docs",
+          description: "Create and edit documents online with real-time collaboration",
+          question: "Did you successfully install Google Docs?",
+          expected_answer: "yes"
+        },
+        {
+          id: 46,
+          app_name: "Google Sheets",
+          app_description: "Online spreadsheet creation and collaboration",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Google_Sheets_logo_%282020%29.svg/1200px-Google_Sheets_logo_%282020%29.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.google.android.apps.docs.editors.sheets",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Google Sheets",
+          description: "Create and edit spreadsheets online with real-time collaboration",
+          question: "Did you successfully install Google Sheets?",
+          expected_answer: "yes"
+        },
+        {
+          id: 47,
+          app_name: "Google Slides",
+          app_description: "Online presentation creation and collaboration",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Google_Slides_logo_%282020%29.svg/1200px-Google_Slides_logo_%282020%29.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.google.android.apps.docs.editors.slides",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Google Slides",
+          description: "Create and edit presentations online with real-time collaboration",
+          question: "Did you successfully install Google Slides?",
+          expected_answer: "yes"
+        },
+        {
+          id: 48,
+          app_name: "Adobe Acrobat Reader",
+          app_description: "PDF viewer and document reader",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Adobe_Acrobat_Reader_CC_logo.svg/1200px-Adobe_Acrobat_Reader_CC_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.adobe.reader",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Adobe Acrobat Reader",
+          description: "View, annotate, and fill PDF documents",
+          question: "Did you successfully install Adobe Acrobat Reader?",
+          expected_answer: "yes"
+        },
+        {
+          id: 49,
+          app_name: "Skype",
+          app_description: "Video calling and messaging platform",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Skype_logo.svg/1200px-Skype_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.skype.raider",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Skype",
+          description: "Make video calls and send messages worldwide",
+          question: "Did you successfully install Skype?",
+          expected_answer: "yes"
+        },
+        {
+          id: 50,
+          app_name: "Viber",
+          app_description: "Free messaging and calling app",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Viber_logo.svg/1200px-Viber_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.viber.voip",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Viber",
+          description: "Send messages and make calls for free",
+          question: "Did you successfully install Viber?",
+          expected_answer: "yes"
+        },
+        {
+          id: 51,
+          app_name: "WeChat",
+          app_description: "All-in-one messaging and social app",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WeChat.svg/1200px-WeChat.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.tencent.mm",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download WeChat",
+          description: "Chat, pay, and discover with friends",
+          question: "Did you successfully install WeChat?",
+          expected_answer: "yes"
+        },
+        {
+          id: 52,
+          app_name: "LINE",
+          app_description: "Free messaging and calling app",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/LINE_logo.svg/1200px-LINE_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=jp.naver.line.android",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download LINE",
+          description: "Connect with friends through messages and calls",
+          question: "Did you successfully install LINE?",
+          expected_answer: "yes"
+        },
+        {
+          id: 53,
+          app_name: "Discord",
+          app_description: "Gaming chat and community platform",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Discord_logo.svg/1200px-Discord_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.discord",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Discord",
+          description: "Connect with gamers and communities through voice and text chat",
+          question: "Did you successfully install Discord?",
+          expected_answer: "yes"
+        },
+        {
+          id: 54,
+          app_name: "Reddit",
+          app_description: "Discover communities and discussions",
+          app_icon: "https://upload.wikimedia.org/wikipedia/en/thumb/8/82/Reddit_logo_and_wordmark.svg/1200px-Reddit_logo_and_wordmark.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.reddit.frontpage",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Reddit",
+          description: "Join communities and discussions on any topic",
+          question: "Did you successfully install Reddit?",
+          expected_answer: "yes"
+        },
+        {
+          id: 55,
+          app_name: "Pinterest",
+          app_description: "Discover and save creative ideas",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Pinterest-logo.png/1200px-Pinterest-logo.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.pinterest",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Pinterest",
+          description: "Find inspiration for your next project or hobby",
+          question: "Did you successfully install Pinterest?",
+          expected_answer: "yes"
+        },
+        {
+          id: 56,
+          app_name: "Tinder",
+          app_description: "Meet new people and find relationships",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Tinder_logo.svg/1200px-Tinder_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.tinder",
+          reward: 17,
+          bond_level_required: 2,
+          title: "Download Tinder",
+          description: "Swipe to match with people nearby",
+          question: "Did you successfully install Tinder?",
+          expected_answer: "yes"
+        },
+        {
+          id: 57,
+          app_name: "Bumble",
+          app_description: "Dating app where women make the first move",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Bumble_logo.svg/1200px-Bumble_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.bumble",
+          reward: 17,
+          bond_level_required: 2,
+          title: "Download Bumble",
+          description: "Find meaningful connections and relationships",
+          question: "Did you successfully install Bumble?",
+          expected_answer: "yes"
+        },
+        {
+          id: 58,
+          app_name: "Shopee",
+          app_description: "Online shopping and marketplace",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Shopee_logo.svg/1200px-Shopee_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.shopee.lite",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Shopee",
+          description: "Shop online with great deals and fast delivery",
+          question: "Did you successfully install Shopee?",
+          expected_answer: "yes"
+        },
+        {
+          id: 59,
+          app_name: "Jumia",
+          app_description: "Online shopping for electronics and more",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Jumia_logo.svg/1200px-Jumia_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.jumia.android",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Jumia",
+          description: "Buy electronics, fashion, and home goods online",
+          question: "Did you successfully install Jumia?",
+          expected_answer: "yes"
+        },
+        {
+          id: 60,
+          app_name: "Booking.com",
+          app_description: "Find and book hotels worldwide",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Booking.com_logo.svg/1200px-Booking.com_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.booking",
+          reward: 17,
+          bond_level_required: 2,
+          title: "Download Booking.com",
+          description: "Book hotels, flights, and travel experiences",
+          question: "Did you successfully install Booking.com?",
+          expected_answer: "yes"
+        },
+        {
+          id: 61,
+          app_name: "Airbnb",
+          app_description: "Find unique places to stay",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Airbnb_Logo_B%C3%A9lo.svg/1200px-Airbnb_Logo_B%C3%A9lo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.airbnb.android",
+          reward: 17,
+          bond_level_required: 2,
+          title: "Download Airbnb",
+          description: "Book unique accommodations and experiences",
+          question: "Did you successfully install Airbnb?",
+          expected_answer: "yes"
+        },
+        {
+          id: 62,
+          app_name: "Duolingo",
+          app_description: "Learn languages for free",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Duolingo_logo.svg/1200px-Duolingo_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.duolingo",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Duolingo",
+          description: "Learn new languages with fun, bite-sized lessons",
+          question: "Did you successfully install Duolingo?",
+          expected_answer: "yes"
+        },
+        {
+          id: 63,
+          app_name: "Coursera",
+          app_description: "Learn from top universities online",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Coursera_logo.svg/1200px-Coursera_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=org.coursera.android",
+          reward: 17,
+          bond_level_required: 2,
+          title: "Download Coursera",
+          description: "Access courses from world-class universities",
+          question: "Did you successfully install Coursera?",
+          expected_answer: "yes"
+        },
+        {
+          id: 64,
+          app_name: "Khan Academy",
+          app_description: "Free educational content and courses",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Khan_Academy_logo.svg/1200px-Khan_Academy_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=org.khanacademy.android",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Khan Academy",
+          description: "Learn math, science, and more for free",
+          question: "Did you successfully install Khan Academy?",
+          expected_answer: "yes"
+        },
+        {
+          id: 65,
+          app_name: "MyFitnessPal",
+          app_description: "Track your nutrition and fitness",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/MyFitnessPal_logo.svg/1200px-MyFitnessPal_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.myfitnesspal.android",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download MyFitnessPal",
+          description: "Track calories, exercise, and achieve your health goals",
+          question: "Did you successfully install MyFitnessPal?",
+          expected_answer: "yes"
+        },
+        {
+          id: 66,
+          app_name: "Strava",
+          app_description: "Track your runs and cycling activities",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Strava_logo.svg/1200px-Strava_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.strava",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Strava",
+          description: "Track your fitness activities and connect with athletes",
+          question: "Did you successfully install Strava?",
+          expected_answer: "yes"
+        },
+        {
+          id: 67,
+          app_name: "Headspace",
+          app_description: "Meditation and mindfulness app",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Headspace_logo.svg/1200px-Headspace_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.getsomeheadspace.android",
+          reward: 17,
+          bond_level_required: 2,
+          title: "Download Headspace",
+          description: "Learn meditation and mindfulness techniques",
+          question: "Did you successfully install Headspace?",
+          expected_answer: "yes"
+        },
+        {
+          id: 68,
+          app_name: "Calm",
+          app_description: "Meditation and sleep app",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Calm_logo.svg/1200px-Calm_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.calm.android",
+          reward: 17,
+          bond_level_required: 2,
+          title: "Download Calm",
+          description: "Meditation, sleep stories, and relaxation",
+          question: "Did you successfully install Calm?",
+          expected_answer: "yes"
+        },
+        {
+          id: 69,
+          app_name: "Adobe Lightroom",
+          app_description: "Professional photo editing and organization",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Adobe_Photoshop_Lightroom_CC_logo.svg/1200px-Adobe_Photoshop_Lightroom_CC_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.adobe.lrmobile",
+          reward: 17,
+          bond_level_required: 2,
+          title: "Download Adobe Lightroom",
+          description: "Edit and organize your photos like a professional",
+          question: "Did you successfully install Adobe Lightroom?",
+          expected_answer: "yes"
+        },
+        {
+          id: 70,
+          app_name: "Canva",
+          app_description: "Design graphics and presentations",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Canva_icon_2021.svg/1200px-Canva_icon_2021.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.canva.creativestudio",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Canva",
+          description: "Create beautiful designs, presentations, and graphics",
+          question: "Did you successfully install Canva?",
+          expected_answer: "yes"
+        },
+        {
+          id: 71,
+          app_name: "Grammarly",
+          app_description: "Writing assistant and grammar checker",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Grammarly_logo.svg/1200px-Grammarly_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.grammarly.android.keyboard",
+          reward: 17,
+          bond_level_required: 2,
+          title: "Download Grammarly",
+          description: "Improve your writing with AI-powered suggestions",
+          question: "Did you successfully install Grammarly?",
+          expected_answer: "yes"
+        },
+        {
+          id: 72,
+          app_name: "Notion",
+          app_description: "All-in-one workspace for notes and collaboration",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Notion_app_logo.png/1200px-Notion_app_logo.png",
+          download_url: "https://play.google.com/store/apps/details?id=notion.id",
+          reward: 17,
+          bond_level_required: 2,
+          title: "Download Notion",
+          description: "Organize your work and life in one place",
+          question: "Did you successfully install Notion?",
+          expected_answer: "yes"
+        },
+        {
+          id: 73,
+          app_name: "Trello",
+          app_description: "Project management and team collaboration",
+          app_icon: "https://upload.wikimedia.org/wikipedia/en/thumb/7/7c/Trello-logo-blue.svg/1200px-Trello-logo-blue.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.trello",
+          reward: 17,
+          bond_level_required: 2,
+          title: "Download Trello",
+          description: "Organize projects with boards, lists, and cards",
+          question: "Did you successfully install Trello?",
+          expected_answer: "yes"
+        },
+        {
+          id: 74,
+          app_name: "Slack",
+          app_description: "Team communication and collaboration platform",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Slack_icon_2019.svg/1200px-Slack_icon_2019.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.Slack",
+          reward: 17,
+          bond_level_required: 2,
+          title: "Download Slack",
+          description: "Connect with your team through messaging and calls",
+          question: "Did you successfully install Slack?",
+          expected_answer: "yes"
+        },
+        {
+          id: 75,
+          app_name: "Asana",
+          app_description: "Project management and team organization",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Asana_logo.svg/1200px-Asana_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.asana.app",
+          reward: 17,
+          bond_level_required: 2,
+          title: "Download Asana",
+          description: "Manage projects and track team progress",
+          question: "Did you successfully install Asana?",
+          expected_answer: "yes"
+        },
+        {
+          id: 76,
+          app_name: "Dropbox",
+          app_description: "Cloud storage and file sharing",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Dropbox_icon.svg/1200px-Dropbox_icon.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.dropbox.android",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Dropbox",
+          description: "Store and share files securely in the cloud",
+          question: "Did you successfully install Dropbox?",
+          expected_answer: "yes"
+        },
+        {
+          id: 77,
+          app_name: "Google Drive",
+          app_description: "Cloud storage and file collaboration",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Google_Drive_icon.svg/1200px-Google_Drive_icon.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.google.android.apps.docs.editors.docs",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Google Drive",
+          description: "Store, share, and collaborate on files",
+          question: "Did you successfully install Google Drive?",
+          expected_answer: "yes"
+        },
+        {
+          id: 78,
+          app_name: "OneDrive",
+          app_description: "Microsoft's cloud storage solution",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/OneDrive_logo.svg/1200px-OneDrive_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.microsoft.skydrive",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download OneDrive",
+          description: "Access your files from anywhere with Microsoft cloud",
+          question: "Did you successfully install OneDrive?",
+          expected_answer: "yes"
+        },
+        {
+          id: 79,
+          app_name: "Evernote",
+          app_description: "Note-taking and organization app",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Evernote_logo.svg/1200px-Evernote_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.evernote",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Evernote",
+          description: "Capture ideas and organize your thoughts",
+          question: "Did you successfully install Evernote?",
+          expected_answer: "yes"
+        },
+        {
+          id: 80,
+          app_name: "Microsoft Word",
+          app_description: "Word processing and document creation",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Microsoft_Office_Word_%282019%E2%80%93present%29.svg/1200px-Microsoft_Office_Word_%282019%E2%80%93present%29.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.microsoft.office.word",
+          reward: 17,
+          bond_level_required: 2,
+          title: "Download Microsoft Word",
+          description: "Create and edit professional documents",
+          question: "Did you successfully install Microsoft Word?",
+          expected_answer: "yes"
+        },
+        {
+          id: 81,
+          app_name: "Microsoft Excel",
+          app_description: "Spreadsheet and data analysis",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg/1200px-Microsoft_Office_Excel_%282019%E2%80%93present%29.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.microsoft.office.excel",
+          reward: 17,
+          bond_level_required: 2,
+          title: "Download Microsoft Excel",
+          description: "Create spreadsheets and analyze data",
+          question: "Did you successfully install Microsoft Excel?",
+          expected_answer: "yes"
+        },
+        {
+          id: 82,
+          app_name: "Microsoft PowerPoint",
+          app_description: "Presentation creation and editing",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Microsoft_Office_PowerPoint_%282019%E2%80%93present%29.svg/1200px-Microsoft_Office_PowerPoint_%282019%E2%80%93present%29.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.microsoft.office.powerpoint",
+          reward: 17,
+          bond_level_required: 2,
+          title: "Download Microsoft PowerPoint",
+          description: "Create stunning presentations and slideshows",
+          question: "Did you successfully install Microsoft PowerPoint?",
+          expected_answer: "yes"
+        },
+        {
+          id: 83,
+          app_name: "Google Docs",
+          app_description: "Online document creation and collaboration",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/Google_Docs_logo_%282020%29.svg/1200px-Google_Docs_logo_%282020%29.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.google.android.apps.docs.editors.docs",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Google Docs",
+          description: "Create and edit documents online with real-time collaboration",
+          question: "Did you successfully install Google Docs?",
+          expected_answer: "yes"
+        },
+        {
+          id: 84,
+          app_name: "Google Sheets",
+          app_description: "Online spreadsheet creation and collaboration",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Google_Sheets_logo_%282020%29.svg/1200px-Google_Sheets_logo_%282020%29.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.google.android.apps.docs.editors.sheets",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Google Sheets",
+          description: "Create and edit spreadsheets online with real-time collaboration",
+          question: "Did you successfully install Google Sheets?",
+          expected_answer: "yes"
+        },
+        {
+          id: 85,
+          app_name: "Google Slides",
+          app_description: "Online presentation creation and collaboration",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Google_Slides_logo_%282020%29.svg/1200px-Google_Slides_logo_%282020%29.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.google.android.apps.docs.editors.slides",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Google Slides",
+          description: "Create and edit presentations online with real-time collaboration",
+          question: "Did you successfully install Google Slides?",
+          expected_answer: "yes"
+        },
+        {
+          id: 86,
+          app_name: "Adobe Acrobat Reader",
+          app_description: "PDF viewer and document reader",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Adobe_Acrobat_Reader_CC_logo.svg/1200px-Adobe_Acrobat_Reader_CC_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.adobe.reader",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Adobe Acrobat Reader",
+          description: "View, annotate, and fill PDF documents",
+          question: "Did you successfully install Adobe Acrobat Reader?",
+          expected_answer: "yes"
+        },
+        {
+          id: 87,
+          app_name: "Skype",
+          app_description: "Video calling and messaging platform",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Skype_logo.svg/1200px-Skype_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.skype.raider",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Skype",
+          description: "Make video calls and send messages worldwide",
+          question: "Did you successfully install Skype?",
+          expected_answer: "yes"
+        },
+        {
+          id: 88,
+          app_name: "Viber",
+          app_description: "Free messaging and calling app",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Viber_logo.svg/1200px-Viber_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.viber.voip",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Viber",
+          description: "Send messages and make calls for free",
+          question: "Did you successfully install Viber?",
+          expected_answer: "yes"
+        },
+        {
+          id: 89,
+          app_name: "LinkedIn",
+          app_description: "Professional networking and job opportunities",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/LinkedIn_logo_initials.png/1200px-LinkedIn_logo_initials.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.linkedin.android",
+          reward: 17,
+          bond_level_required: 2,
+          title: "Download LinkedIn",
+          description: "Build your professional network and discover career opportunities",
+          question: "Did you successfully install LinkedIn?",
+          expected_answer: "yes"
+        },
+        {
+          id: 90,
+          app_name: "Uber",
+          app_description: "Request rides and food delivery",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Uber_logo_2018.svg/1200px-Uber_logo_2018.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.ubercab",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Uber",
+          description: "Get rides and food delivered to your doorstep",
+          question: "Did you successfully install Uber?",
+          expected_answer: "yes"
+        },
+        {
+          id: 91,
+          app_name: "Google Maps",
+          app_description: "Navigate and explore the world",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Google_Maps_logo_%282020%29.svg/1200px-Google_Maps_logo_%282020%29.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.google.android.apps.maps",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Google Maps",
+          description: "Find directions, explore places, and navigate with ease",
+          question: "Did you successfully install Google Maps?",
+          expected_answer: "yes"
+        },
+        {
+          id: 92,
+          app_name: "Gmail",
+          app_description: "Professional email communication",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Gmail_icon_%282020%29.svg/1200px-Gmail_icon_%282020%29.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.google.android.gm",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Gmail",
+          description: "Manage your emails efficiently with Google's email service",
+          question: "Did you successfully install Gmail?",
+          expected_answer: "yes"
+        },
+        {
+          id: 93,
+          app_name: "Microsoft Teams",
+          app_description: "Collaborate with your team remotely",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Microsoft_Office_Teams_%282018%E2%80%93present%29.svg/1200px-Microsoft_Office_Teams_%282018%E2%80%93present%29.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.microsoft.teams",
+          reward: 17,
+          bond_level_required: 2,
+          title: "Download Microsoft Teams",
+          description: "Work together with chat, video calls, and file sharing",
+          question: "Did you successfully install Microsoft Teams?",
+          expected_answer: "yes"
+        },
+        {
+          id: 94,
+          app_name: "Zoom",
+          app_description: "Video conferencing and online meetings",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Zoom_logo.svg/1200px-Zoom_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=us.zoom.videomeetings",
+          reward: 17,
+          bond_level_required: 2,
+          title: "Download Zoom",
+          description: "Join video meetings and webinars from anywhere",
+          question: "Did you successfully install Zoom?",
+          expected_answer: "yes"
+        },
+        {
+          id: 95,
+          app_name: "Amazon",
+          app_description: "Online shopping for everything",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Amazon_logo.svg/1200px-Amazon_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.amazon.mShop.android.shopping",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Amazon",
+          description: "Shop millions of products with fast delivery",
+          question: "Did you successfully install Amazon?",
+          expected_answer: "yes"
+        },
+        {
+          id: 96,
+          app_name: "eBay",
+          app_description: "Buy and sell online marketplace",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/EBay_logo.svg/1200px-EBay_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.ebay.mobile",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download eBay",
+          description: "Buy and sell items in the world's online marketplace",
+          question: "Did you successfully install eBay?",
+          expected_answer: "yes"
+        },
+        {
+          id: 97,
+          app_name: "Walmart",
+          app_description: "Shop groceries and household items",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Walmart_logo.svg/1200px-Walmart_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.walmart.android",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Walmart",
+          description: "Shop groceries, electronics, and household items",
+          question: "Did you successfully install Walmart?",
+          expected_answer: "yes"
+        },
+        {
+          id: 98,
+          app_name: "Target",
+          app_description: "Shop for everything you need",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Target_logo.svg/1200px-Target_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.target.shopping",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Target",
+          description: "Shop for clothing, electronics, and home goods",
+          question: "Did you successfully install Target?",
+          expected_answer: "yes"
+        },
+        {
+          id: 99,
+          app_name: "Best Buy",
+          app_description: "Electronics and technology retailer",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Best_Buy_logo.svg/1200px-Best_Buy_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.bestbuy.android",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Best Buy",
+          description: "Shop for electronics, appliances, and technology",
+          question: "Did you successfully install Best Buy?",
+          expected_answer: "yes"
+        },
+        {
+          id: 100,
+          app_name: "Home Depot",
+          app_description: "Home improvement and hardware store",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/The_Home_Depot_logo.svg/1200px-The_Home_Depot_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.homedepot.shopping",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Home Depot",
+          description: "Shop for tools, building materials, and home improvement",
+          question: "Did you successfully install Home Depot?",
+          expected_answer: "yes"
+        },
+        {
+          id: 101,
+          app_name: "Lowe's",
+          app_description: "Home improvement and hardware store",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Lowe%27s_logo.svg/1200px-Lowe%27s_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.lowes.android",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Lowe's",
+          description: "Shop for home improvement and building supplies",
+          question: "Did you successfully install Lowe's?",
+          expected_answer: "yes"
+        },
+        {
+          id: 102,
+          app_name: "IKEA",
+          app_description: "Furniture and home goods store",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/IKEA_logo.svg/1200px-IKEA_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.ikea.app",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download IKEA",
+          description: "Shop for furniture and home accessories",
+          question: "Did you successfully install IKEA?",
+          expected_answer: "yes"
+        },
+        {
+          id: 103,
+          app_name: "Wayfair",
+          app_description: "Online furniture and home goods",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Wayfair_logo.svg/1200px-Wayfair_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.wayfair",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Wayfair",
+          description: "Shop for furniture and home decor online",
+          question: "Did you successfully install Wayfair?",
+          expected_answer: "yes"
+        },
+        {
+          id: 104,
+          app_name: "Etsy",
+          app_description: "Handmade and vintage marketplace",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Etsy_logo.svg/1200px-Etsy_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.etsy.android",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Etsy",
+          description: "Shop for unique handmade and vintage items",
+          question: "Did you successfully install Etsy?",
+          expected_answer: "yes"
+        },
+        {
+          id: 105,
+          app_name: "Alibaba",
+          app_description: "Global wholesale marketplace",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Alibaba_logo.svg/1200px-Alibaba_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.alibaba.intl.android.apps.poseidon",
+          reward: 17,
+          bond_level_required: 2,
+          title: "Download Alibaba",
+          description: "Connect with global suppliers and manufacturers",
+          question: "Did you successfully install Alibaba?",
+          expected_answer: "yes"
+        },
+        {
+          id: 106,
+          app_name: "AliExpress",
+          app_description: "Global online retail platform",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/AliExpress_logo.svg/1200px-AliExpress_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.alibaba.aliexpresshd",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download AliExpress",
+          description: "Shop for products from global sellers",
+          question: "Did you successfully install AliExpress?",
+          expected_answer: "yes"
+        },
+        {
+          id: 107,
+          app_name: "Wish",
+          app_description: "Shopping app with deals and discounts",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Wish_logo.svg/1200px-Wish_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.contextlogic.wish",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Wish",
+          description: "Discover amazing deals and save money",
+          question: "Did you successfully install Wish?",
+          expected_answer: "yes"
+        },
+        {
+          id: 108,
+          app_name: "Temu",
+          app_description: "Online shopping with great prices",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Temu_logo.svg/1200px-Temu_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.pinduoduo.temu",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Temu",
+          description: "Shop for quality products at affordable prices",
+          question: "Did you successfully install Temu?",
+          expected_answer: "yes"
+        },
+        {
+          id: 109,
+          app_name: "DoorDash",
+          app_description: "Food delivery service",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/DoorDash_logo.svg/1200px-DoorDash_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.dd.doordash",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download DoorDash",
+          description: "Get food delivered from your favorite restaurants",
+          question: "Did you successfully install DoorDash?",
+          expected_answer: "yes"
+        },
+        {
+          id: 110,
+          app_name: "Grubhub",
+          app_description: "Food delivery and takeout",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Grubhub_logo.svg/1200px-Grubhub_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.grubhub.android",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Grubhub",
+          description: "Order food delivery and takeout from local restaurants",
+          question: "Did you successfully install Grubhub?",
+          expected_answer: "yes"
+        },
+        {
+          id: 111,
+          app_name: "Postmates",
+          app_description: "Food and delivery service",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Postmates_logo.svg/1200px-Postmates_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.postmates.android",
+          reward: 17,
+          bond_level_required: 1,
+          title: "Download Postmates",
+          description: "Get food, groceries, and more delivered",
+          question: "Did you successfully install Postmates?",
+          expected_answer: "yes"
+        },
+        {
+          id: 112,
+          app_name: "Instacart",
+          app_description: "Grocery delivery service",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Instacart_logo.svg/1200px-Instacart_logo.svg.png",
+          title: "Download Instacart",
+        },
+        {
+          id: 113,
+          app_name: "Shipt",
+          app_description: "Grocery delivery and pickup",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Shipt_logo.svg/1200px-Shipt_logo.svg.png",
+          title: "Download Shipt",
+        },
+        {
+          id: 114,
+          app_name: "Lyft",
+          app_description: "Ride-hailing and transportation",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Lyft_logo.svg/1200px-Lyft_logo.svg.png",
+          title: "Download Lyft",
+        },
+        {
+          id: 115,
+          app_name: "Grab",
+          app_description: "Ride-hailing and delivery service",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Grab_logo.svg/1200px-Grab_logo.svg.png",
+          title: "Download Grab",
+        },
+        {
+          id: 116,
+          app_name: "GoJek",
+          app_description: "Multi-service platform",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/GoJek_logo.svg/1200px-GoJek_logo.svg.png",
+          title: "Download GoJek",
+        },
+        {
+          id: 117,
+          app_name: "Didi",
+          app_description: "Ride-hailing and transportation",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Didi_logo.svg/1200px-Didi_logo.svg.png",
+          title: "Download Didi",
+        },
+        {
+          id: 118,
+          app_name: "Expedia",
+          app_description: "Travel booking platform",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Expedia_logo.svg/1200px-Expedia_logo.svg.png",
+          title: "Download Expedia",
+        },
+        {
+          id: 119,
+          app_name: "TripAdvisor",
+          app_description: "Travel planning and reviews",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/TripAdvisor_logo.svg/1200px-TripAdvisor_logo.svg.png",
+          title: "Download TripAdvisor",
+        },
+        {
+          id: 120,
+          app_name: "Kayak",
+          app_description: "Travel search and booking",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Kayak_logo.svg/1200px-Kayak_logo.svg.png",
+          title: "Download Kayak",
+        },
+        {
+          id: 121,
+          app_name: "Hotels.com",
+          app_description: "Hotel booking platform",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Hotels.com_logo.svg/1200px-Hotels.com_logo.svg.png",
+          title: "Download Hotels.com",
+        },
+        {
+          id: 122,
+          app_name: "Trivago",
+          app_description: "Hotel price comparison",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Trivago_logo.svg/1200px-Trivago_logo.svg.png",
+          title: "Download Trivago",
+        },
+        {
+          id: 123,
+          app_name: "Priceline",
+          app_description: "Travel booking and deals",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Priceline_logo.svg/1200px-Priceline_logo.svg.png",
+          title: "Download Priceline",
+        },
+        {
+          id: 124,
+          app_name: "Orbitz",
+          app_description: "Travel booking platform",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Orbitz_logo.svg/1200px-Orbitz_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.orbitz.android",
+          reward: 17,
+          bond_level_required: 2,
+          title: "Download Orbitz",
+          description: "Book flights, hotels, and vacation packages",
+          question: "Did you successfully install Orbitz?",
+          expected_answer: "yes"
+        },
+        {
+          id: 125,
+          app_name: "CheapTickets",
+          app_description: "Travel deals and discounts",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/CheapTickets_logo.svg/1200px-CheapTickets_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.cheaptickets.android",
+          reward: 17,
+          bond_level_required: 2,
+          title: "Download CheapTickets",
+          description: "Find travel deals and book flights and hotels",
+          question: "Did you successfully install CheapTickets?",
+          expected_answer: "yes"
+        },
+        {
+          id: 126,
+          app_name: "Hotwire",
+          app_description: "Travel deals and last-minute bookings",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Hotwire_logo.svg/1200px-Hotwire_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.hotwire.android",
+          reward: 17,
+          bond_level_required: 2,
+          title: "Download Hotwire",
+          description: "Find last-minute travel deals",
+          question: "Did you successfully install Hotwire?",
+          expected_answer: "yes"
+        },
+        {
+          id: 127,
+          app_name: "Travelocity",
+          app_description: "Travel booking and planning",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Travelocity_logo.svg/1200px-Travelocity_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.travelocity.android",
+          reward: 17,
+          bond_level_required: 2,
+          title: "Download Travelocity",
+          description: "Book flights, hotels, and vacation packages",
+          question: "Did you successfully install Travelocity?",
+          expected_answer: "yes"
+        },
+        {
+          id: 128,
+          app_name: "VRBO",
+          app_description: "Vacation rental booking",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/VRBO_logo.svg/1200px-VRBO_logo.svg.png",
+          download_url: "https://play.google.com/store/apps/details?id=com.vrbo.android",
+          reward: 17,
+          bond_level_required: 2,
+          title: "Download VRBO",
+          description: "Find and book vacation rentals",
+          question: "Did you successfully install VRBO?",
+          expected_answer: "yes"
+        },
+        {
+          id: 129,
+          app_name: "HomeAway",
+          app_description: "Vacation rental platform",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/HomeAway_logo.svg/1200px-HomeAway_logo.svg.png",
+          title: "Download HomeAway",
+        },
+        {
+          id: 130,
+          app_name: "Trip.com",
+          app_description: "Global travel booking platform",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Trip.com_logo.svg/1200px-Trip.com_logo.svg.png",
+          title: "Download Trip.com",
+        },
+        {
+          id: 131,
+          app_name: "Agoda",
+          app_description: "Hotel booking platform",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Agoda_logo.svg/1200px-Agoda_logo.svg.png",
+          title: "Download Agoda",
+        },
+        {
+          id: 132,
+          app_name: "HotelsCombined",
+          app_description: "Hotel price comparison",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/HotelsCombined_logo.svg/1200px-HotelsCombined_logo.svg.png",
+          title: "Download HotelsCombined",
+        },
+        {
+          id: 133,
+          app_name: "Skyscanner",
+          app_description: "Flight search and comparison",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Skyscanner_logo.svg/1200px-Skyscanner_logo.svg.png",
+          title: "Download Skyscanner",
+        },
+        {
+          id: 134,
+          app_name: "Google Flights",
+          app_description: "Flight search and booking",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Google_Flights_logo.svg/1200px-Google_Flights_logo.svg.png",
+          title: "Download Google Flights",
+        },
+        {
+          id: 135,
+          app_name: "Hopper",
+          app_description: "Flight and hotel booking app",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Hopper_logo.svg/1200px-Hopper_logo.svg.png",
+          title: "Download Hopper",
+        },
+        {
+          id: 136,
+          app_name: "Momondo",
+          app_description: "Flight and hotel search",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Momondo_logo.svg/1200px-Momondo_logo.svg.png",
+          title: "Download Momondo",
+        },
+        {
+          id: 137,
+          app_name: "CheapOair",
+          app_description: "Travel deals and booking",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/CheapOair_logo.svg/1200px-CheapOair_logo.svg.png",
+          title: "Download CheapOair",
+        },
+        {
+          id: 138,
+          app_name: "OneTravel",
+          app_description: "Travel booking and deals",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/OneTravel_logo.svg/1200px-OneTravel_logo.svg.png",
+          title: "Download OneTravel",
+        },
+        {
+          id: 139,
+          app_name: "JustFly",
+          app_description: "Flight booking platform",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/JustFly_logo.svg/1200px-JustFly_logo.svg.png",
+          title: "Download JustFly",
+        },
+        {
+          id: 140,
+          app_name: "StudentUniverse",
+          app_description: "Student travel deals",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/StudentUniverse_logo.svg/1200px-StudentUniverse_logo.svg.png",
+          title: "Download StudentUniverse",
+        },
+        {
+          id: 141,
+          app_name: "STA Travel",
+          app_description: "Student and youth travel",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/STA_Travel_logo.svg/1200px-STA_Travel_logo.svg.png",
+          title: "Download STA Travel",
+        },
+        {
+          id: 142,
+          app_name: "Contiki",
+          app_description: "Group travel experiences",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Contiki_logo.svg/1200px-Contiki_logo.svg.png",
+          title: "Download Contiki",
+        },
+        {
+          id: 143,
+          app_name: "G Adventures",
+          app_description: "Small group adventure travel",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/G_Adventures_logo.svg/1200px-G_Adventures_logo.svg.png",
+          title: "Download G Adventures",
+        },
+        {
+          id: 144,
+          app_name: "Intrepid Travel",
+          app_description: "Small group adventure tours",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Intrepid_Travel_logo.svg/1200px-Intrepid_Travel_logo.svg.png",
+          title: "Download Intrepid Travel",
+        },
+        {
+          id: 145,
+          app_name: "Topdeck",
+          app_description: "Youth travel experiences",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Topdeck_logo.svg/1200px-Topdeck_logo.svg.png",
+          title: "Download Topdeck",
+        },
+        {
+          id: 146,
+          app_name: "EF Tours",
+          app_description: "Educational travel experiences",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/EF_Tours_logo.svg/1200px-EF_Tours_logo.svg.png",
+          title: "Download EF Tours",
+        },
+        {
+          id: 147,
+          app_name: "Road Scholar",
+          app_description: "Educational travel for adults",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Road_Scholar_logo.svg/1200px-Road_Scholar_logo.svg.png",
+          title: "Download Road Scholar",
+        },
+        {
+          id: 148,
+          app_name: "National Geographic Expeditions",
+          app_description: "Adventure travel experiences",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/National_Geographic_Expeditions_logo.svg/1200px-National_Geographic_Expeditions_logo.svg.png",
+          title: "Download National Geographic Expeditions",
+        },
+        {
+          id: 149,
+          app_name: "Lonely Planet",
+          app_description: "Travel guide and planning",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Lonely_Planet_logo.svg/1200px-Lonely_Planet_logo.svg.png",
+          title: "Download Lonely Planet",
+        },
+        {
+          id: 150,
+          app_name: "Fodor's Travel",
+          app_description: "Travel guide and recommendations",
+          app_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Fodors_Travel_logo.svg/1200px-Fodors_Travel_logo.svg.png",
+          title: "Download Fodor's Travel", 
+        }
+        // Add more apps here...
+      ];
+
+      // Get today's seed for consistent daily shuffle
+      const today = new Date();
+      const seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+      
+      // Shuffle apps using today's seed
+      const shuffledApps = shuffleArray(allApps, seed);
+      
+      // Mark completed tasks from database
+      const completedTaskIds = await loadCompletedTasksFromDatabase();
+      
+      // Load user stats from database
+      const userStats = await loadUserStatsFromDatabase();
+      
+      // Get user's current level for reward calculation
+      const userLevel = userInfo.bondLevel || 1;
+      const levelReward = getRewardForLevel(userLevel);
+      
+      console.log(`👤 User info:`, userInfo);
+      console.log(`📊 User stats:`, userStats);
+      console.log(`🎯 User level: ${userLevel}, Reward: ${levelReward}`);
+      
+      console.log(`🎯 Setting rewards for Level ${userLevel}: ${levelReward} shillings per task`);
+      console.log(`📊 Loaded ${completedTaskIds.length} completed tasks from database`);
+      
+      // Update user info from database
+      if (userStats.completedToday !== undefined) {
+        userInfo.completedToday = userStats.completedToday;
+        console.log(`📈 Updated user stats from database: ${userStats.completedToday} tasks completed today`);
+      }
+      
+      const finalTasks = shuffledApps.map(app => ({
+        ...app,
+        reward: levelReward, // Apply level-based reward
+        completedToday: completedTaskIds.includes(app.id)
+      }));
+      
+      console.log(`✅ getSampleAppTasks completed: ${finalTasks.length} tasks loaded`);
+      console.log(`📊 Sample tasks:`, finalTasks.slice(0, 3));
+      
+      return finalTasks;
+    }
+
+    // Fisher-Yates shuffle with seed for consistent daily results
+    function shuffleArray(array, seed) {
+      const shuffled = [...array];
+      let currentSeed = seed;
+      
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        currentSeed = (currentSeed * 9301 + 49297) % 233280;
+        const j = Math.floor(currentSeed / 233280 * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      
+      return shuffled;
+    }
+
+    // Check if user can perform tasks
+    function canPerformTasks() {
+      if (!userInfo.is_temporary_worker) return true;
+      return !userInfo.trial_expired;
+    }
+
+    // Show trial expired message
+    function showTrialExpiredMessage() {
+      const message = document.createElement('div');
+      message.style.cssText = `
+        background: linear-gradient(90deg, #ff4444, #cc0000);
+        color: white;
+        padding: 12px 18px;
+        border-radius: 8px;
+        font-size: 1em;
+        font-weight: 600;
+        margin: 18px 8px 0 8px;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(255, 68, 68, 0.3);
+      `;
+      message.textContent = "⏰ Trial Period Expired! Upgrade to Level 1 to continue earning";
+      
+      // Insert after header
+      const header = document.querySelector('.header');
+      header.parentNode.insertBefore(message, header.nextSibling);
+    }
+
+    // Show daily limit reached message
+    function showDailyLimitMessage() {
+      const userLevel = userInfo.bondLevel || 1;
+      const dailyLimit = getDailyTaskLimit(userLevel);
+      const completedToday = userInfo.completedToday || 0;
+      
+      if (completedToday >= dailyLimit) {
+        const message = document.createElement('div');
+        message.style.cssText = `
+          background: linear-gradient(90deg, #ff8800, #ff6600);
+          color: white;
+          padding: 12px 18px;
+          border-radius: 8px;
+          font-size: 1em;
+          font-weight: 600;
+          margin: 18px 8px 0 8px;
+          text-align: center;
+          box-shadow: 0 2px 8px rgba(255, 136, 0, 0.3);
+        `;
+        message.textContent = `🎯 Daily Limit Reached! You've completed ${completedToday}/${dailyLimit} tasks today. Come back tomorrow!`;
+        
+        // Insert after header
+        const header = document.querySelector('.header');
+        header.parentNode.insertBefore(message, header.nextSibling);
+      }
+    }
+
+    // Update level requirements display
+    function updateLevelRequirements() {
+      const userLevel = userInfo.bondLevel || 1;
+      const dailyLimit = getDailyTaskLimit(userLevel);
+      const completedToday = userInfo.completedToday || 0;
+      const levelRequirementsEl = document.getElementById('level-requirements');
+      const levelRequirementsTextEl = document.getElementById('level-requirements-text');
+      const levelProgressEl = document.getElementById('level-progress');
+      
+      if (levelRequirementsEl && levelRequirementsTextEl && levelProgressEl) {
+        // Show level requirements for ongoing tab
+        const currentTab = getCurrentActiveTab();
+        if (currentTab === 'ongoing') {
+          levelRequirementsEl.style.display = 'block';
+          
+          // Set level-specific text
+          let levelText = '';
+          if (userInfo.is_temporary_worker) {
+            levelText = `Temporary Worker: Complete ${dailyLimit} tasks per day`;
+          } else {
+            levelText = `Level ${userLevel}: Complete ${dailyLimit} tasks per day`;
+          }
+          
+          levelRequirementsTextEl.textContent = levelText;
+          levelProgressEl.textContent = `${completedToday}/${dailyLimit}`;
+          
+          // Change color based on progress
+          if (completedToday >= dailyLimit) {
+            levelRequirementsEl.style.background = 'linear-gradient(90deg, #ff4444, #cc0000)';
+          } else if (completedToday > 0) {
+            levelRequirementsEl.style.background = 'linear-gradient(90deg, #28a745, #20c997)';
+          } else {
+            levelRequirementsEl.style.background = 'linear-gradient(90deg, #1175d3, #1565c0)';
+          }
+        } else {
+          levelRequirementsEl.style.display = 'none';
+        }
+      }
+    }
+
+    // Enhanced task completion with comprehensive database integration
+    async function recordTaskCompletion(task) {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.log('No token found, skipping MySQL update');
+        return;
+      }
+
+      // Validate user is logged in and has proper user info
+      if (!userInfo.userId) {
+        console.error('User ID not found, cannot record task completion');
+        return;
+      }
+
+      try {
+        console.log(`🔄 Recording task completion for user ${userInfo.userId}, task ${task.id}`);
+        
+        // Record task completion in MySQL task table
+        const response = await fetch('/api/complete-task', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify({
+            task_id: task.id,
+            task_name: task.app_name,
+            reward_amount: task.reward,
+            completed_at: new Date().toISOString(),
+            task_type: 'app_download',
+            task_status: 'completed',
+            user_id: userInfo.userId,
+            task_description: task.description || `Download ${task.app_name}`,
+            bond_level_required: task.bond_level_required || 1,
+            user_phone: userInfo.phone || null,
+            user_level: userInfo.bondLevel || 1
+          })
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          
+          // Check for daily limit error
+          if (errorData.dailyLimitReached) {
+            throw new Error(`Daily task limit reached! You have completed ${errorData.completedToday} tasks today. Daily limit for your level is ${errorData.maxTasksPerDay} tasks.`);
+          }
+          
+          // Check for trial period completion
+          if (errorData.shouldUpgrade) {
+            throw new Error(errorData.error || 'Trial period completed. Please upgrade to continue.');
+          }
+          
+          throw new Error(`Failed to record task completion: ${errorData.message || response.statusText}`);
+        }
+
+        const result = await response.json();
+        console.log('✅ Task completion recorded in MySQL for user:', userInfo.userId, result);
+
+        // Update local user info with comprehensive database response
+        if (result.newBalance !== undefined) {
+          userInfo.balance = result.newBalance;
+          console.log(`💰 Balance updated: ${userInfo.balance}`);
+        }
+        
+        if (result.stats) {
+          // Update comprehensive user statistics
+          userInfo.tasksDone = result.stats.totalTasksCompleted || userInfo.tasksDone || 0;
+          userInfo.totalEarnings = result.stats.totalEarnings || userInfo.totalEarnings || 0;
+          userInfo.monthEarning = result.stats.thisMonthEarnings || userInfo.monthEarning || 0;
+          userInfo.completedToday = result.stats.tasksCompletedToday || userInfo.completedToday || 0;
+          userInfo.todaysEarnings = result.stats.todaysEarnings || userInfo.todaysEarnings || 0;
+          
+          console.log('📊 User stats updated from database:', {
+            tasksDone: userInfo.tasksDone,
+            totalEarnings: userInfo.totalEarnings,
+            monthEarning: userInfo.monthEarning,
+            completedToday: userInfo.completedToday,
+            todaysEarnings: userInfo.todaysEarnings
+          });
+        }
+
+        // Database is source of truth, no need to save to localStorage
+        console.log('💾 Database is source of truth, stats automatically persisted');
+
+        // Update dashboard elements if they exist
+        updateDashboardElements(result);
+
+        // Log successful comprehensive update
+        console.log('🎉 User account updated successfully from database:', {
+          userId: userInfo.userId,
+          newBalance: userInfo.balance,
+          tasksDone: userInfo.tasksDone,
+          monthEarning: userInfo.monthEarning,
+          completedToday: userInfo.completedToday,
+          reward: result.reward
+        });
+
+        return result;
+
+      } catch (error) {
+        console.error('❌ Error recording task completion for user:', userInfo.userId, error);
+        throw error; // Re-throw to be handled by caller
+      }
+    }
+
+    // Update dashboard elements with database response
+    function updateDashboardElements(result) {
+      try {
+        // Update balance display if it exists
+        const balanceElements = document.querySelectorAll('[data-balance], .balance-amount, #user-balance');
+        balanceElements.forEach(el => {
+          if (result.newBalance !== undefined) {
+            el.textContent = `KES ${parseFloat(result.newBalance).toFixed(2)}`;
+          }
+        });
+
+        // Update task count displays
+        const taskCountElements = document.querySelectorAll('[data-tasks-completed], .tasks-completed, #tasks-completed');
+        taskCountElements.forEach(el => {
+          if (result.stats && result.stats.totalTasksCompleted !== undefined) {
+            el.textContent = result.stats.totalTasksCompleted;
+          }
+        });
+
+        // Update earnings displays
+        const earningsElements = document.querySelectorAll('[data-total-earnings], .total-earnings, #total-earnings');
+        earningsElements.forEach(el => {
+          if (result.stats && result.stats.totalEarnings !== undefined) {
+            el.textContent = `KES ${parseFloat(result.stats.totalEarnings).toFixed(2)}`;
+          }
+        });
+
+        // Update monthly earnings
+        const monthlyEarningsElements = document.querySelectorAll('[data-monthly-earnings], .monthly-earnings, #monthly-earnings');
+        monthlyEarningsElements.forEach(el => {
+          if (result.stats && result.stats.thisMonthEarnings !== undefined) {
+            el.textContent = `KES ${parseFloat(result.stats.thisMonthEarnings).toFixed(2)}`;
+          }
+        });
+
+        console.log('📊 Dashboard elements updated with database response');
+      } catch (error) {
+        console.error('Error updating dashboard elements:', error);
+      }
+    }
+
+    // --- Replace renderTasks with new card design ---
+    function renderTasks(filter = 'ongoing') {
       const list = document.getElementById("task-list");
+
       list.innerHTML = "";
-      // Only show maxTasksPerDay tasks
-      tasks.slice(0, userInfo.maxTasksPerDay).forEach(task => {
+      
+      console.log(`🔄 Rendering tasks with filter: ${filter}`);
+      console.log(`📊 Total tasks available: ${tasks.length}`);
+      console.log(`📊 Tasks array:`, tasks);
+      
+      // Show trial expired message if applicable
+      if (userInfo.is_temporary_worker && userInfo.trial_expired) {
+        showTrialExpiredMessage();
+      }
+      
+      // Show daily limit message if applicable
+      showDailyLimitMessage();
+      
+      // Update level requirements display
+      updateLevelRequirements();
+      
+      let filteredTasks = tasks;
+      if (filter === 'ongoing') filteredTasks = tasks.filter(t => !t.completedToday);
+      if (filter === 'completed') filteredTasks = tasks.filter(t => t.completedToday);
+      
+      console.log(`📊 Filtered tasks: ${filteredTasks.length} tasks`);
+      
+      // Show all available tasks (up to 100)
+      const tasksToShow = filteredTasks.slice(0, 100);
+      tasksToShow.forEach(task => {
         const li = document.createElement("li");
-        li.className = "task-card" + (taskRecords[task.id] ? " task-card-completed" : "");
+        li.className = "task-card" + (task.completedToday ? " task-card-completed" : "");
+        li.setAttribute('data-task-id', task.id); // Add data attribute for easy selection
+        const appName = task.app_name || task.title || "Mobile App";
+        const appIcon = task.app_icon || task.thumbnailUrl || 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Google_Play_Store_badge_EN.svg/1200px-Google_Play_Store_badge_EN.svg.png';
+        
+        // Download progress state
+        const isThisDownloading = isDownloading && currentDownloadingTaskId === task.id;
+        let downloadSection = '';
+        if (isThisDownloading || task.completedToday) {
+          const percent = task.completedToday ? 100 : 0;
+          downloadSection = `
+            <div class="task-download-progress-container">
+              <div class="task-download-progress-bar-container">
+                <div class="task-download-progress-bar-fill" id="download-bar-${task.id}" style="width: ${task.completedToday ? '100%' : '0%'};"></div>
+              </div>
+              <div class="task-download-status-text" id="download-status-${task.id}" style="color: ${task.completedToday ? '#28a745' : '#666'}; font-weight: ${task.completedToday ? 'bold' : 'normal'};">
+                ${task.completedToday ? 'Completed!' : 'Downloading app...'}
+              </div>
+            </div>
+          `;
+        } else if (task.downloadError) {
+          downloadSection = `<div class="task-error-msg">${task.downloadError}</div>`;
+        }
+        
+        // Check if user can perform this task
+        const canPerform = canPerformTasks();
+        const userLevel = userInfo.bondLevel || 1;
+        const dailyLimit = getDailyTaskLimit(userLevel);
+        const completedToday = userInfo.completedToday || 0;
+        const dailyLimitReached = completedToday >= dailyLimit;
+        
+        const isDisabled = isDownloading && !isThisDownloading || task.completedToday || !canPerform || dailyLimitReached;
+        const buttonText = task.completedToday ? 'Completed' : 
+                          (isThisDownloading ? 'Downloading...' : 
+                          (!canPerform ? 'Upgrade Required' : 
+                          (dailyLimitReached ? 'Daily Limit Reached' : 'Install')));
+        
         li.innerHTML = `
-          <div class="task-thumb">
-            <img src="${task.thumb}">
-            <span class="play-btn">&#9654;</span>
-          </div>
-          <div class="task-details">
-            <span class="task-level-tag">Lv${task.level}</span>
-            <span class="task-reward">Reward price: KSh +${task.reward}</span>
+          <div style="display:flex; align-items:center; gap:14px; width:100%;">
+            <div style="width:54px; height:54px; border-radius:12px; background:#fff; border:1.5px solid #e3f0ff; display:flex; align-items:center; justify-content:center;">
+              <img src="${appIcon}" alt="${appName}" style="width:40px; height:40px; object-fit:contain;">
+            </div>
+            <div style="flex:1; display:flex; flex-direction:column; gap:2px; min-width:0;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-weight:700; font-size:1.08em; color:#222;">${appName}</span>
+                <span style="background:#1175d3; color:#fff; border-radius:4px; padding:2px 6px; font-size:0.8em; font-weight:600;">${userInfo.is_temporary_worker ? 'Temp Worker' : 'Lv' + (userInfo.bondLevel || 1)}</span>
+              </div>
+              <span style="color:#28a745; font-size:1em; font-weight:600;">Earn KES ${task.reward.toFixed(2)}</span>
+              <span style="color:#666; font-size:0.85em; font-weight:500;">Daily Limit: ${completedToday}/${dailyLimit} tasks</span>
+              ${downloadSection}
+            </div>
+            <button class="install-btn" id="install-btn-${task.id}" style="background:${!canPerform ? '#ff4444' : dailyLimitReached ? '#ff8800' : '#1175d3'}; color:#fff; border:none; border-radius:8px; padding:7px 18px; font-weight:700; font-size:1em; cursor:pointer;" ${isDisabled ? 'disabled' : ''}>${buttonText}</button>
           </div>
         `;
-        if (!taskRecords[task.id]) {
-          li.onclick = () => openTaskModal(task);
-        }
+        
+        // Install button logic
+        li.querySelector('.install-btn').onclick = (e) => {
+          e.stopPropagation();
+          if (!canPerform) {
+            window.location.href = 'level.html';
+            return;
+          }
+          if (dailyLimitReached) {
+            showDailyLimitError();
+            return;
+          }
+          if (!isDownloading && !task.completedToday) {
+            startTaskDownload(task);
+          }
+        };
         list.appendChild(li);
       });
+      
+      console.log(`✅ Rendered ${tasksToShow.length} tasks`);
     }
-    function openTaskModal(task) {
-      currentModalTask = task;
-      document.getElementById("modal-bg").classList.add("active");
-      document.getElementById("modal-video").src = task.video;
-      document.getElementById("modal-intro").textContent = task.intro;
-      document.getElementById("modal-reward-label").textContent = `Reward price: KSh ${task.reward}`;
-      document.getElementById("modal-question-text").textContent = task.question;
-      document.getElementById("modal-watch-timer-label").innerHTML = `Watch for ${task.required_seconds} seconds<br>Currently watched 0 seconds`;
-      document.getElementById("modal-answer-input").value = "";
-      document.getElementById("modal-answer-section").style.display = "none";
-      document.getElementById("modal-success-msg").textContent = "";
-      document.getElementById("modal-error-msg").textContent = "";
-      document.getElementById("modal-start-answering-btn").disabled = true;
-      document.getElementById("modal-submit-answer-btn").style.display = "none";
-      document.getElementById("modal-start-answering-btn").style.display = "inline-block";
-      answered = false; watchSeconds = 0;
-      requiredSeconds = task.required_seconds;
-      setupWatchTimer();
+    // --- Tab navigation logic ---
+    document.getElementById('tab-ongoing').onclick = function() {
+      setActiveTab('ongoing');
+      renderTasks('ongoing');
+      updateLevelRequirements();
+    };
+    document.getElementById('tab-all').onclick = function() {
+      setActiveTab('all');
+      renderTasks('all');
+      updateLevelRequirements();
+    };
+    document.getElementById('tab-completed').onclick = function() {
+      setActiveTab('completed');
+      renderTasks('completed');
+      updateLevelRequirements();
+    };
+    function setActiveTab(tab) {
+      document.getElementById('tab-ongoing').classList.remove('active');
+      document.getElementById('tab-all').classList.remove('active');
+      document.getElementById('tab-completed').classList.remove('active');
+      document.getElementById('tab-' + tab).classList.add('active');
+      
+      // Update current filter
+      currentFilter = tab;
+      
+      // Save the current filter preference
+      saveUserPreferences({
+        lastFilter: tab,
+        lastFilterChange: new Date().toISOString()
+      });
+      
+      console.log(`📝 Saved filter preference: ${tab}`);
     }
-    function closeTaskModal() {
-      document.getElementById("modal-bg").classList.remove("active");
-      document.getElementById("modal-video").pause();
-      document.getElementById("modal-video").src = "";
-    }
-    document.getElementById("modal-close-btn").onclick = closeTaskModal;
-    document.getElementById("modal-watch-later-btn").onclick = closeTaskModal;
+    // --- Update summary card values dynamically ---
+    function updateSummaryCard() {
+      // Calculate based on actual task completion status
+      const completed = tasks.filter(t => t.completedToday).length;
+      const ongoing = tasks.filter(t => !t.completedToday).length;
+      
+      // Get user's daily task limit
+      const userLevel = userInfo.bondLevel || 1;
+      const dailyLimit = getDailyTaskLimit(userLevel);
+      
+      // Calculate percentage based on daily limit, not total tasks
+      const percent = dailyLimit > 0 ? Math.round((completed / dailyLimit) * 100) : 0;
+      
+      console.log('📊 Updating summary card:', {
+        totalTasks: tasks.length,
+        completed: completed,
+        ongoing: ongoing,
+        percent: percent,
+        dailyLimit: dailyLimit,
+        completedTasks: tasks.filter(t => t.completedToday).map(t => t.title)
+      });
+      
+      // Update the summary card elements
+      document.getElementById('summary-ongoing').textContent = ongoing;
+      document.getElementById('summary-completed').textContent = completed;
+      document.getElementById('summary-progress-text').textContent = percent + '%';
+      
 
-    function setupWatchTimer() {
-      const video = document.getElementById('modal-video');
-      video.currentTime = 0;
-      let enableAnswer = false;
-      video.onended = function() {
-        enableAnswer = true;
-        document.getElementById('modal-start-answering-btn').disabled = false;
+      
+      // Animate progress circle
+      const circle = document.getElementById('progress-circle');
+      if (circle) {
+        circle.setAttribute('stroke-dashoffset', 176 - (176 * percent / 100));
       }
-      video.ontimeupdate = function() {
-        watchSeconds = Math.floor(video.currentTime);
-        document.getElementById('modal-watch-timer-label').innerHTML =
-          `Watch for ${requiredSeconds} seconds<br>Currently watched ${watchSeconds} seconds`;
-        if (watchSeconds >= requiredSeconds && !enableAnswer) {
-          enableAnswer = true;
-          document.getElementById('modal-start-answering-btn').disabled = false;
+      
+      console.log('✅ Summary card updated successfully');
+      
+      // Update level requirements display
+      updateLevelRequirements();
+    }
+    // --- On DOMContentLoaded ---
+    document.addEventListener("DOMContentLoaded", async function() {
+      console.log("DOM Content Loaded");
+      
+      // Initialize database-driven state management
+      initializeWithDatabase();
+      
+      // Load user data first
+      await loadUserData();
+      
+      // Check for midnight refresh
+      checkMidnightRefresh();
+      
+      // Set up midnight refresh timer
+      setupMidnightRefresh();
+      
+      // Load tasks with daily shuffle and database persistence
+      tasks = await getSampleAppTasks();
+      console.log("📋 Tasks loaded:", tasks.length);
+      console.log("📋 Tasks array:", tasks);
+      
+      // Mark tasks as completed based on database data
+      await markCompletedTasksFromBackend();
+      
+      // Ensure completed tasks are properly displayed from database
+      ensureCompletedTasksDisplayed();
+      
+      // Restore any saved filter preference
+      const preferences = loadUserPreferences();
+      const defaultFilter = preferences.lastFilter || 'ongoing';
+      
+      renderTasks(defaultFilter);
+      setActiveTab(defaultFilter);
+      updateSummaryCard();
+      
+      console.log('🎉 Page fully loaded with enhanced persistence');
+    });
+
+    // Ensure completed tasks are properly displayed from database
+    async function ensureCompletedTasksDisplayed() {
+      try {
+        // Get fresh data from database
+        const userStats = await loadUserStatsFromDatabase();
+        const completedTaskIds = await loadCompletedTasksFromDatabase();
+        
+        // Mark tasks as completed based on database
+        tasks.forEach(task => {
+          task.completedToday = completedTaskIds.includes(task.id);
+        });
+        
+      const completedTasks = tasks.filter(t => t.completedToday);
+        console.log(`📊 Found ${completedTasks.length} completed tasks from database`);
+      
+        // Update user info with database data
+        userInfo.completedToday = userStats.completedToday || 0;
+      
+        // Update summary card with database data
+      updateSummaryCard();
+      } catch (error) {
+        console.error('Error ensuring completed tasks are displayed from database:', error);
+      }
+    }
+
+    // Check if it's midnight and refresh if needed (database handles reset)
+    function checkMidnightRefresh() {
+      const now = new Date();
+      const currentHour = now.getHours();
+      const currentMinute = now.getMinutes();
+      
+      // Database automatically handles midnight reset, just refresh from database
+      if (currentHour === 0 && currentMinute === 0) {
+        console.log('🕛 Midnight detected - refreshing from database');
+        
+        // Show midnight refresh notification
+        showMidnightRefreshNotification();
+        
+        // Refresh all data from database
+        refreshFromDatabase();
+      }
+    }
+
+    // Set up automatic midnight refresh (database handles reset)
+    function setupMidnightRefresh() {
+      const now = new Date();
+      const tomorrow = new Date(now);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      tomorrow.setHours(0, 0, 0, 0); // Set to midnight
+      
+      const timeUntilMidnight = tomorrow - now;
+      
+      console.log(`⏰ Setting up midnight refresh in ${Math.floor(timeUntilMidnight / 1000 / 60)} minutes`);
+      
+      // Schedule midnight refresh (only once)
+      setTimeout(() => {
+        console.log('🕛 Midnight reached - refreshing from database');
+        showMidnightRefreshNotification();
+        
+        // Refresh all data from database (database handles reset)
+        refreshFromDatabase();
+      }, timeUntilMidnight);
+    }
+
+    // Show midnight refresh notification
+    function showMidnightRefreshNotification() {
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: linear-gradient(90deg, #1175d3, #1565c0);
+        color: white;
+        padding: 20px 30px;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(17, 117, 211, 0.4);
+        z-index: 10000;
+        font-weight: 600;
+        max-width: 400px;
+        text-align: center;
+        animation: popin 0.5s ease-out;
+      `;
+      
+      notification.innerHTML = `
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 15px;">
+          <span style="font-size: 2em;">🕛</span>
+          <div>
+            <div style="font-size: 1.2em; margin-bottom: 5px;">New Day Started!</div>
+            <div style="font-size: 0.9em; opacity: 0.9;">Tasks refreshed • Earnings reset</div>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(notification);
+      
+      // Remove notification after 5 seconds
+      setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease-in';
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+          }
+        }, 300);
+      }, 5000);
+    }
+
+    // Download logic for task card
+    let currentDownloadingTaskId = null;
+    function startTaskDownload(task) {
+      isDownloading = true;
+      currentDownloadingTaskId = task.id;
+      renderTasks();
+      let progress = 0;
+      const progressBar = () => document.getElementById(`download-bar-${task.id}`);
+      const statusText = () => document.getElementById(`download-status-${task.id}`);
+      const interval = setInterval(() => {
+        progress += (100 / 100); // 10 seconds = 100 intervals of 100ms
+        if (progressBar()) progressBar().style.width = Math.min(progress, 100) + "%";
+        if (progress >= 100) {
+          clearInterval(interval);
+          setTimeout(() => {
+            if (statusText()) {
+              statusText().textContent = "Completed!";
+              statusText().style.color = "#28a745";
+              statusText().style.fontWeight = "bold";
+            }
+            setTimeout(() => {
+              awardUserForDownloadCard(task);
+            }, 500);
+            isDownloading = false;
+            currentDownloadingTaskId = null;
+          }, 500);
+        }
+      }, 100);
+    }
+    
+
+    
+    // Award user for download (card version) with database-only integration
+    async function awardUserForDownloadCard(task) {
+      try {
+        const reward = task.reward || 17;
+        
+        console.log(`🎯 Starting task completion for: ${task.app_name} (ID: ${task.id})`);
+        
+        // Record task completion in backend first (database is source of truth)
+        const result = await recordTaskCompletion(task);
+        
+        // Update task state based on database response
+        task.completedToday = true;
+        
+        // Update UI immediately for better UX
+        updateSummaryCard();
+        renderTasks();
+        
+        // Show success notification with database response
+        showTaskCompletionNotification(task, result);
+        
+        // Refresh user stats from database
+        await refreshUserStatsFromDatabase();
+        
+        console.log(`🎉 Task ${task.id} completed successfully with database integration`);
+        
+      } catch (error) {
+        console.error('❌ Task completion error:', error);
+        
+        // Show appropriate error message
+        if (error.message && error.message.includes('Daily task limit reached')) {
+          showDailyLimitError();
+        } else if (error.message && error.message.includes('Trial period')) {
+          showTrialExpiredError(error.message);
+        } else {
+          task.downloadError = "Network error! Please try again.";
+          renderTasks();
         }
       }
     }
-    document.getElementById('modal-start-answering-btn').onclick = function() {
-      document.getElementById('modal-answer-section').style.display = "flex";
-      this.style.display = "none";
-      document.getElementById('modal-submit-answer-btn').style.display = "inline-block";
-      answered = true;
-    };
-    document.getElementById('modal-submit-answer-btn').onclick = function() {
-      const answer = document.getElementById('modal-answer-input').value.trim();
-      const correctAnswer = currentModalTask.answer.trim().toLowerCase();
-      if (!answer) {
-        document.getElementById('modal-error-msg').textContent = "Please provide an answer!";
-        return;
+    
+    // Refresh user stats from database
+    async function refreshUserStatsFromDatabase() {
+      try {
+        const userStats = await loadUserStatsFromDatabase();
+        
+        // Update user info with fresh database data
+        userInfo.completedToday = userStats.completedToday || 0;
+        userInfo.todayEarnings = userStats.todayEarnings || 0;
+        userInfo.monthEarnings = userStats.monthEarnings || 0;
+        userInfo.totalEarnings = userStats.totalEarnings || 0;
+        userInfo.walletBalance = userStats.walletBalance || 0;
+        userInfo.tasksDone = userStats.tasksDone || 0;
+        
+        console.log('🔄 User stats refreshed from database:', userStats);
+        
+        // Update summary card with fresh data
+        updateSummaryCard();
+        
+      } catch (error) {
+        console.error('Error refreshing user stats from database:', error);
       }
-      if (answer.toLowerCase() !== correctAnswer) {
-        document.getElementById('modal-error-msg').textContent = "Incorrect answer. Please watch the ad and answer correctly!";
-        return;
-      }
-      document.getElementById('modal-error-msg').textContent = "";
-      // Save record (simulate backend DB save)
-      taskRecords[currentModalTask.id] = {
-        answer: answer,
-        time: new Date().toISOString(),
-        reward: currentModalTask.reward
-      };
-      setTaskRecords(taskRecords);
-      userInfo.completedToday = Object.keys(taskRecords).length;
-      setProfileData(userInfo);
-      document.getElementById('modal-success-msg').textContent = "Task completed! Reward credited.";
+    }
+
+    // Enhanced task completion notification with database response
+    function showTaskCompletionNotification(task, result) {
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(90deg, #28a745, #20c997);
+        color: white;
+        padding: 15px 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+        z-index: 10000;
+        font-weight: 600;
+        max-width: 350px;
+        animation: slideIn 0.3s ease-out;
+      `;
+      
+      const reward = result?.reward || task.reward || 17;
+      const newBalance = result?.newBalance || userInfo.balance;
+      
+      notification.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 1.5em;">✅</span>
+          <div>
+            <div style="font-size: 1em; margin-bottom: 2px;">Task Completed!</div>
+            <div style="font-size: 0.85em; opacity: 0.9;">Earned KES ${reward.toFixed(2)}</div>
+            <div style="font-size: 0.8em; opacity: 0.8;">Balance: KES ${parseFloat(newBalance).toFixed(2)}</div>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(notification);
+      
+      // Remove notification after 4 seconds
       setTimeout(() => {
-        closeTaskModal();
-        updateUserInfo();
-        renderTasks();
-      }, 1300);
-    };
-    document.addEventListener("DOMContentLoaded", function() {
-      updateUserInfo();
-      renderTasks();
-    });
+        notification.style.animation = 'slideOut 0.3s ease-in';
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+          }
+        }, 300);
+      }, 4000);
+    }
+
+    // Show trial expired error notification
+    function showTrialExpiredError(message) {
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(90deg, #ff8800, #ff6600);
+        color: white;
+        padding: 15px 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(255, 136, 0, 0.3);
+        z-index: 10000;
+        font-weight: 600;
+        max-width: 350px;
+        animation: slideIn 0.3s ease-out;
+      `;
+      
+      notification.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 1.5em;">⏰</span>
+          <div>
+            <div style="font-size: 1em; margin-bottom: 2px;">Trial Period Ended</div>
+            <div style="font-size: 0.85em; opacity: 0.9;">${message}</div>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(notification);
+      
+      // Remove notification after 5 seconds
+      setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease-in';
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+          }
+        }, 300);
+      }, 5000);
+    }
+
+    // Update dashboard data for cross-page consistency (database-driven)
+    async function updateDashboardData() {
+      try {
+        // Refresh user stats from database
+        await refreshUserStatsFromDatabase();
+        
+        console.log('📊 Dashboard data refreshed from database for cross-page consistency');
+      } catch (error) {
+        console.error('Error updating dashboard data from database:', error);
+      }
+    }
+
+    // Database-driven dashboard updates
+    async function updateDashboardFromDatabase() {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        console.log('🔄 Updating dashboard from database...');
+        
+        // Fetch latest user data from database
+        const response = await fetch('/api/user-stats', {
+          method: 'GET',
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        });
+
+        if (response.ok) {
+          const userData = await response.json();
+          
+          // Update local user info with fresh database data
+          userInfo.balance = userData.wallet_balance || userInfo.balance;
+          userInfo.tasksDone = userData.tasks_done || userInfo.tasksDone;
+          userInfo.totalEarnings = userData.total_revenue || userInfo.totalEarnings;
+          userInfo.monthEarning = userData.month_earning || userInfo.monthEarning;
+          userInfo.completedToday = userData.tasks_completed_today || userInfo.completedToday;
+          userInfo.todayEarnings = userData.today_earning || userInfo.todayEarnings;
+          
+          // Update UI elements
+          updateDashboardElements({
+            newBalance: userInfo.balance,
+            stats: {
+              totalTasksCompleted: userInfo.tasksDone,
+              totalEarnings: userInfo.totalEarnings,
+              thisMonthEarnings: userInfo.monthEarning
+            }
+          });
+          
+          console.log('✅ Dashboard updated from database');
+        }
+      } catch (error) {
+        console.error('❌ Error updating dashboard from database:', error);
+      }
+    }
+    
+
+    
+    // Show task completion notification
+    function showTaskCompletionNotification(task) {
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(90deg, #28a745, #20c997);
+        color: white;
+        padding: 15px 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+        z-index: 10000;
+        font-weight: 600;
+        max-width: 300px;
+        animation: slideIn 0.3s ease-out;
+      `;
+      
+      notification.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 1.5em;">✅</span>
+          <div>
+            <div style="font-size: 1em; margin-bottom: 2px;">Task Completed!</div>
+            <div style="font-size: 0.85em; opacity: 0.9;">Earned KES ${task.reward.toFixed(2)}</div>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(notification);
+      
+      // Remove notification after 3 seconds
+      setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease-in';
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+          }
+        }, 300);
+      }, 3000);
+    }
+
+    // Show daily limit error notification
+    function showDailyLimitError() {
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(90deg, #ff4444, #cc0000);
+        color: white;
+        padding: 15px 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(255, 68, 68, 0.3);
+        z-index: 10000;
+        font-weight: 600;
+        max-width: 350px;
+        animation: slideIn 0.3s ease-out;
+      `;
+      
+      notification.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 1.5em;">⚠️</span>
+          <div>
+            <div style="font-size: 1em; margin-bottom: 2px;">Daily Limit Reached!</div>
+            <div style="font-size: 0.85em; opacity: 0.9;">You've completed your daily task limit. Come back tomorrow!</div>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(notification);
+      
+      // Remove notification after 5 seconds
+      setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease-in';
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+          }
+        }, 300);
+      }, 5000);
+    }
+
+    // Get current active tab
+    function getCurrentActiveTab() {
+      if (document.getElementById('tab-ongoing').classList.contains('active')) return 'ongoing';
+      if (document.getElementById('tab-all').classList.contains('active')) return 'all';
+      if (document.getElementById('tab-completed').classList.contains('active')) return 'completed';
+      return 'ongoing';
+    }
   </script>
 </body>
 </html>
+

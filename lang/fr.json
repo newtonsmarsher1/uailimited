@@ -18,5 +18,17 @@
   "notification": "Notification",
   "withdraw": "Retirer",
   "bind_details": "Lier les détails de retrait",
-  "privacy_policy": "Politique de confidentialité"
+  "privacy_policy": "Politique de confidentialité",
+  "welcome": "Bienvenue à UAI",
+  "welcome_trial": "Bon retour! Travailleur d'essai",
+  "start_msg": "Commencez votre parcours de travail",
+  "company_activities": "Activités de l'entreprise",
+  "news": "Actualités",
+  "benefits": "Avantages des membres",
+  "positions": "Positions publicitaires",
+  "team_expansion": "Expansion de l'équipe",
+  "financial_management": "UAI wealth fund",
+  "casino_enter": "Cliquez ici pour entrer au casino",
+  "team_management": "Gestion d'équipe",
+  "level": "Niveau"
 }

@@ -149,6 +149,7 @@
             padding: 0 12px;
             border: 1px solid #b3c6ff;
             min-height: 50px;
+            position: relative;
         }
 
         .input-icon {
@@ -165,6 +166,26 @@
             padding: 14px 0;
             font-size: 1em;
             flex: 1;
+        }
+
+        .password-toggle {
+            background: none;
+            border: none;
+            color: #2979ff;
+            font-size: 1.2em;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: background 0.2s;
+            margin-left: 8px;
+        }
+
+        .password-toggle:hover {
+            background: #e3f0ff;
+        }
+
+        .password-toggle:active {
+            background: #b3c6ff;
         }
 
         .remember-row {
@@ -278,6 +299,7 @@
             <div class="input-row">
                 <span class="input-icon">&#128274;</span>
                 <input type="password" name="password" placeholder="Please enter login password" required autocomplete="current-password">
+                <button type="button" class="password-toggle">&#128065;</button>
             </div>
             <div class="remember-row">
                 <input type="checkbox" id="remember" name="remember">
@@ -295,6 +317,17 @@
     </div>
 <script>
 const notif = document.getElementById('login-notification');
+
+// Password toggle functionality
+const passwordInput = document.querySelector('input[name="password"]');
+const passwordToggle = document.querySelector('.password-toggle');
+
+passwordToggle.addEventListener('click', function() {
+    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+    passwordInput.setAttribute('type', type);
+    this.textContent = type === 'password' ? '👁' : '🙈';
+});
+
 document.querySelector('.login-form').addEventListener('submit', async function(e) {
   e.preventDefault();
   notif.style.display = "none";

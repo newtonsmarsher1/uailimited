@@ -80,6 +80,37 @@
       padding: 9px; font-size: 1em; margin-bottom: 1em; box-sizing: border-box;
       resize: none;
     }
+    .pay-btn {
+      background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 15px 30px;
+      font-size: 1.1em;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .pay-btn:hover {
+      background: linear-gradient(135deg, #e55a2b 0%, #e0851a 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 107, 53, 0.6);
+    }
+    .pay-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 10px rgba(255, 107, 53, 0.4);
+    }
+    .pay-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
     .message { margin-top: 1.2em; color: #2979ff; font-weight: 600; min-height: 24px;}
     .recharge-note {
       color: #ad7ce6;
@@ -101,22 +132,28 @@
   <div class="uai-logo"><span>UAI</span></div>
   <h2>Recharge - Method 3 (Send to Paybill)</h2>
   <div class="recharge-note">
-    Send your payment to the following Paybill Number and Account Name:<br>
+    Send your payment to the following Paybill Number, Account Number, and Account Name:<br>
     <b>Paybill Number:</b>
   </div>
   <div class="info-block" id="paybill-block">
     123456
-    <button class="copy-btn" onclick="copyText('123456')">Copy</button>
+    <button type="button" class="copy-btn" onclick="copyText('123456')">Copy</button>
+  </div>
+  <div class="label">Account Number:</div>
+  <div class="info-block" id="account-number-block">
+    987654321
+    <button type="button" class="copy-btn" onclick="copyText('987654321')">Copy</button>
   </div>
   <div class="label">Account Name:</div>
   <div class="info-block" id="account-name-block">
     UAI COMPANY
-    <button class="copy-btn" onclick="copyText('UAI COMPANY')">Copy</button>
   </div>
   <div class="label">Paste Mpesa Payment Message Below:</div>
   <form id="msgForm">
     <textarea id="mpesa-message" placeholder="Paste your Mpesa message here"></textarea>
-    <button type="submit" class="pay-btn">Submit Payment Message</button>
+    <button type="submit" class="pay-btn">
+      🔥 SUBMIT PAYMENT MESSAGE 🔥
+    </button>
   </form>
   <div class="message" id="message"></div>
 </div>
@@ -145,11 +182,23 @@
         body: JSON.stringify({ mpesa_message })
       });
       const data = await res.json();
-      document.getElementById('message').style.color = data.message ? "#2979ff" : "#c62828";
-      document.getElementById('message').textContent = data.message || data.error || "Payment message received. We will verify and update your balance shortly.";
+      
+      if (data.message && data.message.includes('confirmed')) {
+        document.getElementById('message').style.color = "#2979ff";
+        document.getElementById('message').textContent = data.message;
+      } else if (data.error) {
+        document.getElementById('message').style.color = "#c62828";
+        document.getElementById('message').textContent = data.error;
+      } else if (data.message) {
+        document.getElementById('message').style.color = "#2979ff";
+        document.getElementById('message').textContent = data.message;
+      } else {
+        document.getElementById('message').style.color = "#c62828";
+        document.getElementById('message').textContent = "Failed to fetch payments. Please check your message and try again.";
+      }
     } catch (e) {
       document.getElementById('message').style.color = "#c62828";
-      document.getElementById('message').textContent = "An error occurred.";
+      document.getElementById('message').textContent = "Failed to fetch payments. Please check your internet connection and try again.";
     }
   };
 </script>

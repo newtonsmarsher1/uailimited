@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Notifications - Admin Portal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: Arial, sans-serif; background: #e3f0ff; margin: 0; }
+    .container { max-width: 600px; margin: 40px auto; background: #fff; border-radius: 12px; box-shadow: 0 2px 12px #2979ff22; padding: 32px 24px; }
+    h1 { color: #2979ff; text-align: center; margin-bottom: 24px; }
+    .notification-list { list-style: none; padding: 0; }
+    .notification-item { background: #f9fbff; border-left: 5px solid #2979ff; margin-bottom: 18px; padding: 16px 14px; border-radius: 8px; box-shadow: 0 1px 4px #2979ff11; }
+    .notification-time { color: #888; font-size: 0.95em; margin-top: 6px; }
+    .empty { text-align: center; color: #888; margin-top: 40px; }
+    .back-btn { display: block; margin-bottom: 18px; background: #2979ff; color: #fff; border: none; border-radius: 8px; padding: 8px 18px; font-size: 1em; cursor: pointer; box-shadow: 0 2px 8px #2979ff22; text-decoration: none; text-align: center; }
+    .back-btn:hover { background: #155fa0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="dashboard.html" class="back-btn">&larr; Back to Dashboard</a>
+    <h1>Notifications</h1>
+    <ul class="notification-list" id="notification-list">
+      <li class="empty" id="empty-msg">Loading notifications...</li>
+    </ul>
+  </div>
+  <script>
+    async function loadNotifications() {
+      try {
+        const userId = localStorage.getItem('userId');
+        if (!userId) throw new Error('User not logged in');
+        const res = await fetch(`/api/notifications?userId=${encodeURIComponent(userId)}`);
+        if (!res.ok) throw new Error('Failed to load notifications');
+        const notifications = await res.json();
+        const list = document.getElementById('notification-list');
+        list.innerHTML = '';
+        if (!notifications.length) {
+          document.getElementById('empty-msg').textContent = 'No notifications yet.';
+          list.appendChild(document.getElementById('empty-msg'));
+          return;
+        }
+        notifications.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        notifications.forEach(n => {
+          const li = document.createElement('li');
+          li.className = 'notification-item';
+          li.innerHTML = `<div>${n.message}</div><div class="notification-time">${new Date(n.created_at).toLocaleString()}</div>`;
+          list.appendChild(li);
+        });
+      } catch (err) {
+        document.getElementById('notification-list').innerHTML = '<li class="empty">Failed to load notifications.</li>';
+      }
+    }
+    loadNotifications();
+  </script>
+</body>
+</html> 

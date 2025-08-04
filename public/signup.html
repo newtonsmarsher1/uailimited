@@ -243,6 +243,23 @@
         font-size: 1em;
       }
     }
+    .password-toggle {
+      background: none;
+      border: none;
+      color: #2979ff;
+      font-size: 1.2em;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 4px;
+      transition: background 0.2s;
+      margin-left: 8px;
+    }
+    .password-toggle:hover {
+      background: #e3f0ff;
+    }
+    .password-toggle:active {
+      background: #b3c6ff;
+    }
   </style>
 </head>
 <body>
@@ -267,12 +284,12 @@
         >
         <div class="error-message" aria-live="polite"></div>
       </div>
-      <div class="input-row" id="invitation-row">
+      <div class="input-row" id="referral-row">
         <span class="input-icon">&#127881;</span>
         <input 
           type="text" 
-          name="invitation" 
-          placeholder="Enter invitation code" 
+          name="referral" 
+          placeholder="Enter referral code" 
           maxlength="16"
           required 
         >
@@ -288,6 +305,7 @@
           required 
           autocomplete="new-password"
         >
+        <button type="button" class="password-toggle" data-target="password">👁</button>
         <div class="error-message" aria-live="polite"></div>
       </div>
       <div class="input-row" id="confirm-password-row">
@@ -300,6 +318,7 @@
           required 
           autocomplete="new-password"
         >
+        <button type="button" class="password-toggle" data-target="confirmPassword">👁</button>
         <div class="error-message" aria-live="polite"></div>
       </div>
       <!-- CAPTCHA and input on the same row -->
@@ -322,13 +341,26 @@
       </div>
       <button type="submit" class="register-btn">Register</button>
     </form>
-    <div id="success-message">Registration successful! Redirecting to login...</div>
+    <div id="success-message">Registration successful! You are now a temporary worker. Redirecting to login...</div>
     <div class="login-link">
       <span>Already have an account?</span>
       <a href="index.html">Log in</a>
     </div>
   </div>
   <script>
+    // Password toggle functionality
+    const passwordToggles = document.querySelectorAll('.password-toggle');
+    
+    passwordToggles.forEach(toggle => {
+      toggle.addEventListener('click', function() {
+        const targetName = this.getAttribute('data-target');
+        const passwordInput = document.querySelector(`input[name="${targetName}"]`);
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        this.textContent = type === 'password' ? '👁' : '🙈';
+      });
+    });
+
     // CAPTCHA logic
     function randomColor() {
       return `rgb(${100+Math.floor(Math.random()*155)},${100+Math.floor(Math.random()*155)},${100+Math.floor(Math.random()*155)})`;
@@ -405,6 +437,47 @@
     const successMessage = document.getElementById('success-message');
     const submitBtn = form.querySelector('.register-btn');
 
+    // Real-time referral code validation
+    const referralInput = form.referral;
+    let referralValidationTimeout;
+
+    referralInput.addEventListener('input', function() {
+      clearTimeout(referralValidationTimeout);
+      clearError(referralRow);
+      
+      const code = this.value.trim();
+      if (code.length >= 3) {
+        referralValidationTimeout = setTimeout(() => {
+          validateReferralCode(code);
+        }, 500);
+      }
+    });
+
+    async function validateReferralCode(code) {
+      try {
+        const response = await fetch('/api/validate-referral', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ code: code })
+        });
+
+        const data = await response.json();
+        
+        if (data.valid) {
+          clearError(referralRow);
+          // Show success indicator
+          referralInput.style.borderColor = '#4caf50';
+        } else {
+          showError(referralRow, data.error || 'Invalid referral code');
+          referralInput.style.borderColor = '#d32f2f';
+        }
+      } catch (error) {
+        console.error('Error validating referral code:', error);
+      }
+    }
+
     function showError(inputRow, message) {
       const errorDiv = inputRow.querySelector('.error-message');
       if(errorDiv) errorDiv.textContent = message;
@@ -419,20 +492,20 @@
 
       // Grab input elements and their parent rows
       const phoneInput = form.phone;
-      const invitationInput = form.invitation;
+      const referralInput = form.referral;
       const passwordInput = form.password;
       const confirmPasswordInput = form.confirmPassword;
       const captchaInput = document.getElementById('captcha-input');
 
       const phoneRow = document.getElementById('phone-row');
-      const invitationRow = document.getElementById('invitation-row');
+      const referralRow = document.getElementById('referral-row');
       const passwordRow = document.getElementById('password-row');
       const confirmPasswordRow = document.getElementById('confirm-password-row');
       const captchaError = document.getElementById('captcha-error');
 
       // Clear previous errors
       clearError(phoneRow);
-      clearError(invitationRow);
+      clearError(referralRow);
       clearError(passwordRow);
       clearError(confirmPasswordRow);
       captchaError.textContent = '';
@@ -445,10 +518,18 @@
         return;
       }
 
-      // Validate invitation code (not empty)
-      if (!invitationInput.value.trim()) {
-        showError(invitationRow, 'Invitation code is required.');
-        invitationInput.focus();
+      // Validate referral code (not empty)
+      if (!referralInput.value.trim()) {
+        showError(referralRow, 'Referral code is required.');
+        referralInput.focus();
+        return;
+      }
+
+      // Validate referral code format (alphanumeric, 3-16 characters)
+      const referralPattern = /^[A-Za-z0-9]{3,16}$/;
+      if (!referralPattern.test(referralInput.value.trim())) {
+        showError(referralRow, 'Referral code must be 3-16 characters long and contain only letters and numbers.');
+        referralInput.focus();
         return;
       }
 
@@ -482,7 +563,7 @@
       const data = {
         phone: phoneInput.value.trim(),
         password: passwordInput.value,
-        referral: invitationInput.value.trim() // <-- match backend field 'referral'
+        referral: referralInput.value.trim() // <-- match backend field 'referral'
       };
 
       // Send data to backend API (now using /api/register and field 'referral')

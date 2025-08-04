@@ -5,6 +5,15 @@
   <title>UAI Profile</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
+    :root {
+      --brand-yellow:#2979ff ;
+      --brand-dark: #282828;
+      --brand-accent: #2979ff;
+      --icon-bg: #fff200;
+      --icon-color: #282828;
+      --menu-bg: #fff;
+      --menu-icon-active: var(--brand-accent);
+    }
     html, body {
       padding: 0;
       margin: 0;
@@ -34,6 +43,7 @@
       right: 0;
       height: 62px;
       background: rgba(255,255,255,0.12);
+      -webkit-backdrop-filter: blur(8px);
       backdrop-filter: blur(8px);
       display: flex;
       align-items: center;
@@ -77,19 +87,7 @@
       box-shadow: 0 1px 8px #bd7de748;
       letter-spacing: 0.5px;
     }
-    .logout-btn {
-      margin-left: auto;
-      background: none;
-      border: none;
-      color: #fff;
-      font-weight: 600;
-      font-size: 1.1em;
-      cursor: pointer;
-      transition: color 0.13s;
-      padding: 5px 10px;
-      border-radius: 10px;
-    }
-    .logout-btn:hover { background: #fff2; color: #f44; }
+
 
     .main-content {
       margin: 112px 0 80px 0;
@@ -144,6 +142,7 @@
       font-weight: 600;
       min-width: 110px;
       margin-bottom: 8px;
+      -webkit-backdrop-filter: blur(1.5px);
       backdrop-filter: blur(1.5px);
       border: 2px solid #ad7ce63a;
     }
@@ -246,45 +245,45 @@
     }
     @keyframes fadein { from {opacity:0;} to {opacity:1;} }
     /* Bottom nav */
-    .bottom-nav {
+    nav.bottom-nav {
       position: fixed;
+      bottom: 0;
       left: 0;
       right: 0;
-      bottom: 0;
-      background: #2979ff;
-      border-top: 1px solid #e3f0ff;
-      z-index: 101;
+      height: 56px;
+      background: #fff;
       display: flex;
       justify-content: space-around;
       align-items: center;
-      height: 60px;
-      box-shadow: 0 -1px 8px #2979ff0e;
-      backdrop-filter: blur(7px);
+      border-top: 1px solid #e3f0ff;
+      z-index: 1000;
     }
-    .nav-btn {
-      background: none;
+    nav.bottom-nav a {
+      background: transparent;
       border: none;
-      outline: none;
-      color: #fff;
-      font-size: 1.3em;
+      color: #282828;
+      font-size: 0.85em;
+      font-weight: 600;
+      cursor: pointer;
       display: flex;
       flex-direction: column;
       align-items: center;
-      cursor: pointer;
-      transition: color 0.12s;
-      padding: 0 2vw;
-      border-radius: 8px;
-      font-weight: 600;
-      text-align: center;
+      -webkit-user-select: none;
+      user-select: none;
+      transition: color 0.3s;
+      padding: 2px 4px;
+      flex-shrink: 0;
       text-decoration: none;
     }
-    .nav-btn.active { color: #bd7de7; }
-    .nav-label {
-      font-size: 0.93em;
-      margin-top: 2px;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      opacity: .87;
+    nav.bottom-nav a.active,
+    nav.bottom-nav a:focus {
+      color: var(--menu-icon-active);
+    }
+    nav.bottom-nav a svg {
+      width: 22px;
+      height: 22px;
+      margin-bottom: 2px;
+      fill: currentColor;
     }
     .language-chooser {
       position: fixed;
@@ -327,19 +326,33 @@
   </style>
 </head>
 <body>
+    <script>
+      // Clear all task-related localStorage data
+      console.log('🧹 Clearing localStorage data...');
+      localStorage.removeItem('completedTasks');
+      localStorage.removeItem('todaysEarnings');
+      localStorage.removeItem('totalEarnings');
+      localStorage.removeItem('lastResetDate');
+      localStorage.removeItem('tasksDone');
+      localStorage.removeItem('walletBalance');
+      localStorage.removeItem('monthEarning');
+      localStorage.removeItem('dashboardStats');
+      console.log('✅ localStorage cleared');
+    </script>
+
   <!-- Top Notification bar -->
   <div id="top-notifications">
     <div id="system-notification-bar"></div>
   </div>
 
+  <script src="js/language-manager.js"></script>
   <!-- Top Navigation -->
   <div class="top-nav fade-in">
     <div class="logo-nav">
       <div class="hexagon-mini"><span>UAI</span></div>
       <span class="user-level-pill" id="user-level-pill">Level --</span>
     </div>
-    <button class="logout-btn" id="logout-btn">Log Out</button>
-    <select class="language-chooser" id="language-chooser">
+    <select class="language-chooser" id="language-chooser" aria-label="Change Language">
       <option value="en">English</option>
       <option value="sw">Swahili</option>
       <option value="fr">French</option>
@@ -352,35 +365,35 @@
     <div class="profile-phone" id="profile-phone">--</div>
     <div class="earnings-row">
       <div class="earn-block">
-        <span id="today-earning-label">Today's Earnings</span>
+        <span id="today-earning-label" data-translate="today-earning-label">Today's Earnings</span>
         <span class="value" id="today-earning">KES 0</span>
       </div>
       <div class="earn-block">
-        <span id="month-earning-label">This Month</span>
+        <span id="month-earning-label" data-translate="month-earning-label">This Month</span>
         <span class="value" id="month-earning">KES 0</span>
       </div>
       <div class="earn-block">
-        <span id="total-revenue-label">Total Revenue</span>
+        <span id="total-revenue-label" data-translate="total-revenue-label">Total Revenue</span>
         <span class="value" id="total-revenue">KES 0</span>
       </div>
       <div class="earn-block loss">
-        <span id="total-withdrawal-label">Total Withdrawn</span>
+        <span id="total-withdrawal-label" data-translate="total-withdrawal-label">Total Withdrawn</span>
         <span class="value" id="total-withdrawal">KES 0</span>
       </div>
       <div class="earn-block wallet">
-        <span id="wallet-balance-label">Wallet Balance</span>
+        <span id="wallet-balance-label" data-translate="wallet-balance-label">Wallet Balance</span>
         <span class="value" id="wallet-balance">KES 0</span>
       </div>
       <div class="earn-block bond">
-        <span id="bond-label">Bond</span>
+        <span id="bond-label" data-translate="bond-label">Bond</span>
         <span class="value" id="bond-amount">KES 0</span>
       </div>
       <div class="earn-block profit">
-        <span id="profit-label">Profit</span>
+        <span id="profit-label" data-translate="profit-label">Profit</span>
         <span class="value" id="profit">KES 0</span>
       </div>
       <div class="earn-block tasks">
-        <span id="tasks-done-label">Tasks Done</span>
+        <span id="tasks-done-label" data-translate="tasks-done-label">Tasks Done</span>
         <span class="value" id="tasks-done">0</span>
       </div>
     </div>
@@ -397,6 +410,9 @@
       <button class="action-btn" onclick="window.location.href='withdrawal.html'">
         🏦 Withdraw
       </button>
+      <button class="action-btn" onclick="loadProfileData()" style="background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%); color: #1a3231; font-weight: 600;">
+        🔄 Refresh Now
+      </button>
     </div>
     <a class="security-btn" href="binddetails.html">
       🔒 Account Security: Bind Withdrawal Details
@@ -409,6 +425,31 @@
     </a>
     <button class="exit-btn" id="exit-btn">Exit & Log Out</button>
   </div>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav" role="navigation" aria-label="Bottom Navigation">
+    <a href="home.html" id="nav-home">
+      <svg viewBox="0 0 24 24"><path d="M3 21v-7.5l9-6.5 9 6.5V21H3z"/></svg>
+      <span id="nav-home-label" data-translate="nav-home-label">Home</span>
+    </a>
+    <a href="task.html" id="nav-task">
+      <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 10h8M8 14h4"/></svg>
+      <span id="nav-task-label" data-translate="nav-task-label">Task</span>
+    </a>
+    <a href="team management.html" id="nav-team">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3"/><path d="M12 15c-4 0-8 2-8 4v1h16v-1c0-2-4-4-8-4z"/></svg>
+      <span id="nav-team-label" data-translate="nav-team-label">Team Management</span>
+    </a>
+    <a href="level.html" id="nav-level">
+      <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 7v10l10 5 10-5V7"/></svg>
+      <span id="nav-level-label" data-translate="nav-level-label">Level</span>
+    </a>
+    <a href="profile.html" class="active" aria-current="page" id="nav-profile">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M2 20v-2a8 8 0 0 1 16 0v2"/></svg>
+      <span id="nav-profile-label" data-translate="nav-profile-label">Profile</span>
+    </a>
+  </nav>
+
   <script>
     // --- Notifications System (top left area) ---
     async function loadNotifications() {
@@ -485,37 +526,318 @@
         window.location.href = "index.html";
         return;
       }
+
+      // Show loading state
+      document.getElementById('profile-name').textContent = "Loading...";
+      document.getElementById('profile-phone').textContent = "Loading...";
+      document.getElementById('user-level-pill').textContent = "Loading...";
+      
       try {
-        const res = await fetch('/api/user-stats', { headers: { Authorization: "Bearer " + token } });
-        if (!res.ok) throw new Error("Not logged in");
+        const res = await fetch('/api/user-stats', { 
+          headers: { Authorization: "Bearer " + token } 
+        });
+        
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+        }
+        
         const data = await res.json();
-        // User info display
-        document.getElementById('profile-name').textContent = data.name || data.phone || "--";
+        
+        // User info display - all data from database
+        console.log('📊 Profile data from API:', data);
+        
+        // Update profile information
         document.getElementById('profile-phone').textContent = data.phone || "--";
-        document.getElementById('profile-avatar').textContent = data.avatar ? data.avatar : "👤";
+        document.getElementById('profile-avatar').textContent = data.avatar || "👤";
         document.getElementById('user-level-pill').textContent = "Level " + (data.level || '--');
-        document.getElementById('today-earning').textContent = "KES " + (data.today_earning || 0);
-        document.getElementById('month-earning').textContent = "KES " + (data.month_earning || 0);
-        document.getElementById('total-revenue').textContent = "KES " + (data.total_revenue || 0);
-        document.getElementById('total-withdrawal').textContent = "KES " + (data.total_withdrawal || 0);
-        document.getElementById('wallet-balance').textContent = "KES " + (data.wallet_balance || 0);
-        document.getElementById('bond-amount').textContent = "KES " + (data.bond || 0);
-        document.getElementById('profit').textContent =
-          "KES " + ((parseFloat(data.wallet_balance || 0) + parseFloat(data.total_withdrawal || 0) - parseFloat(data.total_revenue || 0)) || 0);
+        
+        // Fetch user name from bound details
+        await loadUserNameFromBoundDetails();
+        
+        // Update financial information with proper formatting
+        document.getElementById('today-earning').textContent = "KES " + parseFloat(data.today_earning || 0).toFixed(2);
+        document.getElementById('month-earning').textContent = "KES " + parseFloat(data.month_earning || 0).toFixed(2);
+        document.getElementById('total-revenue').textContent = "KES " + parseFloat(data.total_revenue || 0).toFixed(2);
+        document.getElementById('total-withdrawal').textContent = "KES " + parseFloat(data.total_withdrawal || 0).toFixed(2);
+        document.getElementById('wallet-balance').textContent = "KES " + parseFloat(data.wallet_balance || 0).toFixed(2);
+        document.getElementById('bond-amount').textContent = "KES " + parseFloat(data.bond || 0).toFixed(2);
+        
+        // Calculate profit (wallet balance + total withdrawn - total revenue)
+        const profit = parseFloat(data.wallet_balance || 0) + parseFloat(data.total_withdrawal || 0) - parseFloat(data.total_revenue || 0);
+        document.getElementById('profit').textContent = "KES " + profit.toFixed(2);
+        
+        // Update task information
         document.getElementById('tasks-done').textContent = data.tasks_done || 0;
+        
+        // Update referral information
         document.getElementById('referral-code').textContent = data.referral_code || "--";
         document.getElementById('referred-by').textContent = data.referred_by || "--";
-      } catch (e) {
-        document.getElementById('profile-name').textContent = "Please log in";
-        document.getElementById('profile-phone').textContent = "";
+        
+        console.log('✅ Profile updated with latest data from database');
+        console.log('💰 Financial Summary:', {
+          todayEarning: data.today_earning,
+          monthEarning: data.month_earning,
+          totalRevenue: data.total_revenue,
+          totalWithdrawal: data.total_withdrawal,
+          walletBalance: data.wallet_balance,
+          profit: profit
+        });
+        
+        // Start real-time balance updates
+        startRealTimeBalanceUpdates();
+        
+      } catch (error) {
+        console.error('❌ Error loading profile data:', error);
+        document.getElementById('profile-name').textContent = "Error loading data";
+        document.getElementById('profile-phone').textContent = "Please try again";
+        document.getElementById('user-level-pill').textContent = "Level --";
+        
+        // Show error notification
+        const notificationBar = document.getElementById('system-notification-bar');
+        notificationBar.innerHTML = `<span style="color:#ff5858;">Error loading profile data. Please refresh the page.</span>`;
+        notificationBar.style.display = "block";
       }
     }
 
-    // --- Logout + Exit ---
-    document.getElementById('logout-btn').onclick = function() {
-      localStorage.removeItem('token');
-      window.location.href = "index.html";
-    };
+    // Load user name from bound details
+    async function loadUserNameFromBoundDetails() {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          document.getElementById('profile-name').textContent = "User";
+          return;
+        }
+        
+        const res = await fetch('/api/binding-status', {
+          headers: { Authorization: "Bearer " + token }
+        });
+        
+        if (res.ok) {
+          const data = await res.json();
+          if (data.isBound && data.fullName) {
+            document.getElementById('profile-name').textContent = data.fullName;
+            console.log('✅ User name loaded from bound details:', data.fullName);
+          } else {
+            // Fallback to phone number if no bound name
+            const userStatsRes = await fetch('/api/user-stats', {
+              headers: { Authorization: "Bearer " + token }
+            });
+            if (userStatsRes.ok) {
+              const userData = await userStatsRes.json();
+              document.getElementById('profile-name').textContent = userData.phone || "User";
+            } else {
+              document.getElementById('profile-name').textContent = "User";
+            }
+          }
+        } else {
+          // Fallback to phone number if binding status fails
+          const userStatsRes = await fetch('/api/user-stats', {
+            headers: { Authorization: "Bearer " + token }
+          });
+          if (userStatsRes.ok) {
+            const userData = await userStatsRes.json();
+            document.getElementById('profile-name').textContent = userData.phone || "User";
+          } else {
+            document.getElementById('profile-name').textContent = "User";
+          }
+        }
+      } catch (error) {
+        console.error('Error loading user name from bound details:', error);
+        // Fallback to phone number
+        const userStatsRes = await fetch('/api/user-stats', {
+          headers: { Authorization: "Bearer " + token }
+        });
+        if (userStatsRes.ok) {
+          const userData = await userStatsRes.json();
+          document.getElementById('profile-name').textContent = userData.phone || "User";
+        } else {
+          document.getElementById('profile-name').textContent = "User";
+        }
+      }
+    }
+
+    // Real-time balance updates
+    function startRealTimeBalanceUpdates() {
+      // Update balance every 15 seconds with automatic notification
+      setInterval(async () => {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+        
+        try {
+          const res = await fetch('/api/user-stats', {
+            headers: { Authorization: "Bearer " + token }
+          });
+          if (res.ok) {
+            const data = await res.json();
+            
+            // Update all profile data, not just balance
+            document.getElementById('profile-phone').textContent = data.phone || "--";
+            document.getElementById('user-level-pill').textContent = "Level " + (data.level || '--');
+            
+            // Update user name from bound details
+            await loadUserNameFromBoundDetails();
+            
+            // Update financial information
+            document.getElementById('today-earning').textContent = "KES " + parseFloat(data.today_earning || 0).toFixed(2);
+            document.getElementById('month-earning').textContent = "KES " + parseFloat(data.month_earning || 0).toFixed(2);
+            document.getElementById('total-revenue').textContent = "KES " + parseFloat(data.total_revenue || 0).toFixed(2);
+            document.getElementById('total-withdrawal').textContent = "KES " + parseFloat(data.total_withdrawal || 0).toFixed(2);
+            document.getElementById('wallet-balance').textContent = "KES " + parseFloat(data.wallet_balance || 0).toFixed(2);
+            document.getElementById('bond-amount').textContent = "KES " + parseFloat(data.bond || 0).toFixed(2);
+            
+            // Recalculate profit
+            const profit = parseFloat(data.wallet_balance || 0) + parseFloat(data.total_withdrawal || 0) - parseFloat(data.total_revenue || 0);
+            document.getElementById('profit').textContent = "KES " + profit.toFixed(2);
+            
+            // Update task information
+            document.getElementById('tasks-done').textContent = data.tasks_done || 0;
+            
+            // Update referral information
+            document.getElementById('referral-code').textContent = data.referral_code || "--";
+            document.getElementById('referred-by').textContent = data.referred_by || "--";
+            
+            // Show payment notification if balance increased
+            const currentBalance = parseFloat(data.wallet_balance || 0);
+            const previousBalance = parseFloat(localStorage.getItem('previousBalance') || 0);
+            
+            if (currentBalance > previousBalance) {
+              const increase = currentBalance - previousBalance;
+              showPaymentNotification(increase);
+            }
+            
+            localStorage.setItem('previousBalance', currentBalance);
+            
+            console.log('🔄 Profile auto-updated:', {
+              balance: data.wallet_balance,
+              tasks: data.tasks_done,
+              earnings: data.today_earning
+            });
+            
+            // Always show update notification every 15 seconds
+            showUpdateNotification();
+          }
+        } catch (error) {
+          console.error('Error updating profile data:', error);
+        }
+      }, 15000); // Update every 15 seconds with automatic notification
+      
+      // Also update immediately when page becomes visible
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) {
+          loadProfileData();
+        }
+      });
+      
+      // Update when user returns to the tab
+      window.addEventListener('focus', () => {
+        loadProfileData();
+      });
+    }
+
+    function showPaymentNotification(amount) {
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(90deg, #4caf50, #45a049);
+        color: white;
+        padding: 15px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+        z-index: 10000;
+        font-weight: 600;
+        max-width: 300px;
+        animation: slideIn 0.3s ease-out;
+      `;
+      
+      notification.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 1.2em;">💰</span>
+          <div>
+            <div style="font-size: 1.1em;">Payment Received!</div>
+            <div style="font-size: 0.9em; opacity: 0.9;">KES ${amount.toFixed(2)} added to your balance</div>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(notification);
+      
+      // Remove notification after 5 seconds
+      setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease-in';
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+          }
+        }, 300);
+      }, 5000);
+    }
+
+    function showUpdateNotification() {
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        background: linear-gradient(90deg, #2979ff, #1565c0);
+        color: white;
+        padding: 12px 18px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(41, 121, 255, 0.3);
+        z-index: 10000;
+        font-weight: 600;
+        max-width: 300px;
+        animation: slideInLeft 0.3s ease-out;
+        font-size: 0.9em;
+      `;
+      
+      notification.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 1.1em;">🔄</span>
+          <div>
+            <div style="font-size: 1em;">Profile Updated</div>
+            <div style="font-size: 0.8em; opacity: 0.9;">Latest data loaded automatically</div>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(notification);
+      
+      // Remove notification after 3 seconds
+      setTimeout(() => {
+        notification.style.animation = 'slideOutLeft 0.3s ease-in';
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+          }
+        }, 300);
+      }, 3000);
+    }
+
+    // Add CSS animations for notifications
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+      }
+      @keyframes slideOut {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+      }
+      @keyframes slideInLeft {
+        from { transform: translateX(-100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+      }
+      @keyframes slideOutLeft {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(-100%); opacity: 0; }
+      }
+    `;
+    document.head.appendChild(style);
+
+    // --- Exit ---
     document.getElementById('exit-btn').onclick = function() {
       localStorage.removeItem('token');
       window.location.href = "index.html";
