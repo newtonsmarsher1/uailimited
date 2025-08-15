@@ -567,6 +567,67 @@
       localStorage.removeItem('monthEarning');
       localStorage.removeItem('dashboardStats');
       console.log('✅ localStorage cleared');
+      
+      // Global page refresh prevention for task operations
+      let isTaskOperationInProgress = false;
+      
+      // Prevent page refresh during task operations
+      window.addEventListener('beforeunload', function(e) {
+        if (isTaskOperationInProgress) {
+          e.preventDefault();
+          e.returnValue = 'Task operation in progress. Are you sure you want to leave?';
+          return e.returnValue;
+        }
+      });
+      
+      // Prevent form submissions
+      document.addEventListener('submit', function(e) {
+        e.preventDefault();
+        console.log('Form submission prevented');
+        return false;
+      });
+      
+      // Prevent page refresh shortcuts
+      document.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && (e.key === 'r' || e.key === 'R')) {
+          e.preventDefault();
+          console.log('Page refresh prevented');
+          return false;
+        }
+      });
+      
+      // Override location methods to prevent redirects during task operations
+      const originalLocation = window.location;
+      Object.defineProperty(window, 'location', {
+        get: function() {
+          return originalLocation;
+        },
+        set: function(value) {
+          if (isTaskOperationInProgress) {
+            console.log('Location change prevented during task operation');
+            return;
+          }
+          originalLocation.href = value;
+        }
+      });
+      
+      // Global error handler to prevent page refresh on errors
+      window.addEventListener('error', function(e) {
+        console.log('Global error caught:', e.error);
+        if (isTaskOperationInProgress) {
+          e.preventDefault();
+          console.log('Error prevented from causing page refresh');
+        }
+      });
+      
+      // Prevent unhandled promise rejections from causing issues
+      window.addEventListener('unhandledrejection', function(e) {
+        console.log('Unhandled promise rejection:', e.reason);
+        if (isTaskOperationInProgress) {
+          e.preventDefault();
+          console.log('Promise rejection prevented from causing page refresh');
+        }
+      });
     </script>
 
   <script src="js/language-manager.js"></script>
@@ -2851,6 +2912,14 @@
 
     // Enhanced task completion with comprehensive database integration
     async function recordTaskCompletion(task) {
+      // Prevent any potential page refresh during API calls
+      if (window.event) {
+        window.event.preventDefault();
+      }
+      
+      // Set global flag to prevent page refresh
+      isTaskOperationInProgress = true;
+      
       const token = localStorage.getItem('token');
       if (!token) {
         console.log('No token found, skipping MySQL update');
@@ -2950,7 +3019,12 @@
 
       } catch (error) {
         console.error('❌ Error recording task completion for user:', userInfo.userId, error);
+        // Clear global flag on error
+        isTaskOperationInProgress = false;
         throw error; // Re-throw to be handled by caller
+      } finally {
+        // Clear global flag after completion
+        isTaskOperationInProgress = false;
       }
     }
 
@@ -3064,7 +3138,7 @@
                           (dailyLimitReached ? 'Daily Limit Reached' : 'Install')));
         
         li.innerHTML = `
-          <div style="display:flex; align-items:center; gap:14px; width:100%;">
+          <div style="display:flex; align-items:center; gap:14px; width:100%;" onsubmit="return false;">
             <div style="width:54px; height:54px; border-radius:12px; background:#fff; border:1.5px solid #e3f0ff; display:flex; align-items:center; justify-content:center;">
               <img src="${appIcon}" alt="${appName}" style="width:40px; height:40px; object-fit:contain;">
             </div>
@@ -3077,23 +3151,33 @@
               <span style="color:#666; font-size:0.85em; font-weight:500;">Daily Limit: ${completedToday}/${dailyLimit} tasks</span>
               ${downloadSection}
             </div>
-            <button class="install-btn" id="install-btn-${task.id}" style="background:${!canPerform ? '#ff4444' : dailyLimitReached ? '#ff8800' : '#1175d3'}; color:#fff; border:none; border-radius:8px; padding:7px 18px; font-weight:700; font-size:1em; cursor:pointer;" ${isDisabled ? 'disabled' : ''}>${buttonText}</button>
+            <button type="button" class="install-btn" id="install-btn-${task.id}" style="background:${!canPerform ? '#ff4444' : dailyLimitReached ? '#ff8800' : '#1175d3'}; color:#fff; border:none; border-radius:8px; padding:7px 18px; font-weight:700; font-size:1em; cursor:pointer;" ${isDisabled ? 'disabled' : ''} onclick="return false;">${buttonText}</button>
           </div>
         `;
         
         // Install button logic
         li.querySelector('.install-btn').onclick = (e) => {
-          e.stopPropagation();
-          if (!canPerform) {
-            window.location.href = 'level.html';
-            return;
-          }
-          if (dailyLimitReached) {
-            showDailyLimitError();
-            return;
-          }
-          if (!isDownloading && !task.completedToday) {
-            startTaskDownload(task);
+          try {
+            e.preventDefault(); // Prevent any default form submission behavior
+            e.stopPropagation(); // Prevent event bubbling
+            e.stopImmediatePropagation(); // Prevent other event handlers from firing
+            
+            if (!canPerform) {
+              window.location.href = 'level.html';
+              return;
+            }
+            if (dailyLimitReached) {
+              showDailyLimitError();
+              return;
+            }
+            if (!isDownloading && !task.completedToday) {
+              startTaskDownload(task);
+            }
+          } catch (error) {
+            console.error('Error in button click handler:', error);
+            // Prevent any page refresh on error
+            e.preventDefault();
+            e.stopPropagation();
           }
         };
         list.appendChild(li);
@@ -3177,6 +3261,20 @@
     // --- On DOMContentLoaded ---
     document.addEventListener("DOMContentLoaded", async function() {
       console.log("DOM Content Loaded");
+      
+      // Prevent accidental page refreshes during task operations
+      document.addEventListener('submit', function(e) {
+        e.preventDefault();
+        console.log('Form submission prevented to avoid page refresh');
+      });
+      
+      // Prevent accidental page refreshes from keyboard shortcuts
+      document.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
+          e.preventDefault();
+          console.log('Page refresh prevented during task operations');
+        }
+      });
       
       // Initialize database-driven state management
       initializeWithDatabase();
@@ -3322,6 +3420,14 @@
     // Download logic for task card
     let currentDownloadingTaskId = null;
     function startTaskDownload(task) {
+      // Prevent any potential page refresh during task download
+      if (window.event) {
+        window.event.preventDefault();
+      }
+      
+      // Set global flag to prevent page refresh
+      isTaskOperationInProgress = true;
+      
       isDownloading = true;
       currentDownloadingTaskId = task.id;
       renderTasks();
@@ -3344,6 +3450,8 @@
             }, 500);
             isDownloading = false;
             currentDownloadingTaskId = null;
+            // Clear global flag after task completion
+            isTaskOperationInProgress = false;
           }, 500);
         }
       }, 100);
@@ -3357,6 +3465,11 @@
         const reward = task.reward || 17;
         
         console.log(`🎯 Starting task completion for: ${task.app_name} (ID: ${task.id})`);
+        
+        // Prevent any potential page refresh during task completion
+        if (window.event) {
+          window.event.preventDefault();
+        }
         
         // Record task completion in backend first (database is source of truth)
         const result = await recordTaskCompletion(task);
@@ -3376,8 +3489,14 @@
         
         console.log(`🎉 Task ${task.id} completed successfully with database integration`);
         
+        // Clear global flag after successful completion
+        isTaskOperationInProgress = false;
+        
       } catch (error) {
         console.error('❌ Task completion error:', error);
+        
+        // Clear global flag on error
+        isTaskOperationInProgress = false;
         
         // Show appropriate error message
         if (error.message && error.message.includes('Daily task limit reached')) {
@@ -3414,7 +3533,7 @@
       }
     }
 
-    // Enhanced task completion notification with database response
+    // Enhanced task completion notification with database response and progress tracking
     function showTaskCompletionNotification(task, result) {
       const notification = document.createElement('div');
       notification.style.cssText = `
@@ -3428,27 +3547,37 @@
         box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
         z-index: 10000;
         font-weight: 600;
-        max-width: 350px;
+        max-width: 380px;
         animation: slideIn 0.3s ease-out;
       `;
       
       const reward = result?.reward || task.reward || 17;
       const newBalance = result?.newBalance || userInfo.balance;
+      const stats = result?.stats || {};
+      
+      // Calculate progress information
+      const userLevel = userInfo.bondLevel || 1;
+      const dailyLimit = getDailyTaskLimit(userLevel);
+      const completedToday = stats.tasksCompletedToday || 0;
+      const progressPercent = dailyLimit > 0 ? Math.round((completedToday / dailyLimit) * 100) : 0;
       
       notification.innerHTML = `
         <div style="display: flex; align-items: center; gap: 10px;">
           <span style="font-size: 1.5em;">✅</span>
-          <div>
-            <div style="font-size: 1em; margin-bottom: 2px;">Task Completed!</div>
-            <div style="font-size: 0.85em; opacity: 0.9;">Earned KES ${reward.toFixed(2)}</div>
-            <div style="font-size: 0.8em; opacity: 0.8;">Balance: KES ${parseFloat(newBalance).toFixed(2)}</div>
+          <div style="flex: 1;">
+            <div style="font-size: 1em; margin-bottom: 3px;">Task Completed!</div>
+            <div style="font-size: 0.85em; opacity: 0.9; margin-bottom: 2px;">Earned KES ${reward.toFixed(2)}</div>
+            <div style="font-size: 0.8em; opacity: 0.8; margin-bottom: 2px;">Balance: KES ${parseFloat(newBalance).toFixed(2)}</div>
+            <div style="font-size: 0.75em; opacity: 0.7;">
+              Today: ${completedToday}/${dailyLimit} (${progressPercent}%) • Total: ${stats.totalTasksCompleted || 0} tasks
+            </div>
           </div>
         </div>
       `;
       
       document.body.appendChild(notification);
       
-      // Remove notification after 4 seconds
+      // Remove notification after 6 seconds (longer to read enhanced info)
       setTimeout(() => {
         notification.style.animation = 'slideOut 0.3s ease-in';
         setTimeout(() => {
@@ -3456,7 +3585,7 @@
             notification.parentNode.removeChild(notification);
           }
         }, 300);
-      }, 4000);
+      }, 6000);
     }
 
     // Show trial expired error notification

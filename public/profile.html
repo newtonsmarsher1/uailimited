@@ -323,6 +323,146 @@
     .user-info-val {
       color: #2979ff; font-weight: 600;
     }
+    
+    /* Task History Styles */
+    .task-history-section {
+      width: 99%;
+      background: #fff;
+      border-radius: 13px;
+      padding: 20px;
+      margin: 15px auto;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    }
+    
+    .task-history-section h3 {
+      color: #2979ff;
+      font-size: 1.2em;
+      font-weight: 700;
+      margin: 0 0 15px 0;
+      text-align: center;
+    }
+    
+    .task-history-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    
+    .stat-item {
+      background: linear-gradient(135deg, #e3f0ff, #f8fbff);
+      padding: 12px;
+      border-radius: 10px;
+      text-align: center;
+      border: 1px solid #d1e7ff;
+    }
+    
+    .stat-label {
+      display: block;
+      color: #666;
+      font-size: 0.85em;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    
+    .stat-value {
+      display: block;
+      color: #2979ff;
+      font-size: 1.1em;
+      font-weight: 700;
+    }
+    
+    .task-history-list {
+      max-height: 300px;
+      overflow-y: auto;
+      margin-bottom: 15px;
+    }
+    
+    .task-history-item {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 8px;
+      border-left: 4px solid #2979ff;
+    }
+    
+    .task-history-item:last-child {
+      margin-bottom: 0;
+    }
+    
+    .task-name {
+      color: #2979ff;
+      font-weight: 600;
+      font-size: 0.95em;
+      margin-bottom: 4px;
+    }
+    
+    .task-details {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85em;
+    }
+    
+    .task-reward {
+      color: #28a745;
+      font-weight: 600;
+    }
+    
+    .task-date {
+      color: #666;
+    }
+    
+    .task-level {
+      background: #e3f0ff;
+      color: #2979ff;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.75em;
+      font-weight: 600;
+    }
+    
+    .loading-message {
+      text-align: center;
+      color: #666;
+      font-style: italic;
+      padding: 20px;
+    }
+    
+    .task-history-pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      margin-top: 15px;
+    }
+    
+    .pagination-btn {
+      background: #2979ff;
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 0.9em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    
+    .pagination-btn:hover {
+      background: #1565c0;
+    }
+    
+    .pagination-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    
+    .page-info {
+      color: #666;
+      font-weight: 600;
+      font-size: 0.9em;
+    }
   </style>
 </head>
 <body>
@@ -398,6 +538,40 @@
       </div>
     </div>
     <div class="user-info-row">
+      <div class="user-info-label">Task Progress:</div>
+      <div class="user-info-val" id="task-progress-info">Loading...</div>
+    </div>
+    
+    <!-- Task History Section -->
+    <div class="task-history-section">
+      <h3 id="task-history-title" data-translate="task-history-title">Recent Task History</h3>
+      <div class="task-history-stats">
+        <div class="stat-item">
+          <span class="stat-label" data-translate="total-tasks-label">Total Tasks</span>
+          <span class="stat-value" id="total-tasks-completed">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label" data-translate="active-days-label">Active Days</span>
+          <span class="stat-value" id="active-days">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label" data-translate="longest-streak-label">Longest Streak</span>
+          <span class="stat-value" id="longest-streak">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label" data-translate="avg-reward-label">Avg Reward</span>
+          <span class="stat-value" id="average-reward">KES 0</span>
+        </div>
+      </div>
+      <div class="task-history-list" id="task-history-list">
+        <div class="loading-message">Loading task history...</div>
+      </div>
+      <div class="task-history-pagination" id="task-history-pagination" style="display: none;">
+        <button class="pagination-btn" id="prev-page-btn" data-translate="prev-page">Previous</button>
+        <span class="page-info" id="page-info">Page 1</span>
+        <button class="pagination-btn" id="next-page-btn" data-translate="next-page">Next</button>
+      </div>
+    </div>
       <span class="user-info-label">Referral Code:</span>
       <span class="user-info-val" id="referral-code">--</span>
       <span class="user-info-label">Referred By:</span>
@@ -583,6 +757,9 @@
           profit: profit
         });
         
+        // Load task history and progress
+        await loadTaskHistory();
+        
         // Start real-time balance updates
         startRealTimeBalanceUpdates();
         
@@ -656,6 +833,117 @@
       }
     }
 
+    // Load task history and progress
+    async function loadTaskHistory(page = 1) {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+      
+      try {
+        const response = await fetch(`/api/task-history?page=${page}&limit=5`, {
+          headers: { Authorization: "Bearer " + token }
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to load task history');
+        }
+        
+        const data = await response.json();
+        console.log('📊 Task history loaded:', data);
+        
+        // Update task progress info
+        updateTaskProgressInfo(data.summary);
+        
+        // Update task history stats
+        updateTaskHistoryStats(data.summary);
+        
+        // Render task history list
+        renderTaskHistoryList(data.taskHistory);
+        
+        // Update pagination
+        updateTaskHistoryPagination(data.pagination);
+        
+      } catch (error) {
+        console.error('Error loading task history:', error);
+        // Don't show error message to avoid page refresh issues
+        // Just log the error and continue
+      }
+    }
+    
+    // Update task progress information
+    function updateTaskProgressInfo(summary) {
+      const progressInfo = document.getElementById('task-progress-info');
+      if (progressInfo) {
+        const totalTasks = summary.totalTasksCompleted || 0;
+        const activeDays = summary.activeDays || 0;
+        const longestStreak = summary.longestStreak || 0;
+        
+        progressInfo.textContent = `${totalTasks} tasks completed • ${activeDays} active days • ${longestStreak} day streak`;
+      }
+    }
+    
+    // Update task history statistics
+    function updateTaskHistoryStats(summary) {
+      document.getElementById('total-tasks-completed').textContent = summary.totalTasksCompleted || 0;
+      document.getElementById('active-days').textContent = summary.activeDays || 0;
+      document.getElementById('longest-streak').textContent = summary.longestStreak || 0;
+      document.getElementById('average-reward').textContent = `KES ${parseFloat(summary.averageReward || 0).toFixed(2)}`;
+    }
+    
+    // Render task history list
+    function renderTaskHistoryList(taskHistory) {
+      const listContainer = document.getElementById('task-history-list');
+      
+      if (!taskHistory || taskHistory.length === 0) {
+        listContainer.innerHTML = '<div class="loading-message">No task history available</div>';
+        return;
+      }
+      
+      const historyHTML = taskHistory.map(task => `
+        <div class="task-history-item">
+          <div class="task-name">${task.task_name}</div>
+          <div class="task-details">
+            <span class="task-reward">+KES ${parseFloat(task.reward_amount).toFixed(2)}</span>
+            <span class="task-level">Level ${task.user_level_at_completion}</span>
+            <span class="task-date">${formatDate(task.completion_date)}</span>
+          </div>
+        </div>
+      `).join('');
+      
+      listContainer.innerHTML = historyHTML;
+    }
+    
+    // Update task history pagination
+    function updateTaskHistoryPagination(pagination) {
+      const paginationContainer = document.getElementById('task-history-pagination');
+      const prevBtn = document.getElementById('prev-page-btn');
+      const nextBtn = document.getElementById('next-page-btn');
+      const pageInfo = document.getElementById('page-info');
+      
+      if (pagination.totalItems > 0) {
+        paginationContainer.style.display = 'flex';
+        pageInfo.textContent = `Page ${pagination.currentPage} of ${pagination.totalPages}`;
+        prevBtn.disabled = !pagination.hasPrevPage;
+        nextBtn.disabled = !pagination.hasNextPage;
+        
+        // Add event listeners for pagination
+        prevBtn.onclick = () => loadTaskHistory(pagination.currentPage - 1);
+        nextBtn.onclick = () => loadTaskHistory(pagination.currentPage + 1);
+      } else {
+        paginationContainer.style.display = 'none';
+      }
+    }
+    
+    // Format date for display
+    function formatDate(dateString) {
+      if (!dateString) return '';
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric',
+        year: 'numeric'
+      });
+    }
+    
     // Real-time balance updates
     function startRealTimeBalanceUpdates() {
       // Update balance every 15 seconds with automatic notification
@@ -695,6 +983,9 @@
             // Update referral information
             document.getElementById('referral-code').textContent = data.referral_code || "--";
             document.getElementById('referred-by').textContent = data.referred_by || "--";
+            
+            // Refresh task history to show latest completions
+            await loadTaskHistory();
             
             // Show payment notification if balance increased
             const currentBalance = parseFloat(data.wallet_balance || 0);

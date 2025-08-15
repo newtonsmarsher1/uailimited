@@ -975,12 +975,12 @@ app.post('/api/complete-task', auth, async (req, res) => {
       `, [req.user.id, taskId]);
       console.log('✅ Recorded in user_tasks, result:', insertResult);
 
-      // 2. Record detailed task completion
+      // 2. Record detailed task completion with enhanced tracking
       await connection.query(`
-        INSERT INTO task_completions (user_id, task_id, task_name, reward_amount, user_level_at_completion)
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO task_completions (user_id, task_id, task_name, reward_amount, user_level_at_completion, completion_date, completed_at)
+        VALUES (?, ?, ?, ?, ?, CURDATE(), NOW())
       `, [req.user.id, taskId, task.title, actualReward, user.bond_level]);
-      console.log('✅ Recorded in task_completions');
+      console.log('✅ Recorded in task_completions with enhanced tracking');
 
       // 3. Update or create daily stats
       const today = new Date().toISOString().split('T')[0];
@@ -1099,6 +1099,97 @@ app.get('/api/user-tasks', auth, async (req, res) => {
   } catch (error) {
     console.error('Error fetching user tasks:', error);
     res.status(500).json({ error: 'Failed to fetch user tasks' });
+  }
+});
+
+// --- Get detailed task history for profile ---
+app.get('/api/task-history', auth, async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
+    
+          // Get detailed task completion history
+      const [taskHistory] = await pool.query(`
+        SELECT 
+          tc.task_name,
+          tc.reward_amount,
+          tc.user_level_at_completion,
+          tc.completion_date,
+          'app_download' as task_type,
+          DATE_FORMAT(tc.completed_at, '%Y-%m-%d %H:%i:%s') as completed_at_formatted
+        FROM task_completions tc
+        WHERE tc.user_id = ?
+        ORDER BY tc.completed_at DESC
+        LIMIT ? OFFSET ?
+      `, [req.user.id, limit, offset]);
+    
+    // Get total count for pagination
+    const [totalCount] = await pool.query(`
+      SELECT COUNT(*) as total FROM task_completions WHERE user_id = ?
+    `, [req.user.id]);
+    
+    // Get summary statistics
+    const [summaryStats] = await pool.query(`
+      SELECT 
+        COUNT(*) as total_tasks_completed,
+        SUM(reward_amount) as total_earnings,
+        AVG(reward_amount) as average_reward,
+        MAX(reward_amount) as highest_reward,
+        MIN(completion_date) as first_task_date,
+        MAX(completion_date) as last_task_date
+      FROM task_completions 
+      WHERE user_id = ?
+    `, [req.user.id]);
+    
+    // Get daily streak information
+    const [streakInfo] = await pool.query(`
+      SELECT 
+        COUNT(DISTINCT completion_date) as active_days,
+        MAX(streak_length) as longest_streak
+      FROM (
+        SELECT 
+          completion_date,
+          @streak := IF(DATEDIFF(completion_date, @prev_date) = 1, @streak + 1, 1) as streak_length,
+          @prev_date := completion_date
+        FROM (
+          SELECT DISTINCT completion_date 
+          FROM task_completions 
+          WHERE user_id = ? 
+          ORDER BY completion_date
+        ) dates, (SELECT @streak := 0, @prev_date := NULL) vars
+      ) streaks
+    `, [req.user.id]);
+    
+    console.log(`📊 Task history for user ${req.user.id}:`, {
+      totalTasks: totalCount[0].total,
+      currentPage: page,
+      taskHistory: taskHistory.length
+    });
+    
+    res.json({
+      taskHistory: taskHistory,
+      pagination: {
+        currentPage: page,
+        totalPages: Math.ceil(totalCount[0].total / limit),
+        totalItems: totalCount[0].total,
+        hasNextPage: page * limit < totalCount[0].total,
+        hasPrevPage: page > 1
+      },
+      summary: {
+        totalTasksCompleted: summaryStats[0].total_tasks_completed || 0,
+        totalEarnings: summaryStats[0].total_earnings || 0,
+        averageReward: summaryStats[0].average_reward || 0,
+        highestReward: summaryStats[0].highest_reward || 0,
+        firstTaskDate: summaryStats[0].first_task_date,
+        lastTaskDate: summaryStats[0].last_task_date,
+        activeDays: streakInfo[0].active_days || 0,
+        longestStreak: streakInfo[0].longest_streak || 0
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching task history:', error);
+    res.status(500).json({ error: 'Failed to fetch task history' });
   }
 });
 
