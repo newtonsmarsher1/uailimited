@@ -1,4 +1,4 @@
-import postgres from 'postgres';
+const postgres = require('postgres');
 
 // Supabase connection string
 const connectionString = process.env.DATABASE_URL || 
@@ -242,4 +242,4 @@ async function verifyDatabase() {
 // Run verification
 verifyDatabase();
 
-export default sql;
+module.exports = sql;
