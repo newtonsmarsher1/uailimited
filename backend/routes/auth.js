@@ -290,16 +290,13 @@ router.post('/register', validateRegistration, async (req, res) => {
       }
     }
     
-    // Create user with trial information
+    // Create user with fields available in current schema
     const now = new Date();
-    const trialEndDate = new Date(now);
-    trialEndDate.setDate(trialEndDate.getDate() + 5); // 5 days from now
-    
     const insertRows = await sql`
       INSERT INTO users (
-        phone, password, name, full_name, is_active, level, wallet_balance, bond_balance, invitation_code, referral_code, referred_by, trial_start_date, trial_end_date, trial_days_remaining, is_trial_active, trial_expired, temp_worker_start_date
+        phone, password, name, full_name, is_active, level, wallet_balance, bond_balance, invitation_code, referral_code, referred_by, temp_worker_start_date
       ) VALUES (
-        ${normalizedPhone}, ${hashedPassword}, ${name}, ${name}, ${1}, ${0}, ${0}, ${0}, ${invitationCode_new}, ${invitationCode_new}, ${referredBy}, ${now}, ${trialEndDate}, ${5}, ${true}, ${false}, ${now.toISOString().split('T')[0]}
+        ${normalizedPhone}, ${hashedPassword}, ${name}, ${name}, ${true}, ${0}, ${0}, ${0}, ${invitationCode_new}, ${invitationCode_new}, ${referredBy}, ${now}
       ) RETURNING id`;
 
     const userId = insertRows[0].id;
