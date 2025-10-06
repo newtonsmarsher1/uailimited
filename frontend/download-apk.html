@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Download UAI App</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <h1>Download UAI Mobile App</h1>
+    <p>Click the button below to download the UAI mobile app:</p>
+    <button onclick="downloadAPK()" style="padding: 15px 30px; font-size: 16px; background: #2979ff; color: white; border: none; border-radius: 8px; cursor: pointer;">
+        📱 Download UAI.apk
+    </button>
+    
+    <script>
+        function downloadAPK() {
+            // Create a blob with the APK data
+            fetch('/base.apk')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('File not found');
+                    }
+                    return response.blob();
+                })
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'UAI.apk';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    window.URL.revokeObjectURL(url);
+                    alert('📱 Download started! Check your downloads folder.');
+                })
+                .catch(error => {
+                    console.error('Download error:', error);
+                    alert('❌ Download failed. Please try again.');
+                });
+        }
+    </script>
+</body>
+</html>

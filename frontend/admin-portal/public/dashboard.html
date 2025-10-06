@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>UAI Admin Portal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(to bottom, #2979ff 0%, #e3f0ff 100%);
+      margin: 0;
+    }
+    /* Hamburger styles */
+    .hamburger {
+      position: fixed;
+      top: 24px;
+      left: 24px;
+      width: 36px;
+      height: 36px;
+      z-index: 1001;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px #2979ff22;
+      transition: background 0.2s;
+    }
+    .hamburger span {
+      display: block;
+      width: 22px;
+      height: 3px;
+      background: #2979ff;
+      margin: 3px 0;
+      border-radius: 2px;
+      transition: 0.3s;
+    }
+    /* Sidebar styles */
+    #sidebar-toggle {
+      display: none;
+    }
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -290px;
+      width: 220px;
+      height: 100vh;
+      background: #1b75db;
+      color: #1ea0d3;
+      box-shadow: 2px 0 16px #2979ff22;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      transition: left 0.3s;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scrollbar-width: thin;
+      scrollbar-color: #2979ff #1b75db;
+    }
+    
+    /* Custom scrollbar for Webkit browsers */
+    .sidebar::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .sidebar::-webkit-scrollbar-track {
+      background: #1b75db;
+    }
+    
+    .sidebar::-webkit-scrollbar-thumb {
+      background: #2979ff;
+      border-radius: 3px;
+    }
+    
+    .sidebar::-webkit-scrollbar-thumb:hover {
+      background: #1565c0;
+    }
+    
+    .sidebar-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 32px 0 0 0;
+      min-height: 100%;
+    }
+    #sidebar-toggle:checked ~ .sidebar {
+      left: 0;
+    }
+    /* Overlay when sidebar is open */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(41,121,255,0.12);
+      z-index: 999;
+    }
+    #sidebar-toggle:checked ~ .sidebar-overlay {
+      display: block;
+    }
+    .sidebar .hexagon {
+      width: 60px;
+      height: 60px;
+      background: #bd7de7;
+      clip-path: polygon(25% 6%, 75% 6%, 100% 50%, 75% 94%, 25% 94%, 0% 50%);
+      margin-bottom: 12px;
+      box-shadow: 0 2px 10px rgba(98, 142, 219, 0.15);
+      position: relative;
+    }
+    .sidebar .uai-in-hex {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transform: translate(-50%, 0);
+      pointer-events: none;
+      z-index: 2;
+    }
+    .sidebar .uai-in-hex span {
+      color: #fff;
+      font-size: 2em;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-shadow: 0 2px 8px #7a09c577, 0 0 2px #4f2b7c;
+      display: inline-block;
+    }
+    .sidebar h2 {
+      margin: 0 0 32px 0;
+      font-size: 1.2em;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: #fff;
+      text-align: center;
+    }
+    .side-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      width: 100%;
+      padding: 0 0 32px 0;
+      align-items: center;
+      flex: 1;
+    }
+    .side-nav a {
+      display: block;
+      width: 170px;
+      background: #2979ff;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 1em;
+      border-radius: 10px;
+      padding: 12px 0;
+      text-align: center;
+      box-shadow: 0 2px 8px #2979ff22;
+      transition: background 0.18s;
+    }
+    .side-nav a:hover {
+      background: #1565c0;
+    }
+    /* Main content shifts when sidebar is open */
+    .main-content {
+      max-width: 500px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 2px 16px #2979ff22;
+      padding: 32px 24px;
+      transition: filter 0.3s;
+      position: relative;
+      z-index: 1;
+    }
+    #sidebar-toggle:checked ~ .main-content {
+      filter: blur(2px) brightness(0.95);
+      pointer-events: none;
+      user-select: none;
+    }
+    .logo-row {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+    h1 {
+      text-align: center;
+      color: #2979ff;
+      font-size: 2em;
+      margin-bottom: 24px;
+    }
+    nav {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    a.nav-link {
+      display: block;
+      background: #2979ff;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.15em;
+      border-radius: 12px;
+      padding: 16px 0;
+      text-align: center;
+      box-shadow: 0 2px 8px #2979ff22;
+      transition: background 0.18s;
+    }
+    a.nav-link:hover {
+      background: #1565c0;
+    }
+    @media (max-width: 700px) {
+      body {
+        padding-left: 0;
+      }
+      .main-content {
+        margin: 24px 8px;
+        padding: 18px 6px;
+      }
+      .sidebar {
+        width: 80vw;
+        min-width: 180px;
+        max-width: 320px;
+      }
+      .side-nav a {
+        width: 90%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <input type="checkbox" id="sidebar-toggle" style="display:none;">
+  <label for="sidebar-toggle" class="hamburger" title="Open navigation">
+    <span></span>
+    <span></span>
+    <span></span>
+  </label>
+    <div class="sidebar">
+    <div class="sidebar-content">
+      <div class="hexagon">
+        <div class="uai-in-hex"><span>UAI</span></div>
+      </div>
+      <h2>Admin Portal</h2>
+      <nav class="side-nav">
+        <a href="dashboard.html" style="display: flex; align-items: center; gap: 8px;">
+          <svg viewBox="0 0 24 24" width="20" height="20" style="vertical-align: middle; fill: #fff;"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/></svg>
+          Dashboard
+        </a>
+        <a href="users.html" style="display: flex; align-items: center; gap: 8px;">
+          <svg viewBox="0 0 24 24" width="20" height="20" style="vertical-align: middle; fill: #fff;"><path d="M12 12c2.7 0 8 1.34 8 4v2H4v-2c0-2.66 5.3-4 8-4zm0-2a4 4 0 1 1 0-8 4 4 0 0 1 0 8z"/></svg>
+          Manage Users
+        </a>
+        <a href="tasks.html" style="display: flex; align-items: center; gap: 8px;">
+          <svg viewBox="0 0 24 24" width="20" height="20" style="vertical-align: middle; fill: #fff;"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 10h8M8 14h4" stroke="#fff" stroke-width="2" fill="none"/></svg>
+          Manage Tasks
+        </a>
+        <a href="withdrawals.html" style="display: flex; align-items: center; gap: 8px;">
+          <svg viewBox="0 0 24 24" width="20" height="20" style="vertical-align: middle; fill: #fff;"><path d="M12 3v12m0 0l-4-4m4 4l4-4" stroke="#fff" stroke-width="2" fill="none"/><rect x="4" y="15" width="16" height="6" rx="2"/></svg>
+          Manage Withdrawals
+        </a>
+        <a href="appeals.html" style="display: flex; align-items: center; gap: 8px;">
+          <svg viewBox="0 0 24 24" width="20" height="20" style="vertical-align: middle; fill: #fff;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" fill="#fff"/></svg>
+          Manage Appeals
+        </a>
+        <a href="recharges.html" style="display: flex; align-items: center; gap: 8px;">
+          <svg viewBox="0 0 24 24" width="20" height="20" style="vertical-align: middle; fill: #fff;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="#fff"/></svg>
+          Manage Recharges
+        </a>
+        <a href="prizes.html" style="display: flex; align-items: center; gap: 8px;">
+          <svg viewBox="0 0 24 24" width="20" height="20" style="vertical-align: middle; fill: #fff;"><circle cx="12" cy="8" r="7"/><path d="M5 21h14l-7-7z"/></svg>
+          Manage Prizes
+        </a>
+        <a href="financial-details.html" style="display: flex; align-items: center; gap: 8px;">
+          <svg viewBox="0 0 24 24" width="20" height="20" style="vertical-align: middle; fill: #fff;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+          Financial Details
+        </a>
+        <a href="your-account.html" style="display: flex; align-items: center; gap: 8px;">
+          <svg viewBox="0 0 24 24" width="20" height="20" style="vertical-align: middle; fill: #fff;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+          Your Account
+        </a>
+        <a href="change-password.html" id="control-panel-link" style="display: flex; align-items: center; gap: 8px;">
+          <svg viewBox="0 0 24 24" width="20" height="20" style="vertical-align: middle; fill: #fff;"><rect x="6" y="10" width="12" height="10" rx="2"/><path d="M12 16v-4" stroke="#fff" stroke-width="2" fill="none"/><circle cx="12" cy="14" r="1" fill="#fff"/></svg>
+          Control Panel
+        </a>
+        <a href="system-settings.html" style="display: flex; align-items: center; gap: 8px;">
+          <svg viewBox="0 0 24 24" width="20" height="20" style="vertical-align: middle; fill: #fff;"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>
+          System Settings
+        </a>
+        <a href="reports.html" style="display: flex; align-items: center; gap: 8px;">
+          <svg viewBox="0 0 24 24" width="20" height="20" style="vertical-align: middle; fill: #fff;"><path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/></svg>
+          Reports
+        </a>
+        <a href="notifications.html" style="display: flex; align-items: center; gap: 8px;">
+          <svg viewBox="0 0 24 24" width="20" height="20" style="vertical-align: middle; fill: #fff;"><path d="M12,22A2,2 0 0,0 14,20H10A2,2 0 0,0 12,22M18,16V11C18,7.93 16.36,5.36 13.5,4.68V4A1.5,1.5 0 0,0 12,2.5A1.5,1.5 0 0,0 10.5,4V4.68C7.63,5.36 6,7.92 6,11V16L4,18V19H20V18L18,16Z"/></svg>
+          Notifications
+        </a>
+        <a href="admin-video-call.html" style="display: flex; align-items: center; gap: 8px;">
+          <svg viewBox="0 0 24 24" width="20" height="20" style="vertical-align: middle; fill: #fff;"><path d="M17,10.5V7A1,1 0 0,0 16,6H4A1,1 0 0,0 3,7V17A1,1 0 0,0 4,18H16A1,1 0 0,0 17,17V13.5L21,17.5V6.5L17,10.5Z"/></svg>
+          Video Conference
+        </a>
+        <a href="admin-messaging.html" style="display: flex; align-items: center; gap: 8px;">
+          <svg viewBox="0 0 24 24" width="20" height="20" style="vertical-align: middle; fill: #fff;"><path d="M20,2H4A2,2 0 0,0 2,4V22L6,18H20A2,2 0 0,0 22,16V4A2,2 0 0,0 20,2M6,9H18V11H6M14,13H6V15H14M18,7H6V9H18V7Z"/></svg>
+          Admin Messaging
+        </a>
+        <a href="help-support.html" style="display: flex; align-items: center; gap: 8px;">
+          <svg viewBox="0 0 24 24" width="20" height="20" style="vertical-align: middle; fill: #fff;"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8Z"/></svg>
+          Help & Support
+        </a>
+        <a href="#" id="logout-btn" style="display: flex; align-items: center; gap: 8px; color: #fff;">
+          <svg viewBox="0 0 24 24" width="20" height="20" style="vertical-align: middle; fill: #fff;"><path d="M16 13v-2H7V8l-5 4 5 4v-3z"/><path d="M20 3h-8a2 2 0 0 0-2 2v4h2V5h8v14h-8v-4h-2v4a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z"/></svg>
+          Log Out
+        </a>
+      </nav>
+    </div>
+  </div>
+  <label for="sidebar-toggle" class="sidebar-overlay"></label>
+  <div class="main-content">
+    <div class="logo-row">
+      <div class="hexagon">
+        <div class="uai-in-hex"><span>UAI</span></div>
+      </div>
+    </div>
+    <div style="background: #e3f0ff; border-left: 6px solid #2979ff; border-radius: 10px; padding: 18px 20px; margin-bottom: 28px; box-shadow: 0 2px 8px #2979ff22;">
+      <h2 style="margin-top:0; color:#2979ff;">Note to All Admins</h2>
+      <p style="font-size:1.1em; color:#222; margin-bottom: 10px;">
+        All admins are encouraged to perform their tasks with <b>integrity</b>, <b>passion</b>, and <b>hard work</b>. Be creative!<br>
+        <br>
+        <b>Lead by Example:</b> Inspire your teams through your actions and commitment.<br>
+        <b>Embrace Innovation:</b> Always look for new ways to improve and grow.<br>
+        <b>Communicate Openly:</b> Foster a culture of transparency and trust.<br>
+        <b>Support Each Other:</b> Collaboration and teamwork are the foundation of our success.<br>
+        <b>Stay Accountable:</b> Take responsibility for your decisions and results.<br>
+        <b>Never Stop Learning:</b> Growth comes from continuous improvement and adaptation.<br>
+        <br>
+        Together, let's build a legacy of excellence at UAI.
+      </p>
+      <div style="text-align:right; font-style:italic; color:#444; font-weight:600;">— C.E.O MR MORGAN ROGUEZ</div>
+    </div>
+    <hr style="margin: 36px 0 24px 0; border: none; border-top: 2px solid #e3f0ff;">
+    <div style="background: #fff; border-radius: 8px; padding: 16px 18px; box-shadow: 0 1px 4px #2979ff11; margin-bottom: 20px;" id="system-overview-section" style="display: none;">
+      <h3 style="margin-top:0; color:#2979ff;">System Overview</h3>
+      <div id="system-stats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+        <div style="background: #e3f0ff; padding: 12px; border-radius: 8px; text-align: center;">
+          <div style="font-size: 1.5em; font-weight: bold; color: #2979ff;" id="total-users">-</div>
+          <div style="color: #666;">Total Users</div>
+        </div>
+        <div style="background: #e3f0ff; padding: 12px; border-radius: 8px; text-align: center;">
+          <div style="font-size: 1.5em; font-weight: bold; color: #2979ff;" id="active-users">-</div>
+          <div style="color: #666;">Active Users</div>
+        </div>
+        <div style="background: #e3f0ff; padding: 12px; border-radius: 8px; text-align: center;">
+          <div style="font-size: 1.5em; font-weight: bold; color: #2979ff;" id="pending-recharges">-</div>
+          <div style="color: #666;">Pending Recharges</div>
+        </div>
+        <div style="background: #e3f0ff; padding: 12px; border-radius: 8px; text-align: center;">
+          <div style="font-size: 1.5em; font-weight: bold; color: #2979ff;" id="pending-withdrawals">-</div>
+          <div style="color: #666;">Pending Withdrawals</div>
+        </div>
+        <div style="background: #e3f0ff; padding: 12px; border-radius: 8px; text-align: center;">
+          <div style="font-size: 1.5em; font-weight: bold; color: #2979ff;" id="total-earnings">-</div>
+          <div style="color: #666;">Total Earnings</div>
+        </div>
+        <div style="background: #e3f0ff; padding: 12px; border-radius: 8px; text-align: center;">
+          <div style="font-size: 1.5em; font-weight: bold; color: #2979ff;" id="pending-admins">-</div>
+          <div style="color: #666;">Pending Admins</div>
+        </div>
+      </div>
+    </div>
+    
+    <div style="background: #fff; border-radius: 8px; padding: 16px 18px; box-shadow: 0 1px 4px #2979ff11; margin-bottom: 20px;">
+      <h3 style="margin-top:0; color:#2979ff;">Recharge Method Status</h3>
+      <div id="recharge-methods" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px;">
+        <div style="background: #4caf50; padding: 10px; border-radius: 6px; text-align: center; color: white;">
+          <div style="font-weight: bold;">Method 1</div>
+          <div style="font-size: 0.9em;">Available</div>
+        </div>
+        <div style="background: #4caf50; padding: 10px; border-radius: 6px; text-align: center; color: white;">
+          <div style="font-weight: bold;">Method 2</div>
+          <div style="font-size: 0.9em;">Available</div>
+        </div>
+        <div style="background: #ff9800; padding: 10px; border-radius: 6px; text-align: center; color: white;">
+          <div style="font-weight: bold;">Method 3</div>
+          <div style="font-size: 0.9em;">Busy</div>
+        </div>
+        <div style="background: #ff9800; padding: 10px; border-radius: 6px; text-align: center; color: white;">
+          <div style="font-weight: bold;">Method 4</div>
+          <div style="font-size: 0.9em;">Busy</div>
+        </div>
+      </div>
+    </div>
+    
+    <div style="background: #fff; border-radius: 8px; padding: 16px 18px; box-shadow: 0 1px 4px #2979ff11;">
+      <h3 style="margin-top:0; color:#2979ff;">Admin Approval Center</h3>
+      <div id="admin-approval-center"></div>
+    </div>
+    <script>
+      const userRole = localStorage.getItem('userRole');
+      const userId = localStorage.getItem('adminId') || localStorage.getItem('userId');
+      let pendingAdmins = [];
+      
+      // Fetch comprehensive system data
+      async function fetchSystemData() {
+        // Only fetch system data if user is CEO
+        if (localStorage.getItem('userRole') !== 'CEO') {
+          return;
+        }
+        
+        try {
+          // Fetch users data
+          const token = localStorage.getItem('adminToken');
+          const usersRes = await fetch('/api/admin/users', {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+          
+          if (!usersRes.ok) {
+            throw new Error('Failed to fetch users data');
+          }
+          
+          const usersData = await usersRes.json();
+          const users = usersData.users || usersData; // Handle both array and object responses
+          
+          document.getElementById('total-users').textContent = Array.isArray(users) ? users.length : 0;
+          document.getElementById('active-users').textContent = Array.isArray(users) ? users.filter(u => u.level > 0).length : 0;
+          
+          // Fetch recharge requests
+          const rechargeRes = await fetch('/api/admin/recharge-requests');
+          const rechargeData = await rechargeRes.json();
+          document.getElementById('pending-recharges').textContent = rechargeData.stats?.pending || 0;
+          
+          // Fetch withdrawal requests
+          const withdrawalRes = await fetch('/api/admin/withdrawal-requests');
+          const withdrawalData = await withdrawalRes.json();
+          document.getElementById('pending-withdrawals').textContent = withdrawalData.stats?.pending || 0;
+          
+          // Calculate total earnings
+          const totalEarnings = Array.isArray(users) ? users.reduce((sum, user) => sum + parseFloat(user.total_earnings || 0), 0) : 0;
+          document.getElementById('total-earnings').textContent = totalEarnings.toLocaleString();
+          
+          // Fetch pending admins count
+          const adminsRes = await fetch('/api/admin/pending-admins', {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+          const adminsData = await adminsRes.json();
+          const admins = adminsData.admins || adminsData; // Handle both array and object responses
+          document.getElementById('pending-admins').textContent = Array.isArray(admins) ? admins.length : 0;
+          
+        } catch (error) {
+          console.error('Error fetching system data:', error);
+        }
+      }
+      
+      async function fetchPendingAdmins() {
+        try {
+          const token = localStorage.getItem('adminToken');
+          if (!token) {
+            throw new Error('No authentication token found');
+          }
+          
+          const res = await fetch('/api/admin/pending-admins', {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+          if (!res.ok) throw new Error('Failed to fetch pending admins');
+          const data = await res.json();
+          pendingAdmins = data.admins || data; // Handle both array and object responses
+          renderAdminApprovalCenter();
+        } catch (err) {
+          console.error('Error fetching pending admins:', err);
+          document.getElementById('admin-approval-center').innerHTML = '<div style="color:#d32f2f;">Failed to load pending admins. Please login again.</div>';
+        }
+      }
+      
+      async function verifyAdmin(id) {
+        const token = localStorage.getItem('adminToken');
+        await fetch('/api/admin/verify-admin', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ id })
+        });
+        fetchPendingAdmins();
+        fetchSystemData(); // Refresh counts
+      }
+      
+      async function rejectAdmin(id) {
+        const token = localStorage.getItem('adminToken');
+        await fetch('/api/admin/reject-admin', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ id })
+        });
+        fetchPendingAdmins();
+        fetchSystemData(); // Refresh counts
+      }
+      
+      function renderAdminApprovalCenter() {
+        const container = document.getElementById('admin-approval-center');
+        container.innerHTML = '';
+        
+        // Ensure pendingAdmins is an array
+        const admins = Array.isArray(pendingAdmins) ? pendingAdmins : [];
+        
+        if (admins.length === 0) {
+          container.innerHTML = '<div style="color:#4caf50; text-align:center; padding:20px;">✅ All admins are approved!</div>';
+          return;
+        }
+        
+        admins.forEach(admin => {
+          // Skip rejected admins
+          if (admin.rejected) return;
+          
+          const isCEO = userRole === "CEO";
+          const isSelf = userId == admin.id;
+          const canSeeFullDetails = isCEO || isSelf;
+          
+          const card = document.createElement('div');
+          card.style.cssText = 'background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 16px; margin-bottom: 12px;';
+          
+          const statusBadge = admin.verified ? 
+            '<span style="background: #4caf50; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.8em;">✅ Verified</span>' :
+            '<span style="background: #ff9800; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.8em;">⏳ Pending</span>';
+          
+          const roleBadge = `<span style="background: #2196f3; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.8em; margin-left: 8px;">${admin.role}</span>`;
+          
+          // Privacy controls - only CEO can see full details, others see only names and roles
+          let detailsHTML = '';
+          if (canSeeFullDetails) {
+            // CEO or self - show full details
+            detailsHTML = `
+              <div style="color: #666; font-size: 0.9em; margin-bottom: 8px;">
+                <div><strong>Username:</strong> ${admin.username}</div>
+                ${admin.id_number ? `<div><strong>ID:</strong> ${admin.id_number}</div>` : ''}
+                ${admin.mobile ? `<div><strong>Mobile:</strong> ${admin.mobile}</div>` : ''}
+                ${admin.gmail ? `<div><strong>Email:</strong> ${admin.gmail}</div>` : ''}
+                ${admin.position ? `<div><strong>Position:</strong> ${admin.position}</div>` : ''}
+                <div><strong>Registered:</strong> ${new Date(admin.created_at).toLocaleDateString()}</div>
+              </div>
+            `;
+          } else {
+            // Other admins - show only basic info
+            detailsHTML = `
+              <div style="color: #666; font-size: 0.9em; margin-bottom: 8px;">
+                <div><strong>Status:</strong> ${admin.verified ? 'Verified' : 'Pending'}</div>
+                <div><strong>Registered:</strong> ${new Date(admin.created_at).toLocaleDateString()}</div>
+                <div style="color: #999; font-style: italic; margin-top: 8px;">
+                  🔒 Sensitive details hidden
+                </div>
+              </div>
+            `;
+          }
+          
+          card.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <div style="font-weight: bold; font-size: 1.1em;">${admin.name || admin.username}</div>
+              <div>${statusBadge}${roleBadge}</div>
+            </div>
+            ${detailsHTML}
+            ${isCEO && !isSelf ? `
+              <div style="display: flex; gap: 8px; margin-top: 12px;">
+                ${!admin.verified ? `<button onclick="verifyAdmin(${admin.id})" style="background: #4caf50; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">✅ Approve</button>` : ''}
+                <button onclick="rejectAdmin(${admin.id})" style="background: #f44336; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">❌ Reject</button>
+              </div>
+            ` : ''}
+          `;
+          
+          container.appendChild(card);
+        });
+      }
+      
+      // Initialize when DOM is loaded
+      document.addEventListener('DOMContentLoaded', function() {
+        // Check if admin is logged in
+        const token = localStorage.getItem('adminToken');
+        if (!token) {
+          alert('Please login to access the admin dashboard');
+          window.location.replace('index.html');
+          return;
+        }
+        
+        fetchSystemData();
+        fetchPendingAdmins();
+        
+        // Logout functionality
+        document.getElementById('logout-btn').addEventListener('click', function(e) {
+          e.preventDefault();
+          localStorage.clear();
+          window.location.replace('index.html');
+        });
+        
+        // Hide Control Panel link for non-CEO users
+        if (localStorage.getItem('userRole') !== 'CEO') {
+          var cpLink = document.getElementById('control-panel-link');
+          if (cpLink) cpLink.style.display = 'none';
+        }
+        
+        // Show System Overview only for CEO
+        if (localStorage.getItem('userRole') === 'CEO') {
+          var systemOverviewSection = document.getElementById('system-overview-section');
+          if (systemOverviewSection) {
+            systemOverviewSection.style.display = 'block';
+          }
+        }
+      });
+    </script>
+  </div>
+</body>
+</html> 

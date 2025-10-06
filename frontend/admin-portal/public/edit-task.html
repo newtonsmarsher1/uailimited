@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Task - UAI Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { 
+      font-family: 'Segoe UI', Arial, sans-serif; 
+      background: linear-gradient(to bottom, #2979ff 0%, #e3f0ff 100%); 
+      margin: 0; 
+    }
+    .container { 
+      max-width: 800px; 
+      margin: 40px auto; 
+      background: #fff; 
+      border-radius: 18px; 
+      box-shadow: 0 2px 16px #2979ff22; 
+      padding: 32px 24px; 
+    }
+    h1 { color: #2979ff; text-align: center; margin-bottom: 24px; }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #2979ff;
+      font-weight: 600;
+    }
+    input[type="text"], input[type="number"], textarea, select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e3f0ff;
+      border-radius: 8px;
+      font-size: 1em;
+      box-sizing: border-box;
+      transition: border-color 0.3s;
+    }
+    input[type="text"]:focus, input[type="number"]:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #2979ff;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+    .btn {
+      background: #2979ff;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 24px;
+      font-size: 1em;
+      cursor: pointer;
+      margin-right: 10px;
+      transition: background 0.3s;
+    }
+    .btn:hover { background: #1565c0; }
+    .btn-secondary {
+      background: #6c757d;
+    }
+    .btn-secondary:hover { background: #545b62; }
+    .btn-success {
+      background: #43e97b;
+    }
+    .btn-success:hover { background: #2ecc71; }
+    .back-btn {
+      background: #2979ff;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 18px;
+      font-size: 1em;
+      cursor: pointer;
+      box-shadow: 0 2px 8px #2979ff22;
+      margin-bottom: 20px;
+    }
+    .info-note {
+      background: #e3f0ff;
+      border-left: 4px solid #2979ff;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      color: #2979ff;
+      font-size: 0.95em;
+    }
+    .download-icon {
+      font-size: 2em;
+      text-align: center;
+      margin-bottom: 20px;
+      color: #43e97b;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <button onclick="window.location.href='tasks.html'" class="back-btn">&larr; Back to Tasks</button>
+    <div class="download-icon">📱</div>
+    <h1 id="pageTitle">Create New Download Task</h1>
+    
+    <div class="info-note">
+      <strong>Download Task:</strong> Create tasks for users to download apps. Include questions to verify completion.
+    </div>
+    
+    <form id="taskForm">
+      <div class="form-group">
+        <label for="title">Task Title *</label>
+        <input type="text" id="title" name="title" required placeholder="e.g., Download TikTok App">
+      </div>
+      
+      <div class="form-group">
+        <label for="bond_level_required">Bond Level Required *</label>
+        <select id="bond_level_required" name="bond_level_required" required>
+          <option value="">Select Bond Level</option>
+          <option value="0">Level 0 - Free</option>
+          <option value="1">Level 1</option>
+          <option value="2">Level 2</option>
+          <option value="3">Level 3</option>
+          <option value="4">Level 4</option>
+          <option value="5">Level 5</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="reward">Reward Amount (KES) *</label>
+        <input type="number" id="reward" name="reward" required min="1" step="0.01" placeholder="e.g., 17.00">
+      </div>
+      
+      <div class="form-group">
+        <label for="videoUrl">App Download Link</label>
+        <input type="text" id="videoUrl" name="videoUrl" placeholder="e.g., https://play.google.com/store/apps/details?id=com.zhiliaoapp.musically">
+      </div>
+      
+      <div class="form-group">
+        <label for="question">Verification Question</label>
+        <textarea id="question" name="question" placeholder="e.g., What is the main color of the TikTok logo?"></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label for="expected_answer">Expected Answer</label>
+        <input type="text" id="expected_answer" name="expected_answer" placeholder="e.g., Red or Black">
+      </div>
+      
+      <div class="form-group">
+        <label for="is_active">Task Status</label>
+        <select id="is_active" name="is_active">
+          <option value="1">Active</option>
+          <option value="0">Inactive</option>
+        </select>
+      </div>
+      
+      <div style="text-align: center; margin-top: 30px;">
+        <button type="submit" class="btn btn-success">Save Task</button>
+        <button type="button" class="btn btn-secondary" onclick="window.location.href='tasks.html'">Cancel</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    const userToken = localStorage.getItem('token');
+    const userRole = localStorage.getItem('userRole');
+    const userId = localStorage.getItem('userId');
+    
+    // Check if user is logged in
+    if (!userToken || !userRole || !userId) {
+      window.location.href = 'index.html';
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const taskId = urlParams.get('id');
+    const isEdit = !!taskId;
+
+    if (isEdit) {
+      document.getElementById('pageTitle').textContent = 'Edit Download Task';
+      loadTask(taskId);
+    }
+
+    async function loadTask(id) {
+      try {
+        // Use legacy route for now
+        const res = await fetch('/api/admin/tasks');
+        if (!res.ok) throw new Error('Failed to fetch tasks');
+        
+        const tasks = await res.json();
+        const task = tasks.find(t => t.id == id);
+        
+        if (!task) {
+          throw new Error('Task not found');
+        }
+        
+        // Populate form fields
+        document.getElementById('title').value = task.title || '';
+        document.getElementById('bond_level_required').value = task.bond_level_required || '';
+        document.getElementById('reward').value = task.reward || '';
+        document.getElementById('videoUrl').value = task.videoUrl || '';
+        document.getElementById('question').value = task.question || '';
+        document.getElementById('expected_answer').value = task.expected_answer || '';
+        document.getElementById('is_active').value = task.is_active !== undefined ? task.is_active : 1;
+        
+      } catch (error) {
+        console.error('Error loading task:', error);
+        alert('Failed to load task details');
+      }
+    }
+
+    document.getElementById('taskForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const formData = {
+        title: document.getElementById('title').value,
+        bond_level_required: parseInt(document.getElementById('bond_level_required').value),
+        reward: parseFloat(document.getElementById('reward').value),
+        videoUrl: document.getElementById('videoUrl').value,
+        question: document.getElementById('question').value,
+        expected_answer: document.getElementById('expected_answer').value,
+        is_active: parseInt(document.getElementById('is_active').value)
+      };
+
+      try {
+        let url, method;
+        
+        if (isEdit) {
+          url = '/api/admin/update-task';
+          method = 'POST';
+          formData.id = taskId;
+        } else {
+          url = '/api/admin/create-task';
+          method = 'POST';
+        }
+        
+        const res = await fetch(url, {
+          method: method,
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+        
+        if (!res.ok) {
+          const error = await res.json();
+          throw new Error(error.error || 'Failed to save task');
+        }
+        
+        const result = await res.json();
+        alert(isEdit ? 'Task updated successfully!' : 'Task created successfully!');
+        window.location.href = 'tasks.html';
+        
+      } catch (error) {
+        console.error('Error saving task:', error);
+        alert(error.message || 'Failed to save task');
+      }
+    });
+  </script>
+</body>
+</html> 

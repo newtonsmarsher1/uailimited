@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manage Withdrawals - UAI Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: linear-gradient(to bottom, #2979ff 0%, #e3f0ff 100%); margin: 0; }
+    .container { max-width: 1200px; margin: 40px auto; background: #fff; border-radius: 18px; box-shadow: 0 2px 16px #2979ff22; padding: 32px 24px; }
+    h1 { color: #2979ff; text-align: center; margin-bottom: 24px; }
+    .stats { display: flex; gap: 20px; margin-bottom: 24px; flex-wrap: wrap; }
+    .stat-card { background: #f7faff; border-radius: 12px; padding: 20px; flex: 1; min-width: 200px; text-align: center; }
+    .stat-number { font-size: 2em; font-weight: bold; color: #2979ff; }
+    .stat-label { color: #666; margin-top: 8px; }
+    .filters { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
+    .filter-btn { padding: 8px 16px; border: 1px solid #2979ff; background: #fff; color: #2979ff; border-radius: 8px; cursor: pointer; }
+    .filter-btn.active { background: #2979ff; color: #fff; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    th, td { padding: 12px 8px; border-bottom: 1px solid #e3f0ff; text-align: left; }
+    th { background: #2979ff; color: #fff; font-weight: 600; }
+    tr:hover { background: #e3f0ff; }
+    .action-btn { background: #2979ff; color: #fff; border: none; border-radius: 8px; padding: 6px 14px; font-size: 1em; cursor: pointer; margin-right: 6px; }
+    .action-btn:hover { background: #1565c0; }
+    .action-btn.approve { background: #4caf50; }
+    .action-btn.approve:hover { background: #388e3c; }
+    .action-btn.reject { background: #f44336; }
+    .action-btn.reject:hover { background: #d32f2f; }
+    .back-link { display: inline-block; margin-bottom: 18px; color: #2979ff; text-decoration: none; font-weight: 600; }
+    .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 0.8em; font-weight: 600; }
+    .status-pending { background: #fff3cd; color: #856404; }
+    .status-approved { background: #d4edda; color: #155724; }
+    .status-rejected { background: #f8d7da; color: #721c24; }
+    .message { padding: 10px; border-radius: 8px; margin-top: 10px; }
+    .message.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    .message.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    .approved-stats { background: linear-gradient(135deg, #4caf50 0%, #45a049 100%); }
+    .approved-stats .stat-card { background: rgba(255, 255, 255, 0.1); color: white; }
+    .approved-stats .stat-number { color: white; }
+    .approved-stats .stat-label { color: rgba(255, 255, 255, 0.9); }
+    .processing-time { font-size: 0.9em; color: #666; margin-top: 4px; }
+    .admin-notes { font-style: italic; color: #666; margin-top: 4px; }
+    .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
+    .modal-content { background-color: #fefefe; margin: 15% auto; padding: 20px; border-radius: 12px; width: 80%; max-width: 500px; }
+    .modal input, .modal textarea { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; }
+    .modal-buttons { text-align: right; margin-top: 20px; }
+    .modal-btn { padding: 8px 16px; margin-left: 10px; border: none; border-radius: 8px; cursor: pointer; }
+    .modal-btn.cancel { background: #6c757d; color: white; }
+    .modal-btn.confirm { background: #2979ff; color: white; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <button onclick="window.location.href='dashboard.html'" style="margin-bottom:18px;background:#2979ff;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:1em;cursor:pointer;box-shadow:0 2px 8px #2979ff22;">&larr; Back</button>
+    <h1>Manage Withdrawal Requests <span id="refreshIndicator" style="font-size: 0.6em; color: #4caf50; margin-left: 10px;">🔄 Auto-refreshing...</span></h1>
+    
+    <div class="stats" id="statsSection">
+      <div class="stat-card">
+        <div class="stat-number" id="totalWithdrawals">0</div>
+        <div class="stat-label">Total Requests</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="pendingWithdrawals">0</div>
+        <div class="stat-label">Pending</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="totalAmount">KES 0</div>
+        <div class="stat-label">Total Amount</div>
+      </div>
+    </div>
+    
+    <div class="filters">
+      <button class="filter-btn active" onclick="filterRequests('all')">All</button>
+      <button class="filter-btn" onclick="filterRequests('pending')">Pending</button>
+      <button class="filter-btn" onclick="filterRequests('approved')">Approved</button>
+      <button class="filter-btn" onclick="filterRequests('rejected')">Rejected</button>
+    </div>
+    
+    <div class="stats approved-stats" id="approvedStatsSection" style="display: none;">
+      <div class="stat-card">
+        <div class="stat-number" id="totalApproved">0</div>
+        <div class="stat-label">Total Approved</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="totalApprovedAmount">KES 0</div>
+        <div class="stat-label">Total Amount Approved</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="avgApprovalTime">0 days</div>
+        <div class="stat-label">Avg Processing Time</div>
+      </div>
+    </div>
+    
+    <table id="withdrawalsTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>User</th>
+          <th>Phone</th>
+          <th>Amount</th>
+          <th>Bank Details</th>
+          <th>Status</th>
+          <th>Request Date</th>
+          <th>Processed Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    
+    <div id="messageDiv"></div>
+  </div>
+  
+  <!-- Modal for approval/rejection -->
+  <div id="actionModal" class="modal">
+    <div class="modal-content">
+      <h3 id="modalTitle">Action</h3>
+      <textarea id="adminNotes" placeholder="Enter admin notes (optional)"></textarea>
+      <div class="modal-buttons">
+        <button class="modal-btn cancel" onclick="closeModal()">Cancel</button>
+        <button class="modal-btn confirm" id="confirmBtn">Confirm</button>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    let allWithdrawals = [];
+    let currentFilter = 'all';
+    let currentAction = '';
+    let currentWithdrawalId = null;
+    
+    async function fetchWithdrawals() {
+      try {
+        console.log('🔄 Fetching withdrawal requests...');
+        const response = await fetch('/api/admin/withdrawal-requests');
+        const data = await response.json();
+        console.log('📊 API Response:', data);
+        
+        allWithdrawals = data.requests || [];
+        console.log('📋 Withdrawals loaded:', allWithdrawals.length);
+        
+        renderWithdrawals();
+        updateStats();
+      } catch (error) {
+        console.error('❌ Error fetching withdrawals:', error);
+        showMessage('Failed to fetch withdrawal requests', false);
+      }
+    }
+    
+    function renderWithdrawals() {
+      const tbody = document.querySelector('#withdrawalsTable tbody');
+      tbody.innerHTML = '';
+      
+      const filteredWithdrawals = allWithdrawals.filter(w => {
+        if (currentFilter === 'all') return true;
+        return w.status === currentFilter;
+      });
+      
+      filteredWithdrawals.forEach(w => {
+        const tr = document.createElement('tr');
+        tr.setAttribute('data-withdrawal-id', w.id);
+        const requestDate = new Date(w.requested_at).toLocaleDateString();
+        const processedDate = w.processed_at ? new Date(w.processed_at).toLocaleDateString() : 'N/A';
+        const adminNotes = w.admin_notes ? `<br><small class="admin-notes">Notes: ${w.admin_notes}</small>` : '';
+        
+        // Calculate processing time for approved withdrawals
+        let processingTime = '';
+        if (w.status === 'approved' && w.processed_at && w.requested_at) {
+          const created = new Date(w.requested_at);
+          const processed = new Date(w.processed_at);
+          const diffTime = processed - created;
+          const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+          const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+          
+          if (diffDays > 0) {
+            processingTime = `<br><small class="processing-time">Processed in ${diffDays} day${diffDays > 1 ? 's' : ''}</small>`;
+          } else if (diffHours > 0) {
+            processingTime = `<br><small class="processing-time">Processed in ${diffHours} hour${diffHours > 1 ? 's' : ''}</small>`;
+          } else {
+            processingTime = `<br><small class="processing-time">Processed within 1 hour</small>`;
+          }
+        }
+        
+        // Get admin information for display
+        let adminInfo = '';
+        if (w.status === 'approved' && w.approved_by) {
+          adminInfo = `<br><small class="admin-notes">Approved by: ${w.approved_by}</small>`;
+        } else if (w.status === 'rejected' && w.rejected_by) {
+          adminInfo = `<br><small class="admin-notes">Rejected by: ${w.rejected_by}</small>`;
+        }
+        
+        // Format bank details to show bank name clearly
+        let paymentMethod = w.bank_type || 'N/A';
+        if (w.bank_type === 'mpesa') {
+          paymentMethod = 'M-Pesa';
+        } else if (w.bank_type && w.bank_type !== 'mpesa' && w.bank_type !== 'bank') {
+          // This is a specific bank name
+          paymentMethod = `🏦 ${w.bank_type}`;
+        }
+        
+        const bankDetailsText = `<strong>${w.full_name || 'N/A'}</strong><br>ID: ${w.id_number || 'N/A'}<br>${paymentMethod}<br>Account: ${w.account_number || 'N/A'}`;
+        
+        // Blur bank details for approved withdrawals
+        const bankDetails = w.status === 'approved' 
+          ? `<span style="filter: blur(3px); color: #999;">${bankDetailsText}</span>`
+          : bankDetailsText;
+        
+        tr.innerHTML = `
+          <td>${w.id}</td>
+          <td>${w.user_name || 'N/A'}</td>
+          <td>${w.user_phone || 'N/A'}</td>
+          <td>KES ${parseFloat(w.admin_display_amount || w.amount * 0.9).toLocaleString()}</td>
+          <td>${bankDetails}</td>
+          <td><span class="status-badge status-${w.status}">${w.status.toUpperCase()}</span>${adminNotes}${adminInfo}${processingTime}</td>
+          <td>${requestDate}</td>
+          <td>${processedDate}</td>
+          <td>
+            ${w.status === 'pending' ? `
+              <button class="action-btn approve" onclick="approveWithdrawal(${w.id})">Approve</button>
+              <button class="action-btn reject" onclick="rejectWithdrawal(${w.id})">Reject</button>
+            ` : w.status === 'approved' ? `
+              <span style="color: #4caf50; font-weight: 600;">✓ Approved</span>
+            ` : w.status === 'rejected' ? `
+              <span style="color: #f44336; font-weight: 600;">✗ Rejected</span>
+            ` : 'No actions'}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+    
+    function updateStats() {
+      const total = allWithdrawals.length;
+      const pending = allWithdrawals.filter(w => w.status === 'pending').length;
+      const totalAmount = allWithdrawals.reduce((sum, w) => sum + parseFloat(w.admin_display_amount || w.amount * 0.9), 0);
+      
+      document.getElementById('totalWithdrawals').textContent = total;
+      document.getElementById('pendingWithdrawals').textContent = pending;
+      document.getElementById('totalAmount').textContent = `KES ${totalAmount.toLocaleString()}`;
+    }
+    
+    function updateApprovedStats() {
+      const approvedWithdrawals = allWithdrawals.filter(w => w.status === 'approved');
+      const totalApproved = approvedWithdrawals.length;
+      const totalApprovedAmount = approvedWithdrawals.reduce((sum, w) => sum + parseFloat(w.amount), 0);
+      
+      // Calculate average processing time
+      let totalProcessingTime = 0;
+      let processedCount = 0;
+      
+      approvedWithdrawals.forEach(w => {
+        if (w.processed_at && w.created_at) {
+          const created = new Date(w.created_at);
+          const processed = new Date(w.processed_at);
+          const diffTime = processed - created;
+          const diffDays = diffTime / (1000 * 60 * 60 * 24);
+          totalProcessingTime += diffDays;
+          processedCount++;
+        }
+      });
+      
+      const avgProcessingTime = processedCount > 0 ? (totalProcessingTime / processedCount).toFixed(1) : 0;
+      
+      document.getElementById('totalApproved').textContent = totalApproved;
+      document.getElementById('totalApprovedAmount').textContent = `KES ${totalApprovedAmount.toLocaleString()}`;
+      document.getElementById('avgApprovalTime').textContent = `${avgProcessingTime} days`;
+    }
+    
+    function filterRequests(status) {
+      currentFilter = status;
+      document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      // Show/hide stats sections based on filter
+      const mainStats = document.getElementById('statsSection');
+      const approvedStats = document.getElementById('approvedStatsSection');
+      
+      if (status === 'approved') {
+        mainStats.style.display = 'none';
+        approvedStats.style.display = 'flex';
+        updateApprovedStats();
+      } else {
+        mainStats.style.display = 'flex';
+        approvedStats.style.display = 'none';
+        updateStats();
+      }
+      
+      renderWithdrawals();
+    }
+    
+    function approveWithdrawal(id) {
+      currentAction = 'approve';
+      currentWithdrawalId = id;
+      document.getElementById('modalTitle').textContent = 'Approve Withdrawal';
+      document.getElementById('confirmBtn').textContent = 'Approve';
+      document.getElementById('actionModal').style.display = 'block';
+    }
+    
+    function rejectWithdrawal(id) {
+      currentAction = 'reject';
+      currentWithdrawalId = id;
+      document.getElementById('modalTitle').textContent = 'Reject Withdrawal';
+      document.getElementById('confirmBtn').textContent = 'Reject';
+      document.getElementById('actionModal').style.display = 'block';
+    }
+    
+    function closeModal() {
+      document.getElementById('actionModal').style.display = 'none';
+      document.getElementById('adminNotes').value = '';
+    }
+    
+    document.getElementById('confirmBtn').addEventListener('click', async function() {
+      const adminNotes = document.getElementById('adminNotes').value;
+      
+      // Get admin information from localStorage
+      const adminId = localStorage.getItem('adminId');
+      const adminName = localStorage.getItem('adminName');
+      
+      if (!adminId || !adminName) {
+        showMessage('Admin session not found. Please login again.', false);
+        return;
+      }
+      
+      try {
+        const endpoint = currentAction === 'approve' ? '/api/admin/approve-withdrawal' : '/api/admin/reject-withdrawal';
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            withdrawalId: currentWithdrawalId,
+            adminNotes: adminNotes,
+            adminId: adminId,
+            adminName: adminName
+          })
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+          showMessage(result.message, true);
+          closeModal();
+          
+          // If approved, immediately blur the bank details in the current view
+          if (currentAction === 'approve') {
+            const row = document.querySelector(`tr[data-withdrawal-id="${currentWithdrawalId}"]`);
+            if (row) {
+              const bankCell = row.querySelector('td:nth-child(5)'); // Bank details column
+              if (bankCell) {
+                const originalText = bankCell.textContent;
+                bankCell.innerHTML = `<span style="filter: blur(3px); color: #999;">${originalText}</span>`;
+              }
+            }
+          }
+          
+          fetchWithdrawals(); // Refresh the list
+        } else {
+          showMessage(result.error || 'Action failed', false);
+        }
+      } catch (error) {
+        showMessage('Network error occurred', false);
+      }
+    });
+    
+    function showMessage(message, isSuccess = true) {
+      const messageDiv = document.getElementById('messageDiv');
+      messageDiv.innerHTML = `<div class="message ${isSuccess ? 'success' : 'error'}">${message}</div>`;
+      setTimeout(() => {
+        messageDiv.innerHTML = '';
+      }, 5000);
+    }
+    
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+      const modal = document.getElementById('actionModal');
+      if (event.target === modal) {
+        closeModal();
+      }
+    }
+    
+    // Auto-refresh functionality
+    let refreshInterval;
+    
+    function startAutoRefresh() {
+      // Refresh every 1 second
+      refreshInterval = setInterval(() => {
+        console.log('🔄 Auto-refreshing withdrawal data...');
+        document.getElementById('refreshIndicator').style.display = 'inline';
+        fetchWithdrawals();
+        // Hide indicator after a short delay
+        setTimeout(() => {
+          document.getElementById('refreshIndicator').style.display = 'none';
+        }, 500);
+      }, 1000);
+    }
+    
+    function stopAutoRefresh() {
+      if (refreshInterval) {
+        clearInterval(refreshInterval);
+        refreshInterval = null;
+        console.log('⏹️ Auto-refresh stopped');
+        document.getElementById('refreshIndicator').style.display = 'none';
+      }
+    }
+    
+    // Start auto-refresh when page loads
+    fetchWithdrawals();
+    startAutoRefresh();
+    
+    // Stop auto-refresh when page is hidden (user switches tabs)
+    document.addEventListener('visibilitychange', function() {
+      if (document.hidden) {
+        stopAutoRefresh();
+      } else {
+        startAutoRefresh();
+      }
+    });
+    
+    // Stop auto-refresh when page is about to unload
+    window.addEventListener('beforeunload', function() {
+      stopAutoRefresh();
+    });
+  </script>
+</body>
+</html> 

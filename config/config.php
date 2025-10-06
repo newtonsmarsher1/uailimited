@@ -25,7 +25,7 @@ define('DARAJA_ENVIRONMENT', 'sandbox');
 // CORS Configuration
 define('ALLOWED_ORIGINS', [
     'http://localhost:3000',
-    'http://localhost:8080',
+    'http://localhost:3000',
     'https://your-app-name.vercel.app'
 ]);
 

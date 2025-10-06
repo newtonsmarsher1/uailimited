@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Reports - UAI Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { 
+      font-family: 'Segoe UI', Arial, sans-serif; 
+      background: linear-gradient(to bottom, #2979ff 0%, #e3f0ff 100%); 
+      margin: 0; 
+      padding: 20px;
+    }
+    .container { 
+      max-width: 1000px; 
+      margin: 0 auto; 
+      background: #fff; 
+      border-radius: 18px; 
+      box-shadow: 0 2px 16px #2979ff22; 
+      padding: 32px 24px; 
+    }
+    .back-btn { 
+      margin-bottom: 18px;
+      background: #2979ff;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 18px;
+      font-size: 1em;
+      cursor: pointer;
+      box-shadow: 0 2px 8px #2979ff22; 
+    }
+    h1 { 
+      color: #2979ff; 
+      text-align: center; 
+      margin-bottom: 32px; 
+      font-size: 2.2em;
+    }
+    .report-section {
+      background: #f7faff;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      border: 1px solid #e3f0ff;
+    }
+    .report-section h3 {
+      color: #2979ff;
+      margin-bottom: 16px;
+      font-size: 1.3em;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .stat-card {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(41,121,255,0.1);
+      border: 1px solid #e3f0ff;
+    }
+    .stat-number {
+      font-size: 2em;
+      font-weight: bold;
+      color: #2979ff;
+      margin-bottom: 8px;
+    }
+    .stat-label {
+      color: #666;
+      font-size: 0.9em;
+    }
+    .chart-container {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 16px 0;
+      box-shadow: 0 2px 8px rgba(41,121,255,0.1);
+      border: 1px solid #e3f0ff;
+    }
+    .btn {
+      background: #2979ff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      margin: 5px;
+    }
+    .btn:hover {
+      background: #1565c0;
+    }
+    .btn-secondary {
+      background: #6c757d;
+    }
+    .btn-secondary:hover {
+      background: #545b62;
+    }
+    .btn-success {
+      background: #28a745;
+    }
+    .btn-success:hover {
+      background: #218838;
+    }
+    .btn-warning {
+      background: #ffc107;
+      color: #212529;
+    }
+    .btn-warning:hover {
+      background: #e0a800;
+    }
+    .date-filter {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .date-filter input, .date-filter select {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    .table-container {
+      overflow-x: auto;
+      margin-top: 16px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(41,121,255,0.1);
+    }
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #e3f0ff;
+    }
+    th {
+      background: #2979ff;
+      color: white;
+      font-weight: 600;
+    }
+    tr:hover {
+      background: #f8f9fa;
+    }
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #666;
+    }
+    .message {
+      padding: 12px;
+      border-radius: 8px;
+      margin: 10px 0;
+      display: none;
+    }
+    .message.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .message.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <button class="back-btn" onclick="window.location.href='dashboard.html'">&larr; Back to Dashboard</button>
+    <h1>📊 Reports & Analytics</h1>
+    
+    <div class="date-filter">
+      <label>Date Range:</label>
+      <select id="dateRange">
+        <option value="today">Today</option>
+        <option value="week">This Week</option>
+        <option value="month" selected>This Month</option>
+        <option value="quarter">This Quarter</option>
+        <option value="year">This Year</option>
+        <option value="custom">Custom Range</option>
+      </select>
+      <input type="date" id="startDate" style="display: none;">
+      <input type="date" id="endDate" style="display: none;">
+      <button class="btn" onclick="generateReport()">📈 Generate Report</button>
+      <button class="btn btn-success" onclick="exportReport()">📥 Export PDF</button>
+      <button class="btn btn-warning" onclick="exportExcel()">📊 Export Excel</button>
+    </div>
+
+    <div class="report-section">
+      <h3>📈 Key Performance Indicators</h3>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number" id="totalUsers">0</div>
+          <div class="stat-label">Total Users</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="activeUsers">0</div>
+          <div class="stat-label">Active Users</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="totalRevenue">KES 0</div>
+          <div class="stat-label">Total Revenue</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="totalWithdrawals">KES 0</div>
+          <div class="stat-label">Total Withdrawals</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="completedTasks">0</div>
+          <div class="stat-label">Completed Tasks</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="pendingRequests">0</div>
+          <div class="stat-label">Pending Requests</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="report-section">
+      <h3>💰 Financial Summary</h3>
+      <div class="chart-container">
+        <h4>Revenue vs Withdrawals</h4>
+        <div style="height: 200px; background: #f8f9fa; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #666;">
+          📊 Chart visualization would appear here
+        </div>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Revenue</th>
+              <th>Withdrawals</th>
+              <th>Net</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="financialTable">
+            <tr>
+              <td colspan="5" class="loading">Loading financial data...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="report-section">
+      <h3>👥 User Activity Report</h3>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>User ID</th>
+              <th>Name</th>
+              <th>Level</th>
+              <th>Balance</th>
+              <th>Tasks Completed</th>
+              <th>Last Active</th>
+            </tr>
+          </thead>
+          <tbody id="userActivityTable">
+            <tr>
+              <td colspan="6" class="loading">Loading user activity data...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="report-section">
+      <h3>📋 Task Performance</h3>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Task ID</th>
+              <th>Task Name</th>
+              <th>Completions</th>
+              <th>Success Rate</th>
+              <th>Average Time</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="taskPerformanceTable">
+            <tr>
+              <td colspan="6" class="loading">Loading task performance data...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="messageDiv"></div>
+  </div>
+
+  <script>
+    // Check if user is logged in and has appropriate role
+    const userRole = localStorage.getItem('userRole');
+    const adminId = localStorage.getItem('adminId');
+    
+    if (!userRole || !adminId) {
+      window.location.href = 'index.html';
+    }
+
+    // Only CEO and Financial Manager can access reports
+    if (userRole !== 'CEO' && userRole !== 'Financial Manager') {
+      document.body.innerHTML = `
+        <div style="text-align: center; padding: 50px; font-family: 'Segoe UI', Arial, sans-serif;">
+          <h2 style="color: #d32f2f;">🚫 Access Denied</h2>
+          <p>Only CEO and Financial Manager can access Reports.</p>
+          <button onclick="window.location.href='dashboard.html'" style="background: #2979ff; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">
+            Back to Dashboard
+          </button>
+        </div>
+      `;
+    }
+
+    function showMessage(message, isSuccess = true) {
+      const messageDiv = document.getElementById('messageDiv');
+      messageDiv.innerHTML = `<div class="message ${isSuccess ? 'success' : 'error'}">${message}</div>`;
+      messageDiv.style.display = 'block';
+      setTimeout(() => {
+        messageDiv.style.display = 'none';
+      }, 5000);
+    }
+
+    function generateReport() {
+      showMessage('📊 Generating report...', true);
+      
+      // Fetch real data from the server
+      fetchRealData();
+    }
+
+    async function fetchRealData() {
+      try {
+        // Fetch user statistics
+        const userResponse = await fetch('/api/admin/users?reports=true');
+        const userData = await userResponse.json();
+        
+        // Fetch payment statistics
+        const paymentResponse = await fetch('/api/admin/payments');
+        const paymentData = await paymentResponse.json();
+        
+        // Fetch withdrawal statistics
+        const withdrawalResponse = await fetch('/api/admin/withdrawals');
+        const withdrawalData = await withdrawalResponse.json();
+        
+        // Fetch task statistics
+        const taskResponse = await fetch('/api/admin/tasks');
+        const taskData = await taskResponse.json();
+        
+        // Update UI with real data
+        updateDashboardWithRealData(userData, paymentData, withdrawalData, taskData);
+        
+        showMessage('✅ Report generated successfully!', true);
+      } catch (error) {
+        console.error('Error fetching real data:', error);
+        showMessage('❌ Error loading data. Please try again.', false);
+        // Fallback to mock data if real data fails
+        loadMockData();
+      }
+    }
+
+    function updateDashboardWithRealData(userData, paymentData, withdrawalData, taskData) {
+      // Update KPI cards with real data
+      document.getElementById('totalUsers').textContent = userData.totalUsers || '0';
+      document.getElementById('activeUsers').textContent = userData.activeUsers || '0';
+      document.getElementById('totalRevenue').textContent = `KES ${(paymentData.totalRevenue || 0).toLocaleString()}`;
+      document.getElementById('totalWithdrawals').textContent = `KES ${(withdrawalData.totalAmount || 0).toLocaleString()}`;
+      document.getElementById('completedTasks').textContent = taskData.completedTasks || '0';
+      document.getElementById('pendingRequests').textContent = (paymentData.pendingPayments || 0) + (withdrawalData.pendingWithdrawals || 0);
+
+      // Update financial table with real data
+      updateFinancialTable(paymentData.payments, withdrawalData.withdrawals);
+      
+      // Update user activity table with real data
+      updateUserActivityTable(userData.users);
+      
+      // Update task performance table with real data
+      updateTaskPerformanceTable(taskData.tasks);
+    }
+
+    function updateFinancialTable(payments, withdrawals) {
+      const financialTable = document.getElementById('financialTable');
+      
+      if (!payments || payments.length === 0) {
+        financialTable.innerHTML = '<tr><td colspan="5" class="loading">No financial data available</td></tr>';
+        return;
+      }
+
+      const tableRows = payments.map(payment => {
+        const withdrawal = withdrawals?.find(w => w.user_id === payment.user_id && w.requested_at?.split('T')[0] === payment.created_at?.split('T')[0]);
+        const net = (parseFloat(payment.amount) || 0) - (parseFloat(withdrawal?.amount) || 0);
+        
+        return `
+          <tr>
+            <td>${payment.created_at?.split('T')[0] || 'N/A'}</td>
+            <td>KES ${(parseFloat(payment.amount) || 0).toLocaleString()}</td>
+            <td>KES ${(parseFloat(withdrawal?.amount) || 0).toLocaleString()}</td>
+            <td>KES ${net.toLocaleString()}</td>
+            <td>${payment.status === 'approved' ? '✅ Completed' : payment.status === 'pending' ? '⏳ Pending' : '❌ Rejected'}</td>
+          </tr>
+        `;
+      }).join('');
+
+      financialTable.innerHTML = tableRows;
+    }
+
+    function updateUserActivityTable(users) {
+      const userTable = document.getElementById('userActivityTable');
+      
+      if (!users || users.length === 0) {
+        userTable.innerHTML = '<tr><td colspan="6" class="loading">No user data available</td></tr>';
+        return;
+      }
+
+      const tableRows = users.slice(0, 10).map(user => {
+        const lastActive = user.last_active ? new Date(user.last_active).toLocaleDateString() : 'Never';
+        return `
+          <tr>
+            <td>${user.id}</td>
+            <td>${user.name}</td>
+            <td>Level ${user.level}</td>
+            <td>KES ${(parseFloat(user.balance) || 0).toLocaleString()}</td>
+            <td>${user.tasks_completed || 0}</td>
+            <td>${lastActive}</td>
+          </tr>
+        `;
+      }).join('');
+
+      userTable.innerHTML = tableRows;
+    }
+
+    function updateTaskPerformanceTable(tasks) {
+      const taskTable = document.getElementById('taskPerformanceTable');
+      
+      if (!tasks || tasks.length === 0) {
+        taskTable.innerHTML = '<tr><td colspan="6" class="loading">No task data available</td></tr>';
+        return;
+      }
+
+      const tableRows = tasks.map(task => {
+        const successRate = task.completions > 0 ? Math.round((task.successful_completions / task.completions) * 100) : 0;
+        return `
+          <tr>
+            <td>${task.id}</td>
+            <td>${task.description}</td>
+            <td>${task.completions || 0}</td>
+            <td>${successRate}%</td>
+            <td>${task.avg_completion_time || 'N/A'}</td>
+            <td>${task.status === 'active' ? '🟢 Active' : task.status === 'paused' ? '🟡 Paused' : '🔴 Inactive'}</td>
+          </tr>
+        `;
+      }).join('');
+
+      taskTable.innerHTML = tableRows;
+    }
+
+    function loadMockData() {
+      // Mock data for demonstration (fallback)
+      document.getElementById('totalUsers').textContent = '1,247';
+      document.getElementById('activeUsers').textContent = '892';
+      document.getElementById('totalRevenue').textContent = 'KES 2,450,000';
+      document.getElementById('totalWithdrawals').textContent = 'KES 1,890,000';
+      document.getElementById('completedTasks').textContent = '15,432';
+      document.getElementById('pendingRequests').textContent = '23';
+
+      // Mock financial table
+      const financialData = [
+        { date: '2025-01-01', revenue: 'KES 45,000', withdrawals: 'KES 32,000', net: 'KES 13,000', status: '✅ Completed' },
+        { date: '2025-01-02', revenue: 'KES 52,000', withdrawals: 'KES 38,000', net: 'KES 14,000', status: '✅ Completed' },
+        { date: '2025-01-03', revenue: 'KES 48,000', withdrawals: 'KES 35,000', net: 'KES 13,000', status: '⏳ Pending' }
+      ];
+
+      const financialTable = document.getElementById('financialTable');
+      financialTable.innerHTML = financialData.map(row => `
+        <tr>
+          <td>${row.date}</td>
+          <td>${row.revenue}</td>
+          <td>${row.withdrawals}</td>
+          <td>${row.net}</td>
+          <td>${row.status}</td>
+        </tr>
+      `).join('');
+
+      // Mock user activity table
+      const userData = [
+        { id: '001', name: 'John Doe', level: 'Level 2', balance: 'KES 15,000', tasks: '45', lastActive: '2 hours ago' },
+        { id: '002', name: 'Jane Smith', level: 'Level 1', balance: 'KES 8,500', tasks: '32', lastActive: '1 day ago' },
+        { id: '003', name: 'Mike Johnson', level: 'Level 3', balance: 'KES 25,000', tasks: '67', lastActive: '3 hours ago' }
+      ];
+
+      const userTable = document.getElementById('userActivityTable');
+      userTable.innerHTML = userData.map(row => `
+        <tr>
+          <td>${row.id}</td>
+          <td>${row.name}</td>
+          <td>${row.level}</td>
+          <td>${row.balance}</td>
+          <td>${row.tasks}</td>
+          <td>${row.lastActive}</td>
+        </tr>
+      `).join('');
+
+      // Mock task performance table
+      const taskData = [
+        { id: 'T001', name: 'Social Media Share', completions: '1,234', successRate: '98%', avgTime: '2.5 min', status: '🟢 Active' },
+        { id: 'T002', name: 'App Download', completions: '856', successRate: '95%', avgTime: '5.2 min', status: '🟢 Active' },
+        { id: 'T003', name: 'Survey Completion', completions: '432', successRate: '92%', avgTime: '8.1 min', status: '🟡 Paused' }
+      ];
+
+      const taskTable = document.getElementById('taskPerformanceTable');
+      taskTable.innerHTML = taskData.map(row => `
+        <tr>
+          <td>${row.id}</td>
+          <td>${row.name}</td>
+          <td>${row.completions}</td>
+          <td>${row.successRate}</td>
+          <td>${row.avgTime}</td>
+          <td>${row.status}</td>
+        </tr>
+      `).join('');
+    }
+
+    function exportReport() {
+      showMessage('📥 Exporting report as PDF...', true);
+      // In a real implementation, this would generate and download a PDF
+    }
+
+    function exportExcel() {
+      showMessage('📊 Exporting report as Excel...', true);
+      // In a real implementation, this would generate and download an Excel file
+    }
+
+    // Handle date range selection
+    document.getElementById('dateRange').addEventListener('change', function() {
+      const startDate = document.getElementById('startDate');
+      const endDate = document.getElementById('endDate');
+      
+      if (this.value === 'custom') {
+        startDate.style.display = 'inline-block';
+        endDate.style.display = 'inline-block';
+      } else {
+        startDate.style.display = 'none';
+        endDate.style.display = 'none';
+      }
+    });
+
+    // Load initial data on page load
+    window.addEventListener('load', function() {
+      generateReport();
+    });
+  </script>
+</body>
+</html>

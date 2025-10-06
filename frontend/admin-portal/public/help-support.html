@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Help & Support - UAI Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { 
+      font-family: 'Segoe UI', Arial, sans-serif; 
+      background: linear-gradient(to bottom, #2979ff 0%, #e3f0ff 100%); 
+      margin: 0; 
+      padding: 20px;
+    }
+    .container { 
+      max-width: 800px; 
+      margin: 0 auto; 
+      background: #fff; 
+      border-radius: 18px; 
+      box-shadow: 0 2px 16px #2979ff22; 
+      padding: 32px 24px; 
+    }
+    .back-btn { 
+      margin-bottom: 18px;
+      background: #2979ff;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 18px;
+      font-size: 1em;
+      cursor: pointer;
+      box-shadow: 0 2px 8px #2979ff22; 
+    }
+    h1 { 
+      color: #2979ff; 
+      text-align: center; 
+      margin-bottom: 32px; 
+      font-size: 2.2em;
+    }
+    .support-section {
+      background: #f7faff;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      border: 1px solid #e3f0ff;
+    }
+    .support-section h3 {
+      color: #2979ff;
+      margin-bottom: 16px;
+      font-size: 1.3em;
+    }
+    .faq-item {
+      background: white;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 8px rgba(41,121,255,0.1);
+      border: 1px solid #e3f0ff;
+      overflow: hidden;
+    }
+    .faq-question {
+      padding: 16px 20px;
+      background: #f8f9fa;
+      cursor: pointer;
+      font-weight: 600;
+      color: #333;
+      border-bottom: 1px solid #e3f0ff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .faq-question:hover {
+      background: #e9ecef;
+    }
+    .faq-answer {
+      padding: 16px 20px;
+      display: none;
+      color: #666;
+      line-height: 1.6;
+    }
+    .faq-answer.active {
+      display: block;
+    }
+    .contact-card {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 16px 0;
+      box-shadow: 0 2px 8px rgba(41,121,255,0.1);
+      border: 1px solid #e3f0ff;
+    }
+    .contact-info {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .contact-icon {
+      width: 40px;
+      height: 40px;
+      background: #2979ff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      margin-right: 12px;
+      font-size: 1.2em;
+    }
+    .contact-details h4 {
+      margin: 0 0 4px 0;
+      color: #333;
+    }
+    .contact-details p {
+      margin: 0;
+      color: #666;
+    }
+    .btn {
+      background: #2979ff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      margin: 5px;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn:hover {
+      background: #1565c0;
+    }
+    .btn-success {
+      background: #28a745;
+    }
+    .btn-success:hover {
+      background: #218838;
+    }
+    .btn-warning {
+      background: #ffc107;
+      color: #212529;
+    }
+    .btn-warning:hover {
+      background: #e0a800;
+    }
+    .ticket-form {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 16px 0;
+      box-shadow: 0 2px 8px rgba(41,121,255,0.1);
+      border: 1px solid #e3f0ff;
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #333;
+    }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    .form-group textarea {
+      height: 100px;
+      resize: vertical;
+    }
+    .message {
+      padding: 12px;
+      border-radius: 8px;
+      margin: 10px 0;
+      display: none;
+    }
+    .message.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .message.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .action-card {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(41,121,255,0.1);
+      border: 1px solid #e3f0ff;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .action-card:hover {
+      transform: translateY(-2px);
+    }
+    .action-icon {
+      font-size: 2em;
+      margin-bottom: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <button class="back-btn" onclick="window.location.href='dashboard.html'">&larr; Back to Dashboard</button>
+    <h1>❓ Help & Support</h1>
+    
+    <div class="quick-actions">
+      <div class="action-card" onclick="scrollToSection('faq')">
+        <div class="action-icon">❓</div>
+        <h4>FAQ</h4>
+        <p>Find answers to common questions</p>
+      </div>
+      <div class="action-card" onclick="scrollToSection('contact')">
+        <div class="action-icon">📞</div>
+        <h4>Contact Us</h4>
+        <p>Get in touch with support team</p>
+      </div>
+      <div class="action-card" onclick="scrollToSection('ticket')">
+        <div class="action-icon">🎫</div>
+        <h4>Submit Ticket</h4>
+        <p>Create a support ticket</p>
+      </div>
+      <div class="action-card" onclick="openUserGuide()">
+        <div class="action-icon">📖</div>
+        <h4>User Guide</h4>
+        <p>Read the complete user manual</p>
+      </div>
+    </div>
+
+    <div class="support-section" id="faq">
+      <h3>❓ Frequently Asked Questions</h3>
+      
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFAQ(this)">
+          How do I approve a withdrawal request?
+          <span>▼</span>
+        </div>
+        <div class="faq-answer">
+          To approve a withdrawal request, go to "Manage Withdrawals" in the sidebar, find the pending request, and click the "Approve" button. Make sure to verify the user's bank details before approval.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFAQ(this)">
+          How do I add funds to a user's account?
+          <span>▼</span>
+        </div>
+        <div class="faq-answer">
+          Only the CEO can add funds to user accounts. Go to "Manage Users", select the user, and use the "Add Funds" section. Enter the amount and click "Add Funds".
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFAQ(this)">
+          How do I change a user's password?
+          <span>▼</span>
+        </div>
+        <div class="faq-answer">
+          Go to "Manage Users", select the user, and use the "Change User Password" section. Enter the new password and confirm it, then click "Change Password".
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFAQ(this)">
+          What are the withdrawal restrictions?
+          <span>▼</span>
+        </div>
+        <div class="faq-answer">
+          Users can only withdraw once per day between 8:00 AM and 4:00 PM. Withdrawals are not allowed on Sundays, public holidays, or the second Tuesday of every month (auditing day).
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFAQ(this)">
+          How do I manage tasks?
+          <span>▼</span>
+        </div>
+        <div class="faq-answer">
+          Go to "Manage Tasks" to create, edit, or delete tasks. You can set task descriptions, rewards, and status. Users can only perform one task at a time.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFAQ(this)">
+          How does the referral system work?
+          <span>▼</span>
+        </div>
+        <div class="faq-answer">
+          Users can share their invitation code with others. When a new user joins and upgrades from temporary worker, the referrer gets rewards: KES 288 for Level 1, KES 600 for Level 2, KES 1200 for Level 3.
+        </div>
+      </div>
+    </div>
+
+    <div class="support-section" id="contact">
+      <h3>📞 Contact Information</h3>
+      
+      <div class="contact-card">
+        <div class="contact-info">
+          <div class="contact-icon">📧</div>
+          <div class="contact-details">
+            <h4>Email Support</h4>
+            <p>support@uaiagency.com</p>
+          </div>
+        </div>
+        <a href="mailto:support@uaiagency.com" class="btn">Send Email</a>
+      </div>
+
+      <div class="contact-card">
+        <div class="contact-info">
+          <div class="contact-icon">📱</div>
+          <div class="contact-details">
+            <h4>Phone Support</h4>
+            <p>+254 736 032 531</p>
+          </div>
+        </div>
+        <a href="tel:+254736032531" class="btn">Call Now</a>
+      </div>
+
+      <div class="contact-card">
+        <div class="contact-info">
+          <div class="contact-icon">💬</div>
+          <div class="contact-details">
+            <h4>WhatsApp Support</h4>
+            <p>+254 736 032 531</p>
+          </div>
+        </div>
+        <a href="https://wa.me/254736032531" class="btn btn-success" target="_blank">Chat on WhatsApp</a>
+      </div>
+
+      <div class="contact-card">
+        <div class="contact-info">
+          <div class="contact-icon">🏢</div>
+          <div class="contact-details">
+            <h4>Office Address</h4>
+            <p>Nairobi, Kenya<br>Business Hours: Mon-Fri 8:00 AM - 5:00 PM</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="support-section" id="ticket">
+      <h3>🎫 Submit Support Ticket</h3>
+      
+      <div class="ticket-form">
+        <form id="supportForm">
+          <div class="form-group">
+            <label for="ticketSubject">Subject *</label>
+            <input type="text" id="ticketSubject" required placeholder="Brief description of your issue">
+          </div>
+          
+          <div class="form-group">
+            <label for="ticketCategory">Category *</label>
+            <select id="ticketCategory" required>
+              <option value="">Select a category</option>
+              <option value="technical">Technical Issue</option>
+              <option value="payment">Payment Problem</option>
+              <option value="account">Account Issue</option>
+              <option value="withdrawal">Withdrawal Problem</option>
+              <option value="task">Task Related</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="ticketPriority">Priority *</label>
+            <select id="ticketPriority" required>
+              <option value="">Select priority</option>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+              <option value="urgent">Urgent</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="ticketDescription">Description *</label>
+            <textarea id="ticketDescription" required placeholder="Please provide detailed information about your issue..."></textarea>
+          </div>
+          
+          <button type="submit" class="btn">🎫 Submit Ticket</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="messageDiv"></div>
+  </div>
+
+  <script>
+    // Check if user is logged in
+    const userRole = localStorage.getItem('userRole');
+    const adminId = localStorage.getItem('adminId');
+    
+    if (!userRole || !adminId) {
+      window.location.href = 'index.html';
+    }
+
+    function showMessage(message, isSuccess = true) {
+      const messageDiv = document.getElementById('messageDiv');
+      messageDiv.innerHTML = `<div class="message ${isSuccess ? 'success' : 'error'}">${message}</div>`;
+      messageDiv.style.display = 'block';
+      setTimeout(() => {
+        messageDiv.style.display = 'none';
+      }, 5000);
+    }
+
+    function toggleFAQ(element) {
+      const answer = element.nextElementSibling;
+      const span = element.querySelector('span');
+      
+      if (answer.classList.contains('active')) {
+        answer.classList.remove('active');
+        span.textContent = '▼';
+      } else {
+        answer.classList.add('active');
+        span.textContent = '▲';
+      }
+    }
+
+    function scrollToSection(sectionId) {
+      const element = document.getElementById(sectionId);
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function openUserGuide() {
+      showMessage('📖 User guide will open in a new tab', true);
+      // In a real implementation, this would open a PDF or web page
+    }
+
+    // Handle support ticket submission
+    document.getElementById('supportForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const subject = document.getElementById('ticketSubject').value;
+      const category = document.getElementById('ticketCategory').value;
+      const priority = document.getElementById('ticketPriority').value;
+      const description = document.getElementById('ticketDescription').value;
+      
+      // In a real implementation, this would send the ticket to the server
+      showMessage('✅ Support ticket submitted successfully! Ticket ID: #' + Math.floor(Math.random() * 10000), true);
+      
+      // Reset form
+      this.reset();
+    });
+
+    // Auto-populate admin info in ticket
+    window.addEventListener('load', function() {
+      const adminName = localStorage.getItem('adminName');
+      if (adminName) {
+        // You could pre-fill some fields with admin info
+        console.log('Admin logged in:', adminName);
+      }
+    });
+  </script>
+</body>
+</html>

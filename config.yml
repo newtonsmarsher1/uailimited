@@ -1,0 +1,7 @@
+tunnel: uai-agency 
+credentials-file: C:\Users\PC\.cloudflared\>uai-agency<.json 
+ 
+ingress: 
+  - hostname: uai-agency.your-domain.com 
+    service: http://localhost:3000 
+  - service: http_status:404 

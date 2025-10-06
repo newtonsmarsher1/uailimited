@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>UAI Logo Generator</title>
+</head>
+<body>
+    <canvas id="logoCanvas" width="512" height="512" style="display:none;"></canvas>
+    <div id="output"></div>
+    
+    <script>
+        function generateUAIlogo() {
+            const canvas = document.getElementById('logoCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Create gradient background
+            const gradient = ctx.createLinearGradient(0, 0, 512, 512);
+            gradient.addColorStop(0, '#2979ff');
+            gradient.addColorStop(1, '#ad7ce6');
+            
+            // Draw background circle
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(256, 256, 240, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Draw white border
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 8;
+            ctx.stroke();
+            
+            // Draw UAI text
+            ctx.fillStyle = '#fff';
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2;
+            ctx.font = 'bold 120px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.strokeText('UAI', 256, 280);
+            ctx.fillText('UAI', 256, 280);
+            
+            // Draw decorative circles
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.beginPath();
+            ctx.arc(256, 180, 20, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.arc(256, 380, 15, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.arc(180, 256, 18, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.arc(332, 256, 18, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Convert to data URL
+            const dataURL = canvas.toDataURL('image/png');
+            
+            // Create download links for different sizes
+            const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+            const output = document.getElementById('output');
+            
+            sizes.forEach(size => {
+                const link = document.createElement('a');
+                link.href = dataURL;
+                link.download = `uai-logo-${size}x${size}.png`;
+                link.textContent = `Download ${size}x${size} PNG`;
+                link.style.display = 'block';
+                link.style.margin = '10px';
+                link.style.padding = '10px';
+                link.style.backgroundColor = '#2979ff';
+                link.style.color = '#fff';
+                link.style.textDecoration = 'none';
+                link.style.borderRadius = '5px';
+                output.appendChild(link);
+            });
+        }
+        
+        // Generate logos when page loads
+        window.onload = generateUAIlogo;
+    </script>
+</body>
+</html>
+

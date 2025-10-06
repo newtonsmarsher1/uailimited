@@ -223,22 +223,39 @@ function handleGetUserStats() {
         [$user['id']]
     );
     
-    // Get this month's earnings
+    // Get this month's earnings from user_earnings_summary table
     $monthEarnings = $db->fetch(
-        "SELECT COALESCE(SUM(reward_earned), 0) as total FROM user_tasks 
-         WHERE user_id = ? AND MONTH(completed_at) = MONTH(CURDATE()) 
-         AND YEAR(completed_at) = YEAR(CURDATE())",
+        "SELECT COALESCE(ues.this_month_earnings, 0) as total 
+         FROM users u 
+         LEFT JOIN user_earnings_summary ues ON u.id = ues.user_id 
+         WHERE u.id = ?",
+        [$user['id']]
+    );
+    
+    // Get referral earnings for this month
+    $referralEarnings = $db->fetch(
+        "SELECT COALESCE(SUM(reward_amount), 0) as total FROM referral_rewards 
+         WHERE inviter_id = ? AND DATE(created_at) >= DATE_FORMAT(NOW(), '%Y-%m-01')",
+        [$user['id']]
+    );
+    
+    // Get total referral earnings (all time)
+    $totalReferralEarnings = $db->fetch(
+        "SELECT COALESCE(SUM(reward_amount), 0) as total FROM referral_rewards 
+         WHERE inviter_id = ?",
         [$user['id']]
     );
     
     successResponse([
-        'today_earnings' => (float)$todayEarnings['total'],
+        'today_earning' => (float)$todayEarnings['total'],
         'tasks_completed_today' => (int)$tasksCompleted['count'],
-        'month_earnings' => (float)$monthEarnings['total'],
+        'month_earning' => (float)$monthEarnings['total'],
         'wallet_balance' => (float)$user['wallet_balance'],
         'bond_balance' => (float)$user['bond_balance'],
-        'total_earned' => (float)$user['total_earned'],
-        'total_withdrawn' => (float)$user['total_withdrawn']
+        'total_revenue' => (float)$monthEarnings['total'], // Use month earnings as total revenue
+        'total_withdrawn' => (float)$user['total_withdrawn'],
+        'referral_earnings_month' => (float)$referralEarnings['total'],
+        'referral_earnings_total' => (float)$totalReferralEarnings['total']
     ]);
 }
 

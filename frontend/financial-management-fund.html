@@ -1,0 +1,2792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>UAI Wealth Fund - Investments</title>
+  <style>
+    :root {
+      --brand-yellow: #2979ff;
+      --brand-dark: #282828;
+      --brand-accent: #2979ff;
+      --icon-bg: #fff200;
+      --icon-color: #282828;
+      --menu-bg: #fff;
+      --menu-icon-active: var(--brand-accent);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: var(--menu-bg);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+    
+    .top-section {
+      background: var(--brand-yellow);
+      min-height: 120px;
+      position: relative;
+      padding: 0 0 12px 0;
+      border-bottom-left-radius: 24px;
+      border-bottom-right-radius: 24px;
+    }
+    
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 18px 0 18px;
+    }
+    
+    .back-btn {
+      background: var(--icon-bg);
+      color: var(--icon-color);
+      border: none;
+      border-radius: 50%;
+      width: 36px; height: 36px;
+      font-size: 18px;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(41,121,255,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s;
+      user-select: none;
+    }
+    
+    .back-btn:hover { background: #fff; }
+    
+    .page-title {
+      font-weight: 700;
+      font-size: 1.5em;
+      color: #fff;
+      text-align: center;
+      flex: 1;
+      margin: 0 20px;
+    }
+    
+    .notification-btn {
+      background: var(--icon-bg);
+      color: var(--icon-color);
+      border: none;
+      border-radius: 50%;
+      width: 36px; height: 36px;
+      font-size: 22px;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(41,121,255,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s;
+      user-select: none;
+    }
+    
+    .notification-btn:hover { background: #fff; }
+    
+    .content-area {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    
+    .investment-card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(41,121,255,0.1);
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    
+    
+    .investment-header {
+      padding: 20px;
+      text-align: center;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .bank-logo {
+      width: 60px;
+      height: 60px;
+      border-radius: 12px;
+      margin: 0 auto 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1.2em;
+      color: white;
+    }
+    
+    .wells-fargo-logo {
+      background: linear-gradient(135deg, #d32f2f, #b71c1c);
+    }
+    
+    .citibank-logo {
+      background: linear-gradient(135deg, #1976d2, #0d47a1);
+    }
+    
+    .bank-name {
+      font-size: 1.4em;
+      font-weight: 700;
+      color: var(--brand-dark);
+      margin-bottom: 8px;
+    }
+    
+    .investment-details {
+      display: flex;
+      justify-content: space-around;
+      margin: 16px 0;
+    }
+    
+    .detail-item {
+      text-align: center;
+      flex: 1;
+    }
+    
+    .detail-label {
+      font-size: 0.9em;
+      color: #666;
+      margin-bottom: 4px;
+    }
+    
+    .detail-value {
+      font-size: 1.1em;
+      font-weight: 600;
+      color: var(--brand-dark);
+    }
+    
+    .investment-form {
+      padding: 20px;
+      background: #f8f9fa;
+    }
+    
+    .form-group {
+      margin-bottom: 16px;
+    }
+    
+    .form-label {
+      display: block;
+      font-weight: 600;
+      color: var(--brand-dark);
+      margin-bottom: 8px;
+      font-size: 0.95em;
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1em;
+      transition: border-color 0.3s;
+      background: #fff;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: var(--brand-accent);
+    }
+    
+    .form-select {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1em;
+      background: #fff;
+      cursor: pointer;
+    }
+    
+    .invest-btn {
+      width: 100%;
+      background: var(--brand-yellow);
+      color: white;
+      border: none;
+      padding: 14px 20px;
+      border-radius: 8px;
+      font-size: 1.1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin-top: 8px;
+    }
+    
+    .invest-btn:hover {
+      background: #1565c0;
+    }
+    
+    .investment-history {
+      padding: 20px;
+    }
+    
+    .history-title {
+      font-size: 1.2em;
+      font-weight: 600;
+      color: var(--brand-dark);
+      margin-bottom: 16px;
+    }
+    
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9em;
+    }
+    
+    .history-table th {
+      background: #f5f5f5;
+      padding: 12px 8px;
+      text-align: left;
+      font-weight: 600;
+      color: #666;
+      border-bottom: 2px solid #e0e0e0;
+    }
+    
+    .history-table td {
+      padding: 12px 8px;
+      border-bottom: 1px solid #f0f0f0;
+      color: var(--brand-dark);
+    }
+    
+    .no-investments {
+      text-align: center;
+      color: #999;
+      padding: 40px 20px;
+      font-style: italic;
+    }
+    
+    .status-active {
+      color: #4caf50;
+      font-weight: 600;
+    }
+    
+    .status-matured {
+      color: #f44336;
+      font-weight: 600;
+    }
+    
+    .status-completed {
+      color: #ff9800;
+      font-weight: 600;
+    }
+    
+    /* Bottom nav */
+    nav.bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 56px;
+      background: #fff;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      border-top: 1px solid #e3f0ff;
+      z-index: 1000;
+    }
+    
+    nav.bottom-nav a {
+      background: transparent;
+      border: none;
+      color: #282828;
+      font-size: 0.85em;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      user-select: none;
+      transition: color 0.3s;
+      padding: 2px 4px;
+      flex-shrink: 0;
+      text-decoration: none;
+    }
+    
+    nav.bottom-nav a.active,
+    nav.bottom-nav a:focus {
+      color: var(--menu-icon-active);
+    }
+    
+    nav.bottom-nav a svg {
+      width: 22px;
+      height: 22px;
+      margin-bottom: 2px;
+      fill: currentColor;
+    }
+    
+    @media (max-width: 720px) {
+      .investment-details {
+        flex-direction: column;
+        gap: 12px;
+      }
+      
+      .history-table {
+        font-size: 0.8em;
+      }
+      
+      .history-table th,
+      .history-table td {
+        padding: 8px 4px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="top-section">
+    <div class="header-row">
+      <button class="back-btn" onclick="window.history.back()" aria-label="Go Back">
+        ←
+      </button>
+      <h1 class="page-title">UAI Wealth Fund</h1>
+      <button class="notification-btn" aria-label="Notifications" title="Notifications" onclick="window.location.href='notifications.html'">
+        &#128276;
+      </button>
+    </div>
+  </div>
+  
+  <div class="content-area">
+    <!-- Manual refresh buttons -->
+    <div style="text-align: center; margin-bottom: 20px;">
+      <button onclick="refreshInvestmentData()" style="
+        background: #2979ff;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-weight: 600;
+        cursor: pointer;
+        margin: 0 5px;
+      ">🔄 Refresh Investment Status</button>
+      <button onclick="processPayouts()" style="
+        background: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-weight: 600;
+        cursor: pointer;
+        margin: 0 5px;
+      ">💰 Process Payouts</button>
+    </div>
+    
+    <!-- UAI Starter Fund Investment Card -->
+    <div class="investment-card" style="position: relative;">
+      <div class="investment-header">
+        <div class="bank-logo" style="background: linear-gradient(135deg, #e91e63, #c2185b);">STARTER</div>
+        <div class="bank-name">UAI Starter Fund</div>
+        <div class="investment-details">
+          <div class="detail-item">
+            <div class="detail-label">📈 ROI</div>
+            <div class="detail-value">2.3% daily</div>
+            <div class="detail-label">for 10 days</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">💰 Minimum</div>
+            <div class="detail-value">KES 100</div>
+          </div>
+        </div>
+        
+        <div class="calculation-display" style="background: #f8f9fa; padding: 15px; margin: 15px 0; border-radius: 8px; border: 1px solid #e0e0e0;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <span style="font-weight: 600; color: #666;">Expected Return:</span>
+            <span style="font-weight: 700; color: #4caf50;" id="starter-fund-expected">KES 0.00</span>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="font-weight: 600; color: #666;">Interest Amount:</span>
+            <span style="font-weight: 700; color: #2196f3;" id="starter-fund-interest">KES 0.00</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="investment-form">
+        <div class="form-group">
+          <label class="form-label">Enter Amount</label>
+          <input type="number" class="form-input" id="starter-fund-amount" placeholder="Enter investment amount" min="100">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Select Wallet</label>
+          <select class="form-select" id="starter-fund-wallet">
+            <option value="">Choose wallet</option>
+            <option value="main">Main Wallet</option>
+          </select>
+        </div>
+        <button class="invest-btn" onclick="investInStarterFund()">Invest Now</button>
+      </div>
+      
+      <div class="investment-history">
+        <div class="history-title">Your Investments in UAI Starter Fund:</div>
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Amount</th>
+              <th>ROI</th>
+              <th>Duration</th>
+              <th>Start</th>
+              <th>Last Paid</th>
+              <th>Ends</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="starter-fund-history">
+            <tr>
+              <td colspan="7" class="no-investments">No investments yet</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- UAI Micro Fund Investment Card -->
+    <div class="investment-card" style="position: relative;">
+      <div class="investment-header">
+        <div class="bank-logo" style="background: linear-gradient(135deg, #4caf50, #2e7d32);">UAI</div>
+        <div class="bank-name">UAI Micro Fund</div>
+        <div class="investment-details">
+          <div class="detail-item">
+            <div class="detail-label">📈 ROI</div>
+            <div class="detail-value">2.5% daily</div>
+            <div class="detail-label">for 15 days</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">💰 Minimum</div>
+            <div class="detail-value">KES 200</div>
+          </div>
+        </div>
+        <div class="calculation-display" style="background: #f8f9fa; padding: 15px; margin: 15px 0; border-radius: 8px; border: 1px solid #e0e0e0;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <span style="font-weight: 600; color: #666;">Expected Return:</span>
+            <span style="font-weight: 700; color: #4caf50;" id="uai-micro-expected">KES 0.00</span>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="font-weight: 600; color: #666;">Interest Amount:</span>
+            <span style="font-weight: 700; color: #2196f3;" id="uai-micro-interest">KES 0.00</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="investment-form">
+        <div class="form-group">
+          <label class="form-label">Enter Amount</label>
+          <input type="number" class="form-input" id="uai-micro-amount" placeholder="Enter investment amount" min="200">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Select Wallet</label>
+          <select class="form-select" id="uai-micro-wallet">
+            <option value="">Choose wallet</option>
+            <option value="main">Main Wallet</option>
+          </select>
+        </div>
+        <button class="invest-btn" onclick="investInUAIMicro()">Invest Now</button>
+      </div>
+      
+      <div class="investment-history">
+        <div class="history-title">Your Investments in UAI Micro Fund:</div>
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Amount</th>
+              <th>ROI</th>
+              <th>Duration</th>
+              <th>Start</th>
+              <th>Last Paid</th>
+              <th>Ends</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="uai-micro-history">
+            <tr>
+              <td colspan="7" class="no-investments">No investments yet</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Agriculture Fund Investment Card -->
+    <div class="investment-card" style="position: relative;">
+      <div class="investment-header">
+        <div class="bank-logo" style="background: linear-gradient(135deg, #8bc34a, #689f38);">AGRI</div>
+        <div class="bank-name">Agriculture Fund</div>
+        <div class="investment-details">
+          <div class="detail-item">
+            <div class="detail-label">📈 ROI</div>
+            <div class="detail-value">2.7% daily</div>
+            <div class="detail-label">for 20 days</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">💰 Minimum</div>
+            <div class="detail-value">KES 300</div>
+          </div>
+        </div>
+        <div class="calculation-display" style="background: #f8f9fa; padding: 15px; margin: 15px 0; border-radius: 8px; border: 1px solid #e0e0e0;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <span style="font-weight: 600; color: #666;">Expected Return:</span>
+            <span style="font-weight: 700; color: #4caf50;" id="agriculture-expected">KES 0.00</span>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="font-weight: 600; color: #666;">Interest Amount:</span>
+            <span style="font-weight: 700; color: #2196f3;" id="agriculture-interest">KES 0.00</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="investment-form">
+        <div class="form-group">
+          <label class="form-label">Enter Amount</label>
+          <input type="number" class="form-input" id="agriculture-amount" placeholder="Enter investment amount" min="300">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Select Wallet</label>
+          <select class="form-select" id="agriculture-wallet">
+            <option value="">Choose wallet</option>
+            <option value="main">Main Wallet</option>
+          </select>
+        </div>
+        <button class="invest-btn" onclick="investInAgriculture()">Invest Now</button>
+      </div>
+      
+      <div class="investment-history">
+        <div class="history-title">Your Investments in Agriculture Fund:</div>
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Amount</th>
+              <th>ROI</th>
+              <th>Duration</th>
+              <th>Start</th>
+              <th>Last Paid</th>
+              <th>Ends</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="agriculture-history">
+            <tr>
+              <td colspan="7" class="no-investments">No investments yet</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Tech Growth Fund Investment Card -->
+    <div class="investment-card" style="position: relative;">
+      <div class="investment-header">
+        <div class="bank-logo" style="background: linear-gradient(135deg, #ff9800, #f57c00);">TECH</div>
+        <div class="bank-name">Tech Growth Fund</div>
+        <div class="investment-details">
+          <div class="detail-item">
+            <div class="detail-label">📈 ROI</div>
+            <div class="detail-value">2.8% daily</div>
+            <div class="detail-label">for 25 days</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">💰 Minimum</div>
+            <div class="detail-value">KES 500</div>
+          </div>
+        </div>
+        <div class="calculation-display" style="background: #f8f9fa; padding: 15px; margin: 15px 0; border-radius: 8px; border: 1px solid #e0e0e0;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <span style="font-weight: 600; color: #666;">Expected Return:</span>
+            <span style="font-weight: 700; color: #4caf50;" id="tech-growth-expected">KES 0.00</span>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="font-weight: 600; color: #666;">Interest Amount:</span>
+            <span style="font-weight: 700; color: #2196f3;" id="tech-growth-interest">KES 0.00</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="investment-form">
+        <div class="form-group">
+          <label class="form-label">Enter Amount</label>
+          <input type="number" class="form-input" id="tech-growth-amount" placeholder="Enter investment amount" min="500">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Select Wallet</label>
+          <select class="form-select" id="tech-growth-wallet">
+            <option value="">Choose wallet</option>
+            <option value="main">Main Wallet</option>
+          </select>
+        </div>
+        <button class="invest-btn" onclick="investInTechGrowth()">Invest Now</button>
+      </div>
+      
+      <div class="investment-history">
+        <div class="history-title">Your Investments in Tech Growth Fund:</div>
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Amount</th>
+              <th>ROI</th>
+              <th>Duration</th>
+              <th>Start</th>
+              <th>Last Paid</th>
+              <th>Ends</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="tech-growth-history">
+            <tr>
+              <td colspan="7" class="no-investments">No investments yet</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Crypto Mining Fund Investment Card -->
+    <div class="investment-card" style="position: relative;">
+      <div class="investment-header">
+        <div class="bank-logo" style="background: linear-gradient(135deg, #607d8b, #37474f);">CRYPTO</div>
+        <div class="bank-name">Crypto Mining Fund</div>
+        <div class="investment-details">
+          <div class="detail-item">
+            <div class="detail-label">📈 ROI</div>
+            <div class="detail-value">3.5% daily</div>
+            <div class="detail-label">for 45 days</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">💰 Minimum</div>
+            <div class="detail-value">KES 750</div>
+          </div>
+        </div>
+        <div class="calculation-display" style="background: #f8f9fa; padding: 15px; margin: 15px 0; border-radius: 8px; border: 1px solid #e0e0e0;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <span style="font-weight: 600; color: #666;">Expected Return:</span>
+            <span style="font-weight: 700; color: #4caf50;" id="crypto-mining-expected">KES 0.00</span>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="font-weight: 600; color: #666;">Interest Amount:</span>
+            <span style="font-weight: 700; color: #2196f3;" id="crypto-mining-interest">KES 0.00</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="investment-form">
+        <div class="form-group">
+          <label class="form-label">Enter Amount</label>
+          <input type="number" class="form-input" id="crypto-mining-amount" placeholder="Enter investment amount" min="750">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Select Wallet</label>
+          <select class="form-select" id="crypto-mining-wallet">
+            <option value="">Choose wallet</option>
+            <option value="main">Main Wallet</option>
+          </select>
+        </div>
+        <button class="invest-btn" onclick="investInCryptoMining()">Invest Now</button>
+      </div>
+      
+      <div class="investment-history">
+        <div class="history-title">Your Investments in Crypto Mining Fund:</div>
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Amount</th>
+              <th>ROI</th>
+              <th>Duration</th>
+              <th>Start</th>
+              <th>Last Paid</th>
+              <th>Ends</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="crypto-mining-history">
+            <tr>
+              <td colspan="7" class="no-investments">No investments yet</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Real Estate Fund Investment Card -->
+    <div class="investment-card" style="position: relative;">
+      <div class="investment-header">
+        <div class="bank-logo" style="background: linear-gradient(135deg, #9c27b0, #6a1b9a);">REAL</div>
+        <div class="bank-name">Real Estate Fund</div>
+        <div class="investment-details">
+          <div class="detail-item">
+            <div class="detail-label">📈 ROI</div>
+            <div class="detail-value">3.2% daily</div>
+            <div class="detail-label">for 60 days</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">💰 Minimum</div>
+            <div class="detail-value">KES 1,000</div>
+          </div>
+        </div>
+        <div class="calculation-display" style="background: #f8f9fa; padding: 15px; margin: 15px 0; border-radius: 8px; border: 1px solid #e0e0e0;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <span style="font-weight: 600; color: #666;">Expected Return:</span>
+            <span style="font-weight: 700; color: #4caf50;" id="real-estate-expected">KES 0.00</span>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="font-weight: 600; color: #666;">Interest Amount:</span>
+            <span style="font-weight: 700; color: #2196f3;" id="real-estate-interest">KES 0.00</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="investment-form">
+        <div class="form-group">
+          <label class="form-label">Enter Amount</label>
+          <input type="number" class="form-input" id="real-estate-amount" placeholder="Enter investment amount" min="1000">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Select Wallet</label>
+          <select class="form-select" id="real-estate-wallet">
+            <option value="">Choose wallet</option>
+            <option value="main">Main Wallet</option>
+          </select>
+        </div>
+        <button class="invest-btn" onclick="investInRealEstate()">Invest Now</button>
+      </div>
+      
+      <div class="investment-history">
+        <div class="history-title">Your Investments in Real Estate Fund:</div>
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Amount</th>
+              <th>ROI</th>
+              <th>Duration</th>
+              <th>Start</th>
+              <th>Last Paid</th>
+              <th>Ends</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="real-estate-history">
+            <tr>
+              <td colspan="7" class="no-investments">No investments yet</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Wells Fargo Investment Card -->
+    <div class="investment-card" style="position: relative;">
+      <div class="investment-header">
+        <div class="bank-logo wells-fargo-logo">WF</div>
+        <div class="bank-name">Wells Fargo</div>
+        <div class="investment-details">
+          <div class="detail-item">
+            <div class="detail-label">📈 ROI</div>
+            <div class="detail-value">2.9% daily</div>
+            <div class="detail-label">for 30 days</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">💰 Minimum</div>
+            <div class="detail-value">KES 2,500</div>
+          </div>
+        </div>
+        <div class="calculation-display" style="background: #f8f9fa; padding: 15px; margin: 15px 0; border-radius: 8px; border: 1px solid #e0e0e0;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <span style="font-weight: 600; color: #666;">Expected Return:</span>
+            <span style="font-weight: 700; color: #4caf50;" id="wells-fargo-expected">KES 0.00</span>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="font-weight: 600; color: #666;">Interest Amount:</span>
+            <span style="font-weight: 700; color: #2196f3;" id="wells-fargo-interest">KES 0.00</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="investment-form">
+        <div class="form-group">
+          <label class="form-label">Enter Amount</label>
+          <input type="number" class="form-input" id="wellsfargo-amount" placeholder="Enter investment amount" min="100">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Select Wallet</label>
+          <select class="form-select" id="wellsfargo-wallet">
+            <option value="">Choose wallet</option>
+            <option value="main">Main Wallet</option>
+          </select>
+        </div>
+        <button class="invest-btn" onclick="investInWellsFargo()">Invest Now</button>
+      </div>
+      
+      <div class="investment-history">
+        <div class="history-title">Your Investments in Wells Fargo:</div>
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Amount</th>
+              <th>ROI</th>
+              <th>Duration</th>
+              <th>Start</th>
+              <th>Last Paid</th>
+              <th>Ends</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="wells-fargo-history">
+            <tr>
+              <td colspan="7" class="no-investments">No investments yet</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <!-- Citibank Investment Card -->
+    <div class="investment-card" style="position: relative;">
+      <div class="investment-header">
+        <div class="bank-logo citibank-logo">CITI</div>
+        <div class="bank-name">Citibank</div>
+        <div class="investment-details">
+          <div class="detail-item">
+            <div class="detail-label">📈 ROI</div>
+            <div class="detail-value">3% daily</div>
+            <div class="detail-label">for 40 days</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">💰 Minimum</div>
+            <div class="detail-value">KES 3,000</div>
+          </div>
+        </div>
+        <div class="calculation-display" style="background: #f8f9fa; padding: 15px; margin: 15px 0; border-radius: 8px; border: 1px solid #e0e0e0;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <span style="font-weight: 600; color: #666;">Expected Return:</span>
+            <span style="font-weight: 700; color: #4caf50;" id="citibank-expected">KES 0.00</span>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="font-weight: 600; color: #666;">Interest Amount:</span>
+            <span style="font-weight: 700; color: #2196f3;" id="citibank-interest">KES 0.00</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="investment-form">
+        <div class="form-group">
+          <label class="form-label">Enter Amount</label>
+          <input type="number" class="form-input" id="citibank-amount" placeholder="Enter investment amount" min="3000" disabled>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Select Wallet</label>
+          <select class="form-select" id="citibank-wallet" disabled>
+            <option value="">Choose wallet</option>
+            <option value="main">Main Wallet</option>
+          </select>
+        </div>
+        <button class="invest-btn" onclick="investInCitibank()" disabled style="background: #ccc; cursor: not-allowed;">Temporarily Unavailable</button>
+      </div>
+      
+      <div class="investment-history">
+        <div class="history-title">Your Investments in Citibank:</div>
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Amount</th>
+              <th>ROI</th>
+              <th>Duration</th>
+              <th>Start</th>
+              <th>Last Paid</th>
+              <th>Ends</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="citibank-history">
+            <tr>
+              <td colspan="7" class="no-investments">No investments yet</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Gold Investment Fund Investment Card -->
+    <div class="investment-card" style="opacity: 0.6; position: relative;">
+      <div class="investment-header">
+        <div class="bank-logo" style="background: linear-gradient(135deg, #ffd700, #ffb300);">GOLD</div>
+        <div class="bank-name">Gold Investment Fund</div>
+        <div class="investment-details">
+          <div class="detail-item">
+            <div class="detail-label">📈 ROI</div>
+            <div class="detail-value">3.8% daily</div>
+            <div class="detail-label">for 90 days</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">💰 Minimum</div>
+            <div class="detail-value">KES 5,000</div>
+          </div>
+        </div>
+        <div class="calculation-display" style="background: #f8f9fa; padding: 15px; margin: 15px 0; border-radius: 8px; border: 1px solid #e0e0e0;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <span style="font-weight: 600; color: #666;">Expected Return:</span>
+            <span style="font-weight: 700; color: #4caf50;" id="gold-fund-expected">KES 0.00</span>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="font-weight: 600; color: #666;">Interest Amount:</span>
+            <span style="font-weight: 700; color: #2196f3;" id="gold-fund-interest">KES 0.00</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="investment-form">
+        <div class="form-group">
+          <label class="form-label">Enter Amount</label>
+          <input type="number" class="form-input" id="gold-fund-amount" placeholder="Enter investment amount" min="5000" disabled>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Select Wallet</label>
+          <select class="form-select" id="gold-fund-wallet" disabled>
+            <option value="">Choose wallet</option>
+            <option value="main">Main Wallet</option>
+          </select>
+        </div>
+        <button class="invest-btn" onclick="investInGoldFund()" disabled style="background: #ccc; cursor: not-allowed;">Temporarily Unavailable</button>
+      </div>
+      
+      <div class="investment-history">
+        <div class="history-title">Your Investments in Gold Investment Fund:</div>
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Amount</th>
+              <th>ROI</th>
+              <th>Duration</th>
+              <th>Start</th>
+              <th>Last Paid</th>
+              <th>Ends</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="gold-fund-history">
+            <tr>
+              <td colspan="7" class="no-investments">No investments yet</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Diamond Elite Fund Investment Card -->
+    <div class="investment-card" style="opacity: 0.6; position: relative;">
+      <div class="investment-header">
+        <div class="bank-logo" style="background: linear-gradient(135deg, #00bcd4, #0097a7);">DIAMOND</div>
+        <div class="bank-name">Diamond Elite Fund</div>
+        <div class="investment-details">
+          <div class="detail-item">
+            <div class="detail-label">📈 ROI</div>
+            <div class="detail-value">4.5% daily</div>
+            <div class="detail-label">for 120 days</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">💰 Minimum</div>
+            <div class="detail-value">KES 10,000</div>
+          </div>
+        </div>
+        <div class="calculation-display" style="background: #f8f9fa; padding: 15px; margin: 15px 0; border-radius: 8px; border: 1px solid #e0e0e0;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <span style="font-weight: 600; color: #666;">Expected Return:</span>
+            <span style="font-weight: 700; color: #4caf50;" id="diamond-elite-expected">KES 0.00</span>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="font-weight: 600; color: #666;">Interest Amount:</span>
+            <span style="font-weight: 700; color: #2196f3;" id="diamond-elite-interest">KES 0.00</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="investment-form">
+        <div class="form-group">
+          <label class="form-label">Enter Amount</label>
+          <input type="number" class="form-input" id="diamond-elite-amount" placeholder="Enter investment amount" min="10000" disabled>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Select Wallet</label>
+          <select class="form-select" id="diamond-elite-wallet" disabled>
+            <option value="">Choose wallet</option>
+            <option value="main">Main Wallet</option>
+          </select>
+        </div>
+        <button class="invest-btn" onclick="investInDiamondElite()" disabled style="background: #ccc; cursor: not-allowed;">Temporarily Unavailable</button>
+      </div>
+      
+      <div class="investment-history">
+        <div class="history-title">Your Investments in Diamond Elite Fund:</div>
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Amount</th>
+              <th>ROI</th>
+              <th>Duration</th>
+              <th>Start</th>
+              <th>Last Paid</th>
+              <th>Ends</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="diamond-elite-history">
+            <tr>
+              <td colspan="7" class="no-investments">No investments yet</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  
+  <nav class="bottom-nav" role="navigation" aria-label="Bottom Navigation">
+    <a href="home.html" id="nav-home">
+      <svg viewBox="0 0 24 24"><path d="M3 21v-7.5l9-6.5 9 6.5V21H3z"/></svg>
+      <span>Home</span>
+    </a>
+    <a href="task.html" id="nav-task">
+      <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 10h8M8 14h4"/></svg>
+      <span>Task</span>
+    </a>
+    <a href="team management.html" id="nav-team">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3"/><path d="M12 15c-4 0-8 2-8 4v1h16v-1c0-2-4-4-8-4z"/></svg>
+      <span>Team Management</span>
+    </a>
+    <a href="level.html" id="nav-level">
+      <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 7v10l10 5 10-5V7"/></svg>
+      <span>Level</span>
+    </a>
+    <a href="profile.html" id="nav-profile">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M2 20v-2a8 8 0 0 1 16 0v2"/></svg>
+      <span>Profile</span>
+    </a>
+  </nav>
+  
+  <script>
+    // User level and temporary worker status
+    let isTemporaryWorker = false;
+    let userLevel = 1;
+
+    // Debounce mechanism to prevent rapid API calls
+    let lastApiCall = 0;
+    const API_DEBOUNCE_TIME = 5000; // 5 seconds
+
+    // Fetch user level data from API
+    async function fetchUserLevel() {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        const response = await fetch('/api/user/stats', {
+          headers: { Authorization: "Bearer " + token }
+        });
+
+        if (response.ok) {
+          const responseText = await response.text();
+          let data;
+          
+                  try {
+          data = JSON.parse(responseText);
+        } catch (jsonError) {
+          console.error('Invalid JSON response:', responseText);
+          console.error('JSON parse error:', jsonError);
+          
+          // Check if this is a login redirect
+          if (checkForLoginRedirect(responseText)) {
+            return;
+          }
+          return;
+        }
+          
+          isTemporaryWorker = data.is_temporary_worker || false;
+          userLevel = data.is_temporary_worker ? 0 : (data.level || 1);
+          
+          console.log('User level data loaded:', { isTemporaryWorker, userLevel });
+          
+          // Apply restrictions based on user level
+          applyUserLevelRestrictions();
+        }
+      } catch (error) {
+        console.error('Error fetching user level:', error);
+      }
+    }
+
+    function applyUserLevelRestrictions() {
+      // Remove temporary unavailable notifications for users above level 1
+      if (userLevel > 1) {
+        // Remove all "TEMPORARILY UNAVAILABLE" badges
+        document.querySelectorAll('.investment-card').forEach(card => {
+          const unavailableBadge = card.querySelector('div[style*="TEMPORARILY UNAVAILABLE"]');
+          if (unavailableBadge) {
+            unavailableBadge.remove();
+          }
+          
+          // Remove opacity and enable all form elements
+          card.style.opacity = 1;
+          card.querySelectorAll('input, select, button.invest-btn').forEach(el => {
+            el.disabled = false;
+            if (el.tagName === 'BUTTON') {
+              el.textContent = 'Invest Now';
+              el.style.background = '';
+              el.style.cursor = '';
+            }
+          });
+        });
+      } else if (isTemporaryWorker) {
+        // Apply restrictions for temporary workers (level 0)
+        document.querySelectorAll('.investment-card').forEach(card => {
+          // Add badge if not already present
+          if (!card.querySelector('.temp-worker-badge')) {
+            const badge = document.createElement('div');
+            badge.className = 'temp-worker-badge';
+            badge.style.cssText = 'position: absolute; top: 10px; left: 10px; background: #ff9800; color: white; padding: 5px 10px; border-radius: 15px; font-size: 12px; font-weight: bold; z-index: 10;';
+            badge.textContent = '⏳ Temporarily unavailable for temporary workers';
+            card.appendChild(badge);
+          }
+          // Dim the card
+          card.style.opacity = 0.6;
+          // Disable all inputs and buttons in the form
+          card.querySelectorAll('input, select, button.invest-btn').forEach(el => {
+            el.disabled = true;
+            if (el.tagName === 'BUTTON') {
+              el.textContent = 'Temporarily Unavailable';
+              el.style.background = '#ccc';
+              el.style.cursor = 'not-allowed';
+            }
+          });
+        });
+      } else {
+        // For level 1 users, remove temporary unavailable badges and enable investments
+        document.querySelectorAll('.investment-card').forEach(card => {
+          const unavailableBadge = card.querySelector('div[style*="TEMPORARILY UNAVAILABLE"]');
+          if (unavailableBadge) {
+            unavailableBadge.remove();
+          }
+          
+          // Remove opacity and enable all form elements
+          card.style.opacity = 1;
+          card.querySelectorAll('input, select, button.invest-btn').forEach(el => {
+            el.disabled = false;
+            if (el.tagName === 'BUTTON') {
+              el.textContent = 'Invest Now';
+              el.style.background = '';
+              el.style.cursor = '';
+            }
+          });
+        });
+      }
+    }
+    
+    // Check authentication
+    function checkAuth() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = 'index.html';
+        return false;
+      }
+      return true;
+    }
+
+    // Check if response is HTML (login page) and redirect if needed
+    function checkForLoginRedirect(responseText) {
+      if (responseText.includes('<!DOCTYPE html>') && responseText.includes('UAI Login')) {
+        console.log('🔐 Authentication required, redirecting to login...');
+        console.log('🔍 Current token:', localStorage.getItem('token') ? 'Present' : 'Missing');
+        localStorage.removeItem('token'); // Clear invalid token
+        window.location.href = 'index.html';
+        return true;
+      }
+      return false;
+    }
+    
+    // Load cached wallet balance from localStorage
+    function loadCachedWalletBalance() {
+      try {
+        const cachedBalance = localStorage.getItem('walletBalance');
+        const timestamp = localStorage.getItem('walletBalanceTimestamp');
+        
+        if (cachedBalance && timestamp) {
+          const dataAge = Date.now() - parseInt(timestamp);
+          const maxAge = 2 * 60 * 1000; // 2 minutes
+          
+          if (dataAge < maxAge) {
+            console.log('📱 Loading cached wallet balance...');
+            const mainWalletOptions = document.querySelectorAll('.form-select option[value="main"]');
+            
+            mainWalletOptions.forEach(option => {
+              option.textContent = `Main Wallet (KES ${parseFloat(cachedBalance || 0).toFixed(2)})`;
+            });
+            return true;
+          }
+        }
+      } catch (error) {
+        console.error('Error loading cached wallet balance:', error);
+      }
+      return false;
+    }
+    
+    // Load user's wallet balance
+    async function loadWalletBalance() {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+      
+      try {
+        const res = await fetch('/api/user/stats', {
+          headers: { Authorization: "Bearer " + token }
+        });
+        if (!res.ok) throw new Error('Failed to load wallet data');
+        
+        const responseText = await res.text();
+        let data;
+        
+        try {
+          data = JSON.parse(responseText);
+        } catch (jsonError) {
+          console.error('Invalid JSON response for wallet balance:', responseText);
+          console.error('JSON parse error:', jsonError);
+          
+          // Check if this is a login redirect
+          if (checkForLoginRedirect(responseText)) {
+            return;
+          }
+          return;
+        }
+        
+        console.log('Wallet balance loaded:', data.wallet_balance);
+        
+        // Store wallet balance in localStorage for persistence
+        localStorage.setItem('walletBalance', data.wallet_balance);
+        localStorage.setItem('walletBalanceTimestamp', Date.now().toString());
+        
+        // Update wallet options with actual balance
+        const mainWalletOptions = document.querySelectorAll('.form-select option[value="main"]');
+        
+        mainWalletOptions.forEach(option => {
+          option.textContent = `Main Wallet (KES ${parseFloat(data.wallet_balance || 0).toFixed(2)})`;
+        });
+        
+      } catch (error) {
+        console.error('Error loading wallet balance:', error);
+      }
+    }
+
+    // Clear all investment cache to ensure privacy
+    function clearInvestmentCache() {
+      try {
+        localStorage.removeItem('investmentHistory');
+        localStorage.removeItem('investmentHistoryTimestamp');
+        console.log('🧹 Cleared investment cache for privacy');
+      } catch (error) {
+        console.error('Error clearing investment cache:', error);
+      }
+    }
+
+    // Load cached investment data from localStorage
+    function loadCachedInvestmentData() {
+      // Always clear cache to ensure privacy - no cached data
+      clearInvestmentCache();
+      return false; // Always return false to force fresh data load
+    }
+
+    // Load user's investment history from database
+    async function loadInvestmentHistory() {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+      
+      // Debounce check to prevent rapid API calls
+      const now = Date.now();
+      if (now - lastApiCall < API_DEBOUNCE_TIME) {
+        console.log('⏳ Debouncing API call to prevent rate limiting');
+        return;
+      }
+      lastApiCall = now;
+      
+      try {
+        const response = await fetch('/api/investments', {
+          headers: { Authorization: "Bearer " + token }
+        });
+        
+        if (!response.ok) {
+          if (response.status === 429) {
+            console.log('⏳ Rate limited, will retry later');
+            return; // Silently handle rate limiting without showing errors
+          }
+          throw new Error('Failed to load investment history');
+        }
+        
+        const responseText = await response.text();
+        let data;
+        
+        try {
+          data = JSON.parse(responseText);
+        } catch (jsonError) {
+          console.error('Invalid JSON response for investment history:', responseText);
+          console.error('JSON parse error:', jsonError);
+          
+          // Check if this is a login redirect
+          if (checkForLoginRedirect(responseText)) {
+            return;
+          }
+          return;
+        }
+        
+        console.log('Investment history loaded:', data.investments);
+        console.log('🔍 DEBUG: Number of investments returned:', data.investments.length);
+        console.log('🔍 DEBUG: Investment details:', data.investments.map(inv => ({
+          id: inv.id,
+          fund_name: inv.fund_name,
+          amount: inv.amount,
+          user_id: inv.user_id || 'N/A'
+        })));
+        
+        // Clear any old cached data to ensure privacy
+        clearInvestmentCache();
+        
+        // DO NOT store investment data in localStorage for privacy
+        // localStorage.setItem('investmentHistory', JSON.stringify(data.investments));
+        // localStorage.setItem('investmentHistoryTimestamp', Date.now().toString());
+        
+        // Update investment history tables
+        updateInvestmentHistoryTables(data.investments);
+        
+        // Start real-time updates if not already started
+        if (!window.realTimeUpdatesStarted) {
+          startRealTimeInvestmentUpdates();
+          window.realTimeUpdatesStarted = true;
+        }
+        
+      } catch (error) {
+        console.error('Error loading investment history:', error);
+      }
+    }
+
+    // Real-time investment status updates
+    function startRealTimeInvestmentUpdates() {
+      console.log('🔄 Starting investment status monitoring...');
+      
+      // Check for matured investments every 2 hours to reduce API calls
+      setInterval(async () => {
+        console.log('🔄 Checking for matured investments...');
+        await checkMaturedInvestments();
+      }, 7200000); // 2 hours = 7,200,000 milliseconds
+      
+      // Also update when page becomes visible (but only if data is old)
+      document.addEventListener('visibilitychange', async () => {
+        if (!document.hidden) {
+          const timestamp = localStorage.getItem('investmentHistoryTimestamp');
+          if (timestamp) {
+            const dataAge = Date.now() - parseInt(timestamp);
+            const maxAge = 30 * 60 * 1000; // 30 minutes
+            if (dataAge > maxAge) {
+              console.log('🔄 Page visible, data is old, updating...');
+          await loadInvestmentHistory();
+            }
+          }
+        }
+      });
+      
+      // Update when user returns to the tab (but only if data is old)
+      window.addEventListener('focus', async () => {
+        const timestamp = localStorage.getItem('investmentHistoryTimestamp');
+        if (timestamp) {
+          const dataAge = Date.now() - parseInt(timestamp);
+          const maxAge = 30 * 60 * 1000; // 30 minutes
+          if (dataAge > maxAge) {
+            console.log('🔄 Tab focused, data is old, updating...');
+        await loadInvestmentHistory();
+          }
+        }
+      });
+    }
+
+    // Check for matured investments and update status
+    async function checkMaturedInvestments() {
+      try {
+        const cachedData = localStorage.getItem('investmentHistory');
+        if (!cachedData) return;
+        
+        const investments = JSON.parse(cachedData);
+        const now = new Date();
+        let hasMatured = false;
+        
+        investments.forEach(inv => {
+          const endDate = new Date(inv.end_date);
+          if (endDate <= now && inv.status !== 'completed') {
+            hasMatured = true;
+            console.log(`📅 Investment ${inv.id} has matured!`);
+          }
+        });
+        
+        // Only refresh if there are matured investments
+        if (hasMatured) {
+          console.log('🔄 Found matured investments, refreshing data...');
+          await loadInvestmentHistory();
+        }
+      } catch (error) {
+        console.error('Error checking matured investments:', error);
+      }
+    }
+
+    // Clear old cache data
+    function clearOldCache() {
+      try {
+        const investmentTimestamp = localStorage.getItem('investmentHistoryTimestamp');
+        const walletTimestamp = localStorage.getItem('walletBalanceTimestamp');
+        
+        if (investmentTimestamp) {
+          const age = Date.now() - parseInt(investmentTimestamp);
+          if (age > 7 * 24 * 60 * 60 * 1000) { // 7 days
+            localStorage.removeItem('investmentHistory');
+            localStorage.removeItem('investmentHistoryTimestamp');
+            console.log('🗑️ Cleared old investment cache');
+          }
+        }
+        
+        if (walletTimestamp) {
+          const age = Date.now() - parseInt(walletTimestamp);
+          if (age > 10 * 60 * 1000) { // 10 minutes
+            localStorage.removeItem('walletBalance');
+            localStorage.removeItem('walletBalanceTimestamp');
+            console.log('🗑️ Cleared old wallet cache');
+          }
+        }
+      } catch (error) {
+        console.error('Error clearing cache:', error);
+      }
+    }
+
+    // Manual refresh function
+    async function refreshInvestmentData() {
+      try {
+        console.log('🔄 Manually refreshing investment data...');
+        await loadInvestmentHistory();
+        showNotification('✅ Investment status refreshed successfully!', 'success');
+      } catch (error) {
+        console.error('Error refreshing investment data:', error);
+        // Don't show error notifications for rate limiting
+        if (!error.message.includes('Rate limited') && !error.message.includes('429')) {
+        showNotification('Failed to refresh investment data', 'error');
+        }
+      }
+    }
+
+    // Manual payout processing function
+    async function processPayouts() {
+      try {
+        console.log('💰 Manually processing payouts...');
+        const token = localStorage.getItem('token');
+        if (!token) {
+          showNotification('Please log in first', 'error');
+          return;
+        }
+
+        const response = await fetch('/api/investments/process-payouts', {
+          method: 'POST',
+          headers: { Authorization: "Bearer " + token }
+        });
+
+        if (response.ok) {
+          const responseText = await response.text();
+          let result;
+          
+          try {
+            result = JSON.parse(responseText);
+          } catch (jsonError) {
+            console.error('Invalid JSON response for payout processing:', responseText);
+            console.error('JSON parse error:', jsonError);
+            showNotification('Failed to process payouts - invalid response', 'error');
+            return;
+          }
+          
+          showNotification('Payout processing completed!', 'success');
+          // Refresh investment data after processing
+          await loadInvestmentHistory();
+        } else {
+          // Handle rate limiting with user feedback
+          if (response.status === 429) {
+            showNotification('⏳ Rate limited for payout processing. Please wait a moment before trying again.', 'warning');
+            return;
+          }
+          
+          const errorText = await response.text();
+          let error;
+          
+          try {
+            error = JSON.parse(errorText);
+          } catch (jsonError) {
+            console.error('Invalid JSON error response:', errorText);
+            showNotification('Failed to process payouts', 'error');
+            return;
+          }
+          
+          showNotification(error.error || 'Failed to process payouts', 'error');
+        }
+      } catch (error) {
+        console.error('Error processing payouts:', error);
+        // Don't show error notifications for network issues that might be rate limiting
+        if (!error.message.includes('Failed to fetch') && !error.message.includes('429')) {
+        showNotification('Failed to process payouts', 'error');
+        }
+      }
+    }
+
+    // Update investment history tables with real data
+    function updateInvestmentHistoryTables(investments) {
+      // Group investments by fund
+      const fundGroups = {};
+      investments.forEach(inv => {
+        if (!fundGroups[inv.fund_name]) {
+          fundGroups[inv.fund_name] = [];
+        }
+        fundGroups[inv.fund_name].push(inv);
+      });
+
+      // Update each fund's history table
+      Object.keys(fundGroups).forEach(fundName => {
+        const fundId = getFundId(fundName);
+        if (fundId) {
+          updateFundHistoryTable(fundId, fundGroups[fundName]);
+        }
+      });
+    }
+
+    // Get fund ID from fund name
+    function getFundId(fundName) {
+      const fundMap = {
+        'UAI Starter Fund': 'starter-fund',
+        'UAI Micro Fund': 'uai-micro',
+        'Agriculture Fund': 'agriculture',
+        'Tech Growth Fund': 'tech-growth',
+        'Crypto Mining Fund': 'crypto-mining',
+        'Real Estate Fund': 'real-estate',
+        'Wells Fargo': 'wells-fargo',
+        'Citibank': 'citibank',
+        'Gold Investment Fund': 'gold-fund',
+        'Diamond Elite Fund': 'diamond-elite'
+      };
+      return fundMap[fundName];
+    }
+
+    // Update a specific fund's history table
+    function updateFundHistoryTable(fundId, investments) {
+      const historyTable = document.getElementById(`${fundId}-history`);
+      if (!historyTable) return;
+
+      // Clear existing rows
+      historyTable.innerHTML = '';
+
+      if (investments.length === 0) {
+        historyTable.innerHTML = '<tr><td colspan="7" class="no-investments">No investments yet</td></tr>';
+        return;
+      }
+
+      // Add investment rows with real-time status
+      investments.forEach(inv => {
+        const row = document.createElement('tr');
+        const startDate = new Date(inv.start_date).toLocaleDateString();
+        const endDate = new Date(inv.end_date).toLocaleDateString();
+        
+        // Calculate real-time status
+        const now = new Date();
+        const endDateObj = new Date(inv.end_date);
+        let status, statusClass;
+        
+        if (inv.status === 'completed') {
+          status = 'Completed';
+          statusClass = 'status-completed';
+        } else if (endDateObj <= now) {
+          status = 'Matured - Payout Pending';
+          statusClass = 'status-matured';
+        } else {
+          // Calculate days remaining
+          const daysRemaining = Math.ceil((endDateObj - now) / (1000 * 60 * 60 * 24));
+          status = `Active (${daysRemaining} days left)`;
+          statusClass = 'status-active';
+        }
+        
+        // Add real-time end date display
+        const endDateDisplay = endDateObj.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric'
+        });
+        
+        // Calculate current earned amount
+        const daysElapsed = Math.min(
+          Math.ceil((now - new Date(inv.start_date)) / (1000 * 60 * 60 * 24)),
+          inv.duration_days
+        );
+        const earnedAmount = (inv.amount * (inv.roi_percentage / 100) * daysElapsed);
+        
+        row.innerHTML = `
+          <td>KES ${parseFloat(inv.amount).toLocaleString()}</td>
+          <td>${inv.roi_percentage}% daily</td>
+          <td>${inv.duration_days} days</td>
+          <td>${startDate}</td>
+          <td>KES ${earnedAmount.toFixed(2)}</td>
+          <td>${endDateDisplay}</td>
+          <td class="${statusClass}">${status}</td>
+        `;
+        
+        historyTable.appendChild(row);
+      });
+    }
+    
+    // Invest in Wells Fargo
+    async function investInWellsFargo() {
+      // Check if user is a temporary worker
+      if (isTemporaryWorker) {
+        showNotification('⚠️ This investment is temporarily unavailable for temporary workers.', 'error');
+        return;
+      }
+      
+      const amount = document.getElementById('wellsfargo-amount').value;
+      const wallet = document.getElementById('wellsfargo-wallet').value;
+      
+      if (!amount || amount < 100) {
+        showNotification('Please enter a valid amount (minimum KES 100)', 'error');
+        return;
+      }
+      
+      if (!wallet) {
+        showNotification('Please select a wallet', 'error');
+        return;
+      }
+      
+      const token = localStorage.getItem('token');
+      if (!token) {
+        showNotification('Please log in first', 'error');
+        return;
+      }
+      
+      // Get the button and show loading state
+      const btn = event.target;
+      const originalText = btn.textContent;
+      btn.textContent = 'Processing...';
+      btn.disabled = true;
+      
+      try {
+        console.log('🚀 Starting investment process...');
+        console.log('📋 Investment data:', { amount, wallet, fundName: 'Wells Fargo' });
+        
+        // Make the API call with timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => {
+          controller.abort();
+          console.log('⏰ Request timed out');
+        }, 30000);
+        
+        console.log('📡 Making API request...');
+        const response = await fetch('/api/investments/invest', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify({
+            amount: parseFloat(amount),
+            fundName: 'Wells Fargo',
+            walletType: wallet
+          }),
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        console.log('📊 Response received, status:', response.status);
+        
+        // Check if response is ok
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('❌ Server error:', errorText);
+          throw new Error(`Server error: ${response.status} - ${errorText}`);
+        }
+        
+        // Parse response
+        console.log('📋 Parsing response...');
+        const responseText = await response.text();
+        let result;
+        
+        try {
+          result = JSON.parse(responseText);
+        } catch (jsonError) {
+          console.error('Invalid JSON response:', responseText);
+          console.error('JSON parse error:', jsonError);
+          throw new Error('Invalid server response');
+        }
+        
+        console.log('📋 Response data:', result);
+        
+        // Check if investment was successful
+        if (!result.success) {
+          throw new Error(result.error || 'Investment failed');
+        }
+        
+        console.log('✅ Investment successful!');
+        
+        // Clear form
+        document.getElementById('wellsfargo-amount').value = '';
+        document.getElementById('wellsfargo-wallet').value = '';
+        
+        // Update wallet balance display
+        await loadWalletBalance();
+        
+        // Show success message
+        const successMessage = `✅ Investment successful! KES ${parseFloat(amount).toFixed(2)} has been invested in Wells Fargo. Expected return: KES ${result.investment.expectedReturn.toFixed(2)}`;
+        console.log('📢 Showing success message:', successMessage);
+        
+        showNotification(successMessage, 'success');
+        
+        // Refresh investment history to show new investment
+        await loadInvestmentHistory();
+        
+      } catch (error) {
+        console.error('❌ Investment error:', error);
+        
+        let errorMessage = 'Investment failed. Please try again.';
+        
+        if (error.name === 'AbortError') {
+          errorMessage = 'Request timed out. Please try again.';
+        } else if (error.message.includes('Failed to fetch')) {
+          errorMessage = 'Network error. Please check your connection.';
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+        
+        console.error('📢 Showing error message:', errorMessage);
+        showNotification(`❌ ${errorMessage}`, 'error');
+        
+      } finally {
+        // Always restore button state
+        console.log('🔄 Restoring button state...');
+        if (btn) {
+        btn.textContent = originalText;
+        btn.disabled = false;
+        }
+      }
+    }
+    
+    // Invest in Citibank
+    async function investInCitibank() {
+      // Check if user is a temporary worker
+      if (isTemporaryWorker) {
+        showNotification('⚠️ This investment is temporarily unavailable for temporary workers.', 'error');
+        return;
+      }
+      
+      const amount = document.getElementById('citibank-amount').value;
+      const wallet = document.getElementById('citibank-wallet').value;
+      
+      if (!amount || amount < 3000) {
+        showNotification('Please enter a valid amount (minimum KES 3,000)', 'error');
+        return;
+      }
+      
+      if (!wallet) {
+        showNotification('Please select a wallet', 'error');
+        return;
+      }
+      
+      const token = localStorage.getItem('token');
+      if (!token) {
+        showNotification('Please log in first', 'error');
+        return;
+      }
+      
+      // Get button reference before try block
+        const btn = event.target;
+        const originalText = btn.textContent;
+      
+      try {
+        // Show loading state
+        btn.textContent = 'Processing...';
+        btn.disabled = true;
+        
+        // Call investment API
+        const response = await fetch('/api/investments/invest', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify({
+            amount: parseFloat(amount),
+            fundName: 'Citibank',
+            walletType: wallet
+          })
+        });
+        
+        const responseText = await response.text();
+        let result;
+        
+        try {
+          result = JSON.parse(responseText);
+        } catch (jsonError) {
+          console.error('Invalid JSON response:', responseText);
+          console.error('JSON parse error:', jsonError);
+          throw new Error('Invalid server response');
+        }
+        
+        if (!response.ok) {
+          const errorMessage = result.error || 'Investment failed';
+          if (result.balanceType) {
+            throw new Error(`${errorMessage}. Available in ${result.balanceType}: KES ${result.currentBalance.toFixed(2)}`);
+          }
+          throw new Error(errorMessage);
+        }
+        
+        // Clear form
+        document.getElementById('citibank-amount').value = '';
+        document.getElementById('citibank-wallet').value = '';
+        
+        // Update wallet balance display
+        await loadWalletBalance();
+        
+        // Show success message
+        showNotification(`Investment successful! KES ${parseFloat(amount).toFixed(2)} has been invested in Citibank. Expected return: KES ${result.investment.expectedReturn.toFixed(2)}`, 'success');
+        
+      } catch (error) {
+        console.error('Investment error:', error);
+        showNotification(error.message || 'Investment failed. Please try again.', 'error');
+      } finally {
+        // Restore button
+        if (btn) {
+        btn.textContent = originalText;
+        btn.disabled = false;
+        }
+      }
+    }
+
+    // Invest in UAI Micro Fund
+    async function investInUAIMicro() {
+      // Check if user is a temporary worker
+      if (isTemporaryWorker) {
+        showNotification('⚠️ This investment is temporarily unavailable for temporary workers.', 'error');
+        return;
+      }
+      
+      const amount = document.getElementById('uai-micro-amount').value;
+      const wallet = document.getElementById('uai-micro-wallet').value;
+      
+      if (!amount || amount < 200) {
+        showNotification('Please enter a valid amount (minimum KES 200)', 'error');
+        return;
+      }
+      
+      if (!wallet) {
+        showNotification('Please select a wallet', 'error');
+        return;
+      }
+      
+      const token = localStorage.getItem('token');
+      if (!token) {
+        showNotification('Please log in first', 'error');
+        return;
+      }
+      
+      // Get button reference before try block
+        const btn = event.target;
+        const originalText = btn.textContent;
+      
+      try {
+        // Show loading state
+        btn.textContent = 'Processing...';
+        btn.disabled = true;
+        
+        // Call investment API
+        const response = await fetch('/api/investments/invest', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify({
+            amount: parseFloat(amount),
+            fundName: 'UAI Micro Fund',
+            walletType: wallet
+          })
+        });
+        
+        const responseText = await response.text();
+        let result;
+        
+        try {
+          result = JSON.parse(responseText);
+        } catch (jsonError) {
+          console.error('Invalid JSON response:', responseText);
+          console.error('JSON parse error:', jsonError);
+          throw new Error('Invalid server response');
+        }
+        
+        if (!response.ok) {
+          const errorMessage = result.error || 'Investment failed';
+          if (result.balanceType) {
+            throw new Error(`${errorMessage}. Available in ${result.balanceType}: KES ${result.currentBalance.toFixed(2)}`);
+          }
+          throw new Error(errorMessage);
+        }
+        
+        // Clear form
+        document.getElementById('uai-micro-amount').value = '';
+        document.getElementById('uai-micro-wallet').value = '';
+        
+        // Update wallet balance display
+        await loadWalletBalance();
+        
+        // Show success message
+        showNotification(`✅ Investment successful! KES ${parseFloat(amount).toFixed(2)} has been invested in UAI Micro Fund. Expected return: KES ${result.investment.expectedReturn.toFixed(2)}`, 'success');
+        
+        // Refresh investment history to show new investment
+        await loadInvestmentHistory();
+        
+      } catch (error) {
+        console.error('Investment error:', error);
+        showNotification(`❌ ${error.message || 'Investment failed. Please try again.'}`, 'error');
+      } finally {
+        // Restore button
+        if (btn) {
+        btn.textContent = originalText;
+        btn.disabled = false;
+        }
+      }
+    }
+
+    // Invest in Tech Growth Fund
+    async function investInTechGrowth() {
+      // Check if user is a temporary worker
+      if (isTemporaryWorker) {
+        showNotification('⚠️ This investment is temporarily unavailable for temporary workers.', 'error');
+        return;
+      }
+      
+      const amount = document.getElementById('tech-growth-amount').value;
+      const wallet = document.getElementById('tech-growth-wallet').value;
+      
+      if (!amount || amount < 500) {
+        showNotification('Please enter a valid amount (minimum KES 500)', 'error');
+        return;
+      }
+      
+      if (!wallet) {
+        showNotification('Please select a wallet', 'error');
+        return;
+      }
+      
+      const token = localStorage.getItem('token');
+      if (!token) {
+        showNotification('Please log in first', 'error');
+        return;
+      }
+      
+      // Get button reference before try block
+        const btn = event.target;
+        const originalText = btn.textContent;
+      
+      try {
+        // Show loading state
+        btn.textContent = 'Processing...';
+        btn.disabled = true;
+        
+        // Call investment API
+        const response = await fetch('/api/investments/invest', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify({
+            amount: parseFloat(amount),
+            fundName: 'Tech Growth Fund',
+            walletType: wallet
+          })
+        });
+        
+        const result = await response.json();
+        
+        if (!response.ok) {
+          const errorMessage = result.error || 'Investment failed';
+          if (result.balanceType) {
+            throw new Error(`${errorMessage}. Available in ${result.balanceType}: KES ${result.currentBalance.toFixed(2)}`);
+          }
+          throw new Error(errorMessage);
+        }
+        
+        // Clear form
+        document.getElementById('tech-growth-amount').value = '';
+        document.getElementById('tech-growth-wallet').value = '';
+        
+        // Update wallet balance display
+        await loadWalletBalance();
+        
+        // Show success message
+        showNotification(`✅ Investment successful! KES ${parseFloat(amount).toFixed(2)} has been invested in Tech Growth Fund. Expected return: KES ${result.investment.expectedReturn.toFixed(2)}`, 'success');
+        
+        // Refresh investment history to show new investment
+        await loadInvestmentHistory();
+        
+      } catch (error) {
+        console.error('Investment error:', error);
+        showNotification(`❌ ${error.message || 'Investment failed. Please try again.'}`, 'error');
+      } finally {
+        // Restore button
+        if (btn) {
+        btn.textContent = originalText;
+        btn.disabled = false;
+        }
+      }
+    }
+
+    // Invest in Real Estate Fund
+    async function investInRealEstate() {
+      // Check if user is a temporary worker
+      if (isTemporaryWorker) {
+        showNotification('⚠️ This investment is temporarily unavailable for temporary workers.', 'error');
+        return;
+      }
+      
+      const amount = document.getElementById('real-estate-amount').value;
+      const wallet = document.getElementById('real-estate-wallet').value;
+      
+      if (!amount || amount < 1000) {
+        showNotification('Please enter a valid amount (minimum KES 1,000)', 'error');
+        return;
+      }
+      
+      if (!wallet) {
+        showNotification('Please select a wallet', 'error');
+        return;
+      }
+      
+      const token = localStorage.getItem('token');
+      if (!token) {
+        showNotification('Please log in first', 'error');
+        return;
+      }
+      
+      // Get button reference before try block
+        const btn = event.target;
+        const originalText = btn.textContent;
+      
+      try {
+        // Show loading state
+        btn.textContent = 'Processing...';
+        btn.disabled = true;
+        
+        // Call investment API
+        const response = await fetch('/api/investments/invest', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify({
+            amount: parseFloat(amount),
+            fundName: 'Real Estate Fund',
+            walletType: wallet
+          })
+        });
+        
+        const result = await response.json();
+        
+        if (!response.ok) {
+          const errorMessage = result.error || 'Investment failed';
+          if (result.balanceType) {
+            throw new Error(`${errorMessage}. Available in ${result.balanceType}: KES ${result.currentBalance.toFixed(2)}`);
+          }
+          throw new Error(errorMessage);
+        }
+        
+        // Clear form
+        document.getElementById('real-estate-amount').value = '';
+        document.getElementById('real-estate-wallet').value = '';
+        
+        // Update wallet balance display
+        await loadWalletBalance();
+        
+        // Show success message
+        showNotification(`✅ Investment successful! KES ${parseFloat(amount).toFixed(2)} has been invested in Real Estate Fund. Expected return: KES ${result.investment.expectedReturn.toFixed(2)}`, 'success');
+        
+        // Refresh investment history to show new investment
+        await loadInvestmentHistory();
+        
+      } catch (error) {
+        console.error('Investment error:', error);
+        showNotification(`❌ ${error.message || 'Investment failed. Please try again.'}`, 'error');
+      } finally {
+        // Restore button
+        if (btn) {
+        btn.textContent = originalText;
+        btn.disabled = false;
+        }
+      }
+    }
+
+    // Invest in Crypto Mining Fund
+    async function investInCryptoMining() {
+      // Check if user is a temporary worker
+      if (isTemporaryWorker) {
+        showNotification('⚠️ This investment is temporarily unavailable for temporary workers.', 'error');
+        return;
+      }
+      
+      const amount = document.getElementById('crypto-mining-amount').value;
+      const wallet = document.getElementById('crypto-mining-wallet').value;
+      
+      if (!amount || amount < 750) {
+        alert('Please enter a valid amount (minimum KES 750)');
+        return;
+      }
+      
+      if (!wallet) {
+        alert('Please select a wallet');
+        return;
+      }
+      
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Please log in first');
+        return;
+      }
+      
+      // Check wallet balance before proceeding
+      try {
+        const res = await fetch('/api/user/stats', {
+          headers: { Authorization: "Bearer " + token }
+        });
+        if (!res.ok) throw new Error('Failed to load wallet data');
+        
+        const data = await res.json();
+        const walletBalance = parseFloat(data.wallet_balance || 0);
+        
+        if (walletBalance < parseFloat(amount)) {
+          showNotification(`Insufficient funds! Your wallet balance is KES ${walletBalance.toFixed(2)}. You need KES ${parseFloat(amount).toFixed(2)} for this investment.`, 'error');
+          return;
+        }
+        
+      } catch (error) {
+        console.error('Error checking wallet balance:', error);
+        showNotification('Unable to verify wallet balance. Please try again.', 'error');
+        return;
+      }
+      
+      // Get button reference before try block
+      const btn = document.querySelector('button[onclick="investInCryptoMining()"]');
+      const originalText = btn ? btn.textContent : 'Invest Now';
+      
+      try {
+        // Show loading state
+        if (btn) {
+        btn.textContent = 'Processing...';
+        btn.disabled = true;
+        }
+        
+        // Simulate investment process
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Add investment to history
+        addInvestmentToHistory('crypto-mining', {
+          amount: parseFloat(amount),
+          roi: '3.5%',
+          duration: '45 days',
+          start: new Date().toLocaleDateString(),
+          lastPaid: '-',
+          ends: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000).toLocaleDateString(),
+          status: 'Active'
+        });
+        
+        // Clear form
+        document.getElementById('crypto-mining-amount').value = '';
+        document.getElementById('crypto-mining-wallet').value = '';
+        
+        // Show success message
+        showNotification('✅ Investment successful! Your investment in Crypto Mining Fund has been processed.', 'success');
+        
+        // Refresh investment history to show new investment
+        await loadInvestmentHistory();
+        
+      } catch (error) {
+        console.error('Investment error:', error);
+        showNotification('❌ Investment failed. Please try again.', 'error');
+      } finally {
+        // Restore button
+        if (btn) {
+        btn.textContent = originalText;
+        btn.disabled = false;
+        }
+      }
+    }
+
+    // Invest in Starter Fund
+    async function investInStarterFund() {
+      // Check if user is a temporary worker
+      if (isTemporaryWorker) {
+        showNotification('⚠️ This investment is temporarily unavailable for temporary workers.', 'error');
+        return;
+      }
+      
+      const amount = document.getElementById('starter-fund-amount').value;
+      const wallet = document.getElementById('starter-fund-wallet').value;
+      
+      if (!amount || amount < 100) {
+        alert('Please enter a valid amount (minimum KES 100)');
+        return;
+      }
+      
+      if (!wallet) {
+        alert('Please select a wallet');
+        return;
+      }
+      
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Please log in first');
+        return;
+      }
+      
+      // Get button reference before try block
+      const btn = event.target || document.querySelector('.invest-btn');
+      const originalText = btn ? btn.textContent : 'Invest Now';
+      
+      try {
+        // Show loading state
+        if (btn) {
+          btn.textContent = 'Processing...';
+          btn.disabled = true;
+        }
+        
+        // Call investment API to deduct from wallet
+        const response = await fetch('/api/investments/invest', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify({
+            amount: parseFloat(amount),
+            fundName: 'UAI Starter Fund',
+            walletType: wallet
+          })
+        });
+        
+        const responseText = await response.text();
+        let result;
+        
+        try {
+          result = JSON.parse(responseText);
+        } catch (jsonError) {
+          console.error('Invalid JSON response for investment:', responseText);
+          console.error('JSON parse error:', jsonError);
+          
+          // Check if this is a login redirect
+          if (checkForLoginRedirect(responseText)) {
+            return;
+          }
+          throw new Error('Server returned invalid response');
+        }
+        
+        if (!response.ok) {
+          const errorMessage = result.error || 'Investment failed';
+          if (result.balanceType) {
+            throw new Error(`${errorMessage}. Available in ${result.balanceType}: KES ${result.currentBalance.toFixed(2)}`);
+          }
+          throw new Error(errorMessage);
+        }
+        
+        // Add investment to history
+        addInvestmentToHistory('starter-fund', {
+          amount: parseFloat(amount),
+          roi: '2.3%',
+          duration: '10 days',
+          start: new Date().toLocaleDateString(),
+          lastPaid: '-',
+          ends: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toLocaleDateString(),
+          status: 'Active'
+        });
+        
+        // Clear form
+        document.getElementById('starter-fund-amount').value = '';
+        document.getElementById('starter-fund-wallet').value = '';
+        
+        // Update wallet balance display
+        await loadWalletBalance();
+        
+        // Show success message
+        showNotification(`✅ Investment successful! KES ${parseFloat(amount).toFixed(2)} has been deducted from your ${wallet} wallet.`, 'success');
+        
+        // Refresh investment history to show new investment
+        await loadInvestmentHistory();
+        
+      } catch (error) {
+        console.error('Investment error:', error);
+        showNotification(`❌ ${error.message || 'Investment failed. Please try again.'}`, 'error');
+      } finally {
+        // Restore button
+        if (btn) {
+          btn.textContent = originalText;
+          btn.disabled = false;
+        }
+      }
+    }
+
+    // Invest in Agriculture Fund
+    async function investInAgriculture() {
+      // Check if user is a temporary worker
+      if (isTemporaryWorker) {
+        showNotification('⚠️ This investment is temporarily unavailable for temporary workers.', 'error');
+        return;
+      }
+      
+      const amount = document.getElementById('agriculture-amount').value;
+      const wallet = document.getElementById('agriculture-wallet').value;
+      
+      if (!amount || amount < 300) {
+        alert('Please enter a valid amount (minimum KES 300)');
+        return;
+      }
+      
+      if (!wallet) {
+        alert('Please select a wallet');
+        return;
+      }
+      
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Please log in first');
+        return;
+      }
+      
+      // Check wallet balance before proceeding
+      try {
+        const res = await fetch('/api/user/stats', {
+          headers: { Authorization: "Bearer " + token }
+        });
+        if (!res.ok) throw new Error('Failed to load wallet data');
+        
+        const data = await res.json();
+        const walletBalance = parseFloat(data.wallet_balance || 0);
+        
+        if (walletBalance < parseFloat(amount)) {
+          showNotification(`Insufficient funds! Your wallet balance is KES ${walletBalance.toFixed(2)}. You need KES ${parseFloat(amount).toFixed(2)} for this investment.`, 'error');
+          return;
+        }
+        
+      } catch (error) {
+        console.error('Error checking wallet balance:', error);
+        showNotification('Unable to verify wallet balance. Please try again.', 'error');
+        return;
+      }
+      
+      // Get button reference before try block
+      const btn = document.querySelector('button[onclick="investInAgriculture()"]');
+      const originalText = btn ? btn.textContent : 'Invest Now';
+      
+      try {
+        // Show loading state
+        if (btn) {
+        btn.textContent = 'Processing...';
+        btn.disabled = true;
+        }
+        
+        // Simulate investment process
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Add investment to history
+        addInvestmentToHistory('agriculture', {
+          amount: parseFloat(amount),
+          roi: '2.7%',
+          duration: '20 days',
+          start: new Date().toLocaleDateString(),
+          lastPaid: '-',
+          ends: new Date(Date.now() + 20 * 24 * 60 * 60 * 1000).toLocaleDateString(),
+          status: 'Active'
+        });
+        
+        // Clear form
+        document.getElementById('agriculture-amount').value = '';
+        document.getElementById('agriculture-wallet').value = '';
+        
+        // Show success message
+        showNotification('✅ Investment successful! Your investment in Agriculture Fund has been processed.', 'success');
+        
+        // Refresh investment history to show new investment
+        await loadInvestmentHistory();
+        
+      } catch (error) {
+        console.error('Investment error:', error);
+        showNotification('❌ Investment failed. Please try again.', 'error');
+      } finally {
+        // Restore button
+        if (btn) {
+          if (btn) {
+        btn.textContent = originalText;
+        btn.disabled = false;
+        }
+        }
+      }
+    }
+
+    // Invest in Gold Fund
+    async function investInGoldFund() {
+      // Check if user is a temporary worker
+      if (isTemporaryWorker) {
+        showNotification('⚠️ This investment is temporarily unavailable for temporary workers.', 'error');
+        return;
+      }
+      
+      const amount = document.getElementById('gold-fund-amount').value;
+      const wallet = document.getElementById('gold-fund-wallet').value;
+      
+      if (!amount || amount < 5000) {
+        alert('Please enter a valid amount (minimum KES 5,000)');
+        return;
+      }
+      
+      if (!wallet) {
+        alert('Please select a wallet');
+        return;
+      }
+      
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Please log in first');
+        return;
+      }
+      
+      // Check wallet balance before proceeding
+      try {
+        const res = await fetch('/api/user/stats', {
+          headers: { Authorization: "Bearer " + token }
+        });
+        if (!res.ok) throw new Error('Failed to load wallet data');
+        
+        const data = await res.json();
+        const walletBalance = parseFloat(data.wallet_balance || 0);
+        
+        if (walletBalance < parseFloat(amount)) {
+          showNotification(`Insufficient funds! Your wallet balance is KES ${walletBalance.toFixed(2)}. You need KES ${parseFloat(amount).toFixed(2)} for this investment.`, 'error');
+          return;
+        }
+        
+      } catch (error) {
+        console.error('Error checking wallet balance:', error);
+        showNotification('Unable to verify wallet balance. Please try again.', 'error');
+        return;
+      }
+      
+      // Get button reference before try block
+      const btn = document.querySelector('button[onclick="investInGoldFund()"]');
+      const originalText = btn ? btn.textContent : 'Invest Now';
+      
+      try {
+        // Show loading state
+        if (btn) {
+        btn.textContent = 'Processing...';
+        btn.disabled = true;
+        }
+        
+        // Simulate investment process
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Add investment to history
+        addInvestmentToHistory('gold-fund', {
+          amount: parseFloat(amount),
+          roi: '3.8%',
+          duration: '90 days',
+          start: new Date().toLocaleDateString(),
+          lastPaid: '-',
+          ends: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toLocaleDateString(),
+          status: 'Active'
+        });
+        
+        // Clear form
+        document.getElementById('gold-fund-amount').value = '';
+        document.getElementById('gold-fund-wallet').value = '';
+        
+        // Show success message
+        showNotification('✅ Investment successful! Your investment in Gold Investment Fund has been processed.', 'success');
+        
+        // Refresh investment history to show new investment
+        await loadInvestmentHistory();
+        
+      } catch (error) {
+        console.error('Investment error:', error);
+        showNotification('❌ Investment failed. Please try again.', 'error');
+      } finally {
+        // Restore button
+        if (btn) {
+        btn.textContent = originalText;
+        btn.disabled = false;
+        }
+      }
+    }
+
+    // Invest in Diamond Elite Fund
+    async function investInDiamondElite() {
+      // Check if user is a temporary worker
+      if (isTemporaryWorker) {
+        showNotification('⚠️ This investment is temporarily unavailable for temporary workers.', 'error');
+        return;
+      }
+      
+      const amount = document.getElementById('diamond-elite-amount').value;
+      const wallet = document.getElementById('diamond-elite-wallet').value;
+      
+      if (!amount || amount < 10000) {
+        alert('Please enter a valid amount (minimum KES 10,000)');
+        return;
+      }
+      
+      if (!wallet) {
+        alert('Please select a wallet');
+        return;
+      }
+      
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Please log in first');
+        return;
+      }
+      
+      // Check wallet balance before proceeding
+      try {
+        const res = await fetch('/api/user/stats', {
+          headers: { Authorization: "Bearer " + token }
+        });
+        if (!res.ok) throw new Error('Failed to load wallet data');
+        
+        const data = await res.json();
+        const walletBalance = parseFloat(data.wallet_balance || 0);
+        
+        if (walletBalance < parseFloat(amount)) {
+          showNotification(`Insufficient funds! Your wallet balance is KES ${walletBalance.toFixed(2)}. You need KES ${parseFloat(amount).toFixed(2)} for this investment.`, 'error');
+          return;
+        }
+        
+      } catch (error) {
+        console.error('Error checking wallet balance:', error);
+        showNotification('Unable to verify wallet balance. Please try again.', 'error');
+        return;
+      }
+      
+      // Get button reference before try block
+      const btn = document.querySelector('button[onclick="investInDiamondElite()"]');
+      const originalText = btn ? btn.textContent : 'Invest Now';
+      
+      try {
+        // Show loading state
+        if (btn) {
+        btn.textContent = 'Processing...';
+        btn.disabled = true;
+        }
+        
+        // Simulate investment process
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Add investment to history
+        addInvestmentToHistory('diamond-elite', {
+          amount: parseFloat(amount),
+          roi: '4.5%',
+          duration: '120 days',
+          start: new Date().toLocaleDateString(),
+          lastPaid: '-',
+          ends: new Date(Date.now() + 120 * 24 * 60 * 60 * 1000).toLocaleDateString(),
+          status: 'Active'
+        });
+        
+        // Clear form
+        document.getElementById('diamond-elite-amount').value = '';
+        document.getElementById('diamond-elite-wallet').value = '';
+        
+        // Show success message
+        showNotification('✅ Investment successful! Your investment in Diamond Elite Fund has been processed.', 'success');
+        
+        // Refresh investment history to show new investment
+        await loadInvestmentHistory();
+        
+      } catch (error) {
+        console.error('Investment error:', error);
+        showNotification('❌ Investment failed. Please try again.', 'error');
+      } finally {
+        // Restore button
+        if (btn) {
+        btn.textContent = originalText;
+        btn.disabled = false;
+        }
+      }
+    }
+    
+    // Add investment to history table
+    function addInvestmentToHistory(bank, investment) {
+      const historyTable = document.getElementById(`${bank}-history`);
+      
+      // Remove "No investments yet" row if it exists
+      const noInvestmentsRow = historyTable.querySelector('.no-investments');
+      if (noInvestmentsRow) {
+        noInvestmentsRow.remove();
+      }
+      
+      // Create new row
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>KES ${investment.amount.toLocaleString()}</td>
+        <td>${investment.roi}</td>
+        <td>${investment.duration}</td>
+        <td>${investment.start}</td>
+        <td>${investment.lastPaid}</td>
+        <td>${investment.ends}</td>
+        <td class="status-${investment.status.toLowerCase()}">${investment.status}</td>
+      `;
+      
+      historyTable.appendChild(row);
+    }
+    
+    // Show notification
+    function showNotification(message, type = 'info') {
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${type === 'success' ? '#4caf50' : type === 'error' ? '#f44336' : '#2196f3'};
+        color: white;
+        padding: 15px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        z-index: 10000;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        animation: slideIn 0.3s ease;
+        max-width: 300px;
+      `;
+      
+      notification.textContent = message;
+      
+      // Add animation CSS
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes slideIn {
+          from { transform: translateX(100%); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+      `;
+      document.head.appendChild(style);
+      
+      document.body.appendChild(notification);
+      
+      // Remove after 4 seconds
+      setTimeout(() => {
+        notification.remove();
+        style.remove();
+      }, 4000);
+    }
+    
+    // Calculate expected return and interest for investment
+    function calculateInvestmentReturns(amount, roiPercentage, durationDays) {
+      const dailyROI = roiPercentage / 100;
+      const totalROI = dailyROI * durationDays;
+      const expectedReturn = amount * (1 + totalROI);
+      const interestAmount = expectedReturn - amount;
+      
+      return {
+        expectedReturn: expectedReturn,
+        interestAmount: interestAmount
+      };
+    }
+
+    // Update calculation display for a specific fund
+    function updateCalculationDisplay(fundId, amount, roiPercentage, durationDays) {
+      if (!amount || amount <= 0) {
+        document.getElementById(`${fundId}-expected`).textContent = 'KES 0.00';
+        document.getElementById(`${fundId}-interest`).textContent = 'KES 0.00';
+        return;
+      }
+
+      const returns = calculateInvestmentReturns(parseFloat(amount), roiPercentage, durationDays);
+      
+      document.getElementById(`${fundId}-expected`).textContent = `KES ${returns.expectedReturn.toFixed(2)}`;
+      document.getElementById(`${fundId}-interest`).textContent = `KES ${returns.interestAmount.toFixed(2)}`;
+    }
+
+    // Add event listeners for amount inputs to calculate returns
+    function setupCalculationListeners() {
+      const fundConfigs = [
+        { id: 'starter-fund', roi: 2.3, duration: 10 },
+        { id: 'uai-micro', roi: 2.5, duration: 15 },
+        { id: 'agriculture', roi: 2.7, duration: 20 },
+        { id: 'tech-growth', roi: 2.8, duration: 25 },
+        { id: 'crypto-mining', roi: 3.5, duration: 45 },
+        { id: 'real-estate', roi: 3.2, duration: 60 },
+        { id: 'wells-fargo', roi: 2.9, duration: 30 },
+        { id: 'citibank', roi: 3.0, duration: 40 },
+        { id: 'gold-fund', roi: 3.8, duration: 90 },
+        { id: 'diamond-elite', roi: 4.5, duration: 120 }
+      ];
+
+      fundConfigs.forEach(fund => {
+        const amountInput = document.getElementById(`${fund.id}-amount`);
+        if (amountInput) {
+          amountInput.addEventListener('input', (e) => {
+            updateCalculationDisplay(fund.id, e.target.value, fund.roi, fund.duration);
+          });
+        }
+      });
+    }
+
+    // Debug function to check authentication status
+    function debugAuthStatus() {
+      const token = localStorage.getItem('token');
+      console.log('🔍 Authentication Debug Info:');
+      console.log('Token present:', token ? 'Yes' : 'No');
+      if (token) {
+        console.log('Token length:', token.length);
+        console.log('Token preview:', token.substring(0, 50) + '...');
+      }
+      
+      // Test token validity
+      if (token) {
+        fetch('/api/user/stats', {
+          headers: { 'Authorization': 'Bearer ' + token }
+        })
+        .then(response => response.text())
+        .then(text => {
+          if (text.includes('<!DOCTYPE html>')) {
+            console.log('❌ Token is invalid - redirecting to login');
+            localStorage.removeItem('token');
+            window.location.href = 'index.html';
+          } else {
+            console.log('✅ Token appears to be valid');
+          }
+        })
+        .catch(error => {
+          console.log('❌ Error testing token:', error);
+        });
+      }
+    }
+
+    // Initialize
+    function init() {
+      console.log('🚀 Initializing UAI Wealth Fund...');
+      debugAuthStatus(); // Debug authentication status
+      
+      // Clear old cache data
+      clearOldCache();
+      
+      // Clear investment cache for privacy
+      clearInvestmentCache();
+      
+      if (checkAuth()) {
+        console.log('✅ Authentication check passed, loading data...');
+        
+        // Try to load cached wallet balance first
+        if (!loadCachedWalletBalance()) {
+        loadWalletBalance();
+        }
+        
+        fetchUserLevel(); // Fetch user level data
+        setupCalculationListeners(); // Setup calculation listeners
+        
+        // Always load fresh investment data (no caching for privacy)
+        loadInvestmentHistory(); // Load investment history from database
+      } else {
+        console.log('❌ Authentication check failed');
+      }
+    }
+    
+    // Run initialization
+    init();
+  </script>
+</body>
+</html>

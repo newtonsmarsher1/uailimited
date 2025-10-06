@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Recharge Method 1 - UAI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #2979ff 0%, #ad7ce6 100%);
+      margin: 0; padding: 0;
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .container {
+      background: rgba(255,255,255,0.96);
+      margin-top: 60px;
+      padding: 36px 24px 28px 24px;
+      border-radius: 22px;
+      max-width: 410px;
+      width: 97vw;
+      box-shadow: 0 2px 24px #ad7ce62a;
+      text-align: center;
+      position: relative;
+    }
+    .uai-logo {
+      position: absolute;
+      left: 50%; top: -38px;
+      transform: translateX(-50%);
+      width: 70px; height: 70px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ad7ce6 0%, #2979ff 100%);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 18px #7a09c555;
+      border: 4px solid #fff;
+    }
+    .uai-logo span {
+      color: #fff;
+      font-size: 2em;
+      font-weight: 800;
+      letter-spacing: 3px;
+      text-shadow: 0 2px 8px #7a09c577, 0 0 2px #4f2b7c;
+    }
+    h2 { color: #2979ff; margin-bottom: 1.5em;}
+    
+    /* Deposit Details Section */
+    .deposit-section {
+      background: linear-gradient(135deg, #e3f0ff 0%, #f0e6ff 100%);
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 25px;
+      border: 2px solid #ad7ce6;
+      position: relative;
+    }
+    .deposit-title {
+      color: #2979ff;
+      font-weight: 700;
+      font-size: 1.1em;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .deposit-details {
+      background: #fff;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
+      border: 1px solid #ad7ce6;
+      font-family: monospace;
+      font-size: 0.9em;
+      color: #333;
+      word-break: break-all;
+      position: relative;
+      min-height: 120px; /* Fixed height to prevent layout shift */
+    }
+    .countdown-container {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #fff3cd;
+      border-radius: 0 0 10px 10px;
+      padding: 8px;
+      border-top: 1px solid #ffeaa7;
+      text-align: center;
+      font-weight: bold;
+      color: #856404;
+      font-size: 0.85em;
+    }
+     .deposit-details .name-phone {
+       font-size: 1.2em;
+       font-weight: 600;
+       color: #2979ff;
+    }
+    .copy-btn {
+      background: linear-gradient(90deg, #2979ff 0%, #ad7ce6 100%);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 0.95em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(45, 121, 255, 0.3);
+    }
+    .copy-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(45, 121, 255, 0.4);
+    }
+    .copy-btn:active { 
+      transform: translateY(0);
+      background: linear-gradient(90deg, #ad7ce6 0%, #2979ff 100%);
+    }
+    .copy-btn.copied {
+      background: #4caf50;
+      color: white;
+    }
+    
+    /* Form Section */
+    .form-section {
+      background: #f8f9ff;
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border: 1px solid #e0e6ff;
+    }
+    .step-indicator {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+      gap: 10px;
+    }
+    .step {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #e0e6ff;
+      color: #ad7ce6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 0.9em;
+    }
+    .step.active {
+      background: linear-gradient(90deg, #2979ff 0%, #ad7ce6 100%);
+      color: white;
+    }
+    .step.completed {
+      background: #4caf50;
+      color: white;
+    }
+    
+    .input-group { 
+      margin-bottom: 1.1em; 
+      text-align: left;
+    }
+    .input-group label { 
+      display: block; 
+      margin-bottom: 0.35em; 
+      color: #ad7ce6; 
+      font-weight: 600;
+    }
+    .input-group input[type="text"], 
+    .input-group input[type="number"],
+    .input-group textarea {
+      width: 100%; 
+      padding: 12px 10px; 
+      border-radius: 9px; 
+      border: 2px solid #e0e6ff;
+      font-size: 1em; 
+      margin-bottom: 0.7em; 
+      box-sizing: border-box;
+      transition: border-color 0.3s ease;
+    }
+    .input-group input:focus,
+    .input-group textarea:focus {
+      outline: none;
+      border-color: #ad7ce6;
+      box-shadow: 0 0 0 3px rgba(173, 124, 230, 0.1);
+    }
+    .input-group textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+    
+    .submit-btn {
+      background: linear-gradient(90deg, #2979ff 0%, #ad7ce6 100%);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 15px 30px;
+      font-size: 1.1em;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+      box-shadow: 0 4px 15px rgba(45, 121, 255, 0.3);
+    }
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(45, 121, 255, 0.4);
+    }
+    .submit-btn:active {
+      transform: translateY(0);
+    }
+    .submit-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    /* Warning Message Styles */
+    .warning-message {
+      background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+      border: 2px solid #f39c12;
+      border-radius: 12px;
+      padding: 16px;
+      margin: 20px 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      box-shadow: 0 2px 8px rgba(243, 156, 18, 0.2);
+    }
+    
+    .warning-icon {
+      font-size: 1.5em;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    
+    .warning-text {
+      color: #856404;
+      font-size: 0.95em;
+      line-height: 1.4;
+      text-align: left;
+    }
+    
+    .warning-text strong {
+      color: #d68910;
+      font-weight: 700;
+    }
+    
+    /* Waiting Approval Screen */
+    .waiting-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      backdrop-filter: blur(5px);
+    }
+    .waiting-content {
+      background: white;
+      border-radius: 20px;
+      padding: 40px 30px;
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+    .waiting-icon {
+      font-size: 4em;
+      margin-bottom: 20px;
+      animation: pulse 2s infinite;
+    }
+    .waiting-title {
+      color: #2979ff;
+      font-size: 1.5em;
+      font-weight: 700;
+      margin-bottom: 15px;
+    }
+    .waiting-message {
+      color: #666;
+      font-size: 1.1em;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+    .waiting-details {
+      background: #f0f8ff;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+    .waiting-details h4 {
+      color: #2979ff;
+      margin: 0 0 10px 0;
+      font-size: 1em;
+    }
+    .waiting-details p {
+      margin: 5px 0;
+      color: #555;
+      font-size: 0.9em;
+    }
+    .system-note {
+      background: #fff3cd;
+      border: 1px solid #ffeaa7;
+      border-radius: 8px;
+      padding: 10px;
+      color: #856404;
+      font-size: 0.9em;
+      margin-top: 15px;
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+    
+    .message {
+      padding: 12px;
+      border-radius: 8px;
+      margin: 15px 0;
+      font-weight: 600;
+      text-align: center;
+    }
+    .message.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .message.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    .message.info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+    
+    @media (max-width: 600px) {
+      .container { 
+        margin-top: 40px;
+        padding: 20px 15px;
+      }
+      .uai-logo { 
+        width: 60px; 
+        height: 60px; 
+        top: -30px; 
+      }
+      .uai-logo span { 
+        font-size: 1.5em;
+      }
+      .waiting-content {
+        padding: 30px 20px;
+      }
+    }
+  </style>
+  <script src="js/payment-monitor.js"></script>
+</head>
+<body>
+<div class="container">
+  <div class="uai-logo"><span>UAI</span></div>
+    <h2>Recharge Method 1</h2>
+    
+    <!-- Deposit Details Section -->
+    <div class="deposit-section">
+      <div class="deposit-title">
+        📋 Step 1: Copy Deposit Details
+      </div>
+             <div class="deposit-details" id="depositDetails">
+         <span class="name-phone">Name: Loading...</span><br><br>
+         <span class="name-phone">Phone: Loading...</span>
+       </div>
+             <button class="copy-btn" id="copyBtn" onclick="copyDepositDetails()">
+         📋 Copy Deposit Details
+       </button>
+       <button class="copy-btn" id="refreshBtn" onclick="loadDepositDetails()" style="margin-left: 10px; background: #4caf50;">
+         🔄 Refresh Details
+        </button>
+  </div>
+  
+    <!-- Form Section -->
+    <div class="form-section">
+      <div class="step-indicator">
+        <div class="step" id="step1">1</div>
+        <div class="step" id="step2">2</div>
+        <div class="step" id="step3">3</div>
+  </div>
+  
+  <form id="rechargeForm">
+    <div class="input-group">
+          <label for="phone">📱 Phone Number:</label>
+          <input type="text" id="phone" placeholder="Enter your phone number (e.g., 0712345678, 0112345678, +254712345678)" required>
+    </div>
+        
+    <div class="input-group">
+          <label for="amount">💰 Amount (KES):</label>
+          <input type="number" id="amount" placeholder="Enter amount (minimum KES 10)" min="10" required>
+    </div>
+        
+    <div class="input-group">
+          <label for="message">📝 Paste Deposit Message (Required):</label>
+          <textarea id="message" placeholder="Paste the deposit message here after copying the details above..." required></textarea>
+    </div>
+    
+    <!-- Warning Message -->
+    <div class="warning-message">
+      <div class="warning-icon">⚠️</div>
+      <div class="warning-text">
+        <strong>Important:</strong> Do not keep or call financial manager numbers. 
+        All communications should be done through the official UAI platform only.
+      </div>
+    </div>
+        
+        <button type="submit" class="submit-btn" id="submitBtn">
+          🚀 Submit Recharge Request
+        </button>
+  </form>
+    </div>
+    
+    <div id="statusMessage" class="message" style="display: none;"></div>
+  </div>
+
+  <!-- Waiting Approval Screen -->
+  <div class="waiting-screen" id="waitingScreen" style="display: none;">
+    <div class="waiting-content">
+      <div class="waiting-icon">⏳</div>
+      <div class="waiting-title">Payment Under Review</div>
+             <div class="waiting-message">
+         Your recharge request is being processed by our Financial Department. 
+         Please wait while we verify your payment details.
+       </div>
+      
+      <div class="waiting-details" id="waitingDetails">
+        <h4>📋 Request Details:</h4>
+        <p><strong>Amount:</strong> <span id="waitingAmount"></span></p>
+        <p><strong>Phone:</strong> <span id="waitingPhone"></span></p>
+        <p><strong>Transaction:</strong> <span id="waitingTransaction"></span></p>
+        <p><strong>Status:</strong> <span id="waitingStatus">Pending Approval</span></p>
+      </div>
+      
+      <div class="system-note">
+        💡 <strong>Note:</strong> Our system might be slow due to high traffic. 
+        Please be patient while we process your request.
+      </div>
+      
+      <button class="copy-btn" onclick="hideWaitingScreen()" style="margin-top: 20px; background: #ff9800;">
+        🔙 Back to Form
+      </button>
+    </div>
+  </div>
+
+<script>
+    let userToken = localStorage.getItem('token');
+    let hasCopiedDetails = false;
+    let currentStep = 1;
+    
+    // Check if user is already waiting for approval
+    async function checkWaitingApproval() {
+      const waitingData = localStorage.getItem('waitingApproval');
+      if (waitingData) {
+        const data = JSON.parse(waitingData);
+        
+        // Check if payment is still pending
+        const isStillPending = await checkPaymentStatus(data.transactionNumber);
+        
+        if (isStillPending) {
+          showWaitingScreen(data);
+          // Start global monitoring
+          startGlobalPaymentMonitoring(data.transactionNumber, data);
+          return true;
+        } else {
+          // Payment is no longer pending, clear localStorage
+          localStorage.removeItem('waitingApproval');
+          return false;
+        }
+      }
+      return false;
+    }
+    
+                   // Copy deposit details
+       function copyDepositDetails() {
+         const depositText = document.getElementById('depositDetails').textContent || document.getElementById('depositDetails').innerText;
+        
+                         // If it's an error message, don't copy it
+          if (depositText.includes('Network error') || depositText.includes('Unable to load') || depositText.includes('Server error') || depositText.includes('Please contact support') || depositText.includes('Error loading') || depositText.includes('No HR manager available') || depositText.includes('Loading')) {
+            showMessage("Please wait for financial details to load first.", "error");
+            return;
+          }
+        
+        // Extract only the phone number from the text
+        const phoneMatch = depositText.match(/Phone:\s*([+\d\s\-\(\)]+)/);
+        if (!phoneMatch) {
+          showMessage("No phone number found to copy.", "error");
+          return;
+        }
+        
+        const phoneNumber = phoneMatch[1];
+        
+        navigator.clipboard.writeText(phoneNumber).then(() => {
+        const copyBtn = document.getElementById('copyBtn');
+        copyBtn.textContent = '✅ Copied!';
+        copyBtn.classList.add('copied');
+        hasCopiedDetails = true;
+        updateStepIndicator();
+        
+        setTimeout(() => {
+          copyBtn.textContent = '📋 Copy Deposit Details';
+          copyBtn.classList.remove('copied');
+        }, 2000);
+             }).catch(err => {
+         console.error('Failed to copy:', err);
+         
+                   // Fallback for mobile devices
+          if (navigator.userAgent.match(/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i)) {
+            // For mobile, show the phone number in a way they can copy
+            showMessage(`Please manually copy the phone number: ${phoneNumber}`, "info");
+          } else {
+            alert(`Please manually copy the phone number: ${phoneNumber}`);
+          }
+       });
+    }
+    
+    // Update step indicator
+    function updateStepIndicator() {
+      const step1 = document.getElementById('step1');
+      const step2 = document.getElementById('step2');
+      const step3 = document.getElementById('step3');
+      
+      // Reset all steps
+      step1.className = 'step';
+      step2.className = 'step';
+      step3.className = 'step';
+      
+      // Mark completed steps
+      if (hasCopiedDetails) {
+        step1.className = 'step completed';
+        step2.className = 'step active';
+      }
+      
+      // Check if form is filled
+      const phone = document.getElementById('phone').value.trim();
+      const amount = document.getElementById('amount').value.trim();
+      const message = document.getElementById('message').value.trim();
+      
+      if (phone && amount && message) {
+        step2.className = 'step completed';
+        step3.className = 'step active';
+      }
+    }
+    
+    // Start periodic status checking
+    function startPeriodicStatusCheck() {
+      console.log('🔄 Starting periodic status check...');
+      
+      // Check status immediately
+      checkPaymentStatusFromLocalStorage();
+      
+      // Set up periodic checking every 30 seconds
+      const statusInterval = setInterval(async () => {
+        const waitingData = localStorage.getItem('waitingApproval');
+        if (!waitingData) {
+          clearInterval(statusInterval);
+          return;
+        }
+        
+        try {
+          const data = JSON.parse(waitingData);
+          const isStillPending = await checkPaymentStatus(data.transactionNumber);
+          
+          if (!isStillPending) {
+            clearInterval(statusInterval);
+            localStorage.removeItem('waitingApproval');
+          }
+        } catch (error) {
+          console.error('Error in periodic status check:', error);
+        }
+      }, 30000); // Check every 30 seconds
+    }
+    
+    // Check payment status from localStorage
+    async function checkPaymentStatusFromLocalStorage() {
+      const waitingData = localStorage.getItem('waitingApproval');
+      if (!waitingData) return;
+      
+      try {
+        const data = JSON.parse(waitingData);
+        await checkPaymentStatus(data.transactionNumber);
+      } catch (error) {
+        console.error('Error checking payment status from localStorage:', error);
+      }
+    }
+    
+    // Show waiting screen
+    async function showWaitingScreen(data) {
+      document.getElementById('waitingAmount').textContent = `KES ${data.amount}`;
+      document.getElementById('waitingPhone').textContent = data.phone;
+      document.getElementById('waitingTransaction').textContent = data.transactionNumber;
+      document.getElementById('waitingScreen').style.display = 'flex';
+      
+      // Hide the main form
+      document.querySelector('.container').style.display = 'none';
+      
+      // Check actual payment status from backend
+      await checkPaymentStatus(data.transactionNumber);
+    }
+    
+    // Check payment status from backend
+    async function checkPaymentStatus(transactionNumber) {
+      try {
+        const response = await fetch(`${window.location.origin}/api/payments/status/${transactionNumber}`, {
+          headers: {
+            'Authorization': `Bearer ${userToken}`
+          }
+        });
+        
+        if (response.ok) {
+          const result = await response.json();
+          const statusElement = document.getElementById('waitingStatus');
+          
+          if (result.status === 'approved') {
+            statusElement.textContent = 'Approved';
+            statusElement.style.color = '#4caf50';
+            // Show success message
+            document.querySelector('.waiting-title').textContent = 'Payment Approved!';
+            document.querySelector('.waiting-icon').textContent = '✅';
+            document.querySelector('.waiting-message').textContent = 'Your recharge has been approved and added to your wallet!';
+            
+            // Auto-hide after 3 seconds and clear localStorage
+            setTimeout(() => {
+              hideWaitingScreen();
+              localStorage.removeItem('waitingApproval');
+            }, 3000);
+            
+            return false; // No longer pending
+          } else if (result.status === 'rejected') {
+            statusElement.textContent = 'Rejected';
+            statusElement.style.color = '#f44336';
+            // Show rejection message
+            document.querySelector('.waiting-title').textContent = 'Payment Rejected';
+            document.querySelector('.waiting-icon').textContent = '❌';
+            document.querySelector('.waiting-message').textContent = result.reason || 'Your recharge request was rejected.';
+            
+            // Auto-hide after 5 seconds and clear localStorage
+            setTimeout(() => {
+              hideWaitingScreen();
+              localStorage.removeItem('waitingApproval');
+            }, 5000);
+            
+            return false; // No longer pending
+          } else {
+            statusElement.textContent = 'Pending Approval';
+            statusElement.style.color = '#ff9800';
+            return true; // Still pending
+          }
+        }
+      } catch (error) {
+        console.error('Error checking payment status:', error);
+        return false; // Assume not pending if error
+      }
+    }
+    
+    // Hide waiting screen
+    function hideWaitingScreen() {
+      document.getElementById('waitingScreen').style.display = 'none';
+      document.querySelector('.container').style.display = 'block';
+      
+      // Ask user if they want to cancel the pending payment
+      if (localStorage.getItem('waitingApproval')) {
+        const confirmCancel = confirm('Do you want to cancel your pending recharge request? This will remove it from the queue.');
+        if (confirmCancel) {
+          localStorage.removeItem('waitingApproval');
+          showMessage('Recharge request cancelled.', 'info');
+        } else {
+          // User doesn't want to cancel, show waiting screen again
+          const waitingData = localStorage.getItem('waitingApproval');
+          if (waitingData) {
+            const data = JSON.parse(waitingData);
+            showWaitingScreen(data);
+          }
+        }
+      }
+    }
+    
+    // Show message
+    function showMessage(message, type) {
+      const msgDiv = document.getElementById('statusMessage');
+      msgDiv.textContent = message;
+      msgDiv.className = `message ${type}`;
+      msgDiv.style.display = 'block';
+      
+      setTimeout(() => {
+        msgDiv.style.display = 'none';
+      }, 5000);
+    }
+    
+    // Countdown functionality for financial details
+    function getCountdownData() {
+      try {
+        const data = localStorage.getItem('financialCountdown');
+        return data ? JSON.parse(data) : null;
+      } catch (error) {
+        console.error('Error getting countdown data:', error);
+        return null;
+      }
+    }
+    
+    function setCountdownData(endTime, financialDetails = null) {
+      try {
+        const data = {
+          endTime: endTime,
+          method: 1, // Track which method this countdown is for
+          financialDetails: financialDetails
+        };
+        localStorage.setItem('financialCountdown', JSON.stringify(data));
+      } catch (error) {
+        console.error('Error setting countdown data:', error);
+      }
+    }
+    
+    function getFinancialDetails() {
+      try {
+        const data = localStorage.getItem('financialCountdown');
+        if (data) {
+          const parsed = JSON.parse(data);
+          return parsed.financialDetails || null;
+        }
+        return null;
+      } catch (error) {
+        console.error('Error getting financial details:', error);
+        return null;
+      }
+    }
+    
+    function startCountdown(endTime) {
+      const countdownInterval = setInterval(() => {
+        const now = Date.now();
+        const timeLeft = endTime - now;
+        
+        if (timeLeft <= 0) {
+          // Countdown finished - automatically fetch new details
+          clearInterval(countdownInterval);
+          
+          // Clear countdown data
+          localStorage.removeItem('financialCountdown');
+          
+          // Automatically fetch new financial details
+          loadDepositDetails();
+        } else {
+          // Update countdown display in fixed container
+          const secondsLeft = Math.ceil(timeLeft / 1000);
+          const countdownContainer = document.getElementById('countdownContainer');
+          
+          if (countdownContainer) {
+            countdownContainer.innerHTML = `⏰ New details available in: ${secondsLeft}s`;
+          }
+        }
+      }, 1000);
+    }
+    
+                 // Load HR manager details from database (using same criteria as Method 2)
+     async function loadDepositDetails() {
+       try {
+         console.log('🔄 Fetching financial details for Method 1...');
+      
+      // Check if we're in countdown period
+      const countdownData = getCountdownData();
+      if (countdownData && countdownData.endTime > Date.now()) {
+        // Show persisted financial details
+        const financialDetails = getFinancialDetails();
+        if (financialDetails) {
+          document.getElementById('depositDetails').innerHTML = financialDetails + `
+            <div class="countdown-container" id="countdownContainer">
+              ⏰ New details available in: ${Math.ceil((countdownData.endTime - Date.now()) / 1000)}s
+            </div>
+          `;
+        }
+        
+        // Show countdown container
+        const countdownContainer = document.getElementById('countdownContainer');
+        if (countdownContainer) {
+          countdownContainer.style.display = 'block';
+        }
+        startCountdown(countdownData.endTime);
+        return;
+      }
+      
+      // Show loading state
+          document.getElementById('depositDetails').textContent = 'Loading deposit details...';
+      
+      // Check if user is logged in
+      if (!userToken) {
+        document.getElementById('depositDetails').textContent = 'Please log in to view deposit details';
+        return;
+      }
+      
+         // Get the main server URL - since frontend and backend are on same port
+      const mainServerUrl = window.location.origin;
+      
+      console.log('📡 Making request to main server:', mainServerUrl);
+      
+      const response = await fetch(`${mainServerUrl}/api/payments/random-hr-manager`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      console.log('📡 Response status:', response.status);
+      console.log('📡 Response ok:', response.ok);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('📊 Response data:', data);
+      
+      if (data.success && data.admin) {
+            // Display the complete financial details
+            const hrManager = data.admin;
+            const depositText = `
+              <span class="name-phone">Name: ${hrManager.name || 'N/A'}</span><br><br>
+              <span class="name-phone">Phone: ${hrManager.phone || 'N/A'}</span><br><br>
+              Bank: ${hrManager.bankName || 'N/A'}<br>
+              Account: ${hrManager.accountNumber || 'N/A'}<br>
+              Branch: ${hrManager.branch || 'N/A'}<br>
+              Swift Code: ${hrManager.swiftCode || 'N/A'}<br>
+              Reference: ${hrManager.referenceCode || 'UAI-RECHARGE'}
+            `;
+            
+            document.getElementById('depositDetails').innerHTML = depositText + `
+              <div class="countdown-container" id="countdownContainer" style="display: none;">
+                ⏰ New details available in: 60s
+              </div>
+            `;
+           console.log('✅ Financial details loaded:', hrManager);
+           
+           // Start 60-second countdown and store financial details
+           const endTime = Date.now() + 60000; // 60 seconds from now
+           setCountdownData(endTime, depositText); // Store the financial details
+           startCountdown(endTime);
+           
+           // Show countdown container
+           const countdownContainer = document.getElementById('countdownContainer');
+           if (countdownContainer) {
+             countdownContainer.style.display = 'block';
+           }
+           
+           // Hide retry button on success
+           const refreshBtn = document.getElementById('refreshBtn');
+           refreshBtn.style.display = 'none';
+      } else {
+           console.log('❌ No deposit details or error occurred');
+           document.getElementById('depositDetails').textContent = 'No deposit details available';
+           
+           // Add retry button
+           const refreshBtn = document.getElementById('refreshBtn');
+           refreshBtn.style.display = 'inline-block';
+           refreshBtn.textContent = '🔄 Retry';
+      }
+    } catch (error) {
+         console.error('❌ Error fetching data:', error);
+      
+         // Provide more specific error messages (same as Method 2)
+      let errorMessage = 'Error loading deposit details';
+      if (error.message.includes('Failed to fetch')) {
+        errorMessage = 'Network error. Please check your connection.';
+      } else if (error.message.includes('HTTP error')) {
+        errorMessage = 'Server error. Please try again later.';
+      } else {
+        errorMessage = 'Error loading deposit details: ' + error.message;
+      }
+      
+         document.getElementById('depositDetails').textContent = errorMessage;
+         
+         // Add retry button
+         const refreshBtn = document.getElementById('refreshBtn');
+         refreshBtn.style.display = 'inline-block';
+         refreshBtn.textContent = '🔄 Retry';
+       }
+     }
+  
+      // Initialize page
+  async function initializePage() {
+       console.log('🚀 Initializing page...');
+    
+    // Check for existing waiting approval data on page load
+    const waitingData = localStorage.getItem('waitingApproval');
+    if (waitingData) {
+      try {
+        const data = JSON.parse(waitingData);
+        console.log('📋 Found existing waiting approval data:', data);
+        
+        // Show waiting screen immediately
+        showWaitingScreen(data);
+        
+        // Start periodic status checking
+        startPeriodicStatusCheck();
+        
+        return; // Don't show the form if there's a pending payment
+      } catch (error) {
+        console.error('Error parsing waiting approval data:', error);
+        localStorage.removeItem('waitingApproval');
+      }
+    }
+    
+    if (!userToken) {
+         showMessage("Please log in to recharge your account.", "error");
+      document.getElementById('rechargeForm').style.display = 'none';
+      
+      // Add login button
+      const loginButton = document.createElement('button');
+      loginButton.textContent = '🔐 Login to Continue';
+      loginButton.style.cssText = `
+        background: linear-gradient(90deg, #2979ff 0%, #ad7ce6 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 15px 30px;
+        font-size: 1.1em;
+        font-weight: 700;
+        cursor: pointer;
+        margin-top: 20px;
+        width: 100%;
+      `;
+      loginButton.onclick = () => window.location.href = '/';
+      
+      const formSection = document.querySelector('.form-section');
+      formSection.appendChild(loginButton);
+      return;
+    }
+    
+       console.log('✅ User token found, loading HR manager details...');
+       
+       // Load HR manager details from database
+       await loadDepositDetails();
+      
+      // Check if already waiting for approval
+      const isWaiting = await checkWaitingApproval();
+      if (isWaiting) {
+        // Start periodic status checking
+        startPeriodicStatusCheck();
+        return;
+      }
+      
+      // Add event listeners for step tracking
+      document.getElementById('phone').addEventListener('input', updateStepIndicator);
+      document.getElementById('amount').addEventListener('input', updateStepIndicator);
+      document.getElementById('message').addEventListener('input', updateStepIndicator);
+    }
+    
+    // Start periodic status checking for pending payments
+    function startPeriodicStatusCheck() {
+      const waitingData = localStorage.getItem('waitingApproval');
+      if (!waitingData) return;
+      
+      const data = JSON.parse(waitingData);
+      
+      // Start global monitoring instead of local interval
+      startGlobalPaymentMonitoring(data.transactionNumber, data);
+    }
+    
+    // Form submission
+    document.getElementById('rechargeForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+      
+    const phone = document.getElementById('phone').value.trim();
+    const amount = document.getElementById('amount').value.trim();
+    const message = document.getElementById('message').value.trim();
+    
+      // Validation
+      if (!hasCopiedDetails) {
+        showMessage("Please copy the deposit details first.", "error");
+        return;
+      }
+      
+      if (!phone || !amount || !message) {
+        showMessage("Please fill in all fields including the deposit message.", "error");
+      return;
+    }
+    
+          // Phone number validation - accept 01, 07, or country codes
+      if (!phone.match(/^(01|07|\+254|\+1|\+44|\+91|\+86|\+81|\+49|\+33|\+39|\+34|\+55|\+61)\d{7,15}$/)) {
+        showMessage("Please enter a valid phone number (e.g., 0712345678, 0112345678, +254712345678).", "error");
+      return;
+    }
+    
+    // Amount validation
+    const amountNum = parseFloat(amount);
+    if (isNaN(amountNum) || amountNum < 10) {
+        showMessage("Please enter a valid amount (minimum KES 10).", "error");
+      return;
+    }
+    
+      // Disable submit button
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = '⏳ Processing...';
+      
+      try {
+        // Check if user is logged in
+        if (!userToken) {
+          showMessage("Please log in to submit a recharge request.", "error");
+          return;
+        }
+        
+        // Get the main backend URL - since frontend and backend are on same port
+       const mainBackendUrl = window.location.origin;
+       
+               const res = await fetch(`${mainBackendUrl}/api/payments/recharge-method1`, {
+         method: "POST",
+         headers: {
+           "Content-Type": "application/json",
+           Authorization: "Bearer " + userToken
+         },
+         body: JSON.stringify({ phone, amount: amountNum, message })
+       });
+      
+      // Check if response is JSON
+      const contentType = res.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        // Response is not JSON, likely redirected to login page
+        if (res.status === 401 || res.status === 403) {
+          showMessage("Please log in to submit a recharge request.", "error");
+          // Redirect to login page
+          window.location.href = '/';
+          return;
+        } else {
+          showMessage("Server error. Please try again later.", "error");
+          return;
+        }
+      }
+      
+      const data = await res.json();
+      
+      if (data.success) {
+          // Store waiting approval data
+          const waitingData = {
+          amount: amountNum,
+          phone: phone,
+          message: message,
+            transactionNumber: data.transactionNumber,
+          created_at: new Date().toISOString(),
+          status: 'pending'
+        };
+                    localStorage.setItem('waitingApproval', JSON.stringify(waitingData));
+          
+          // Show waiting screen
+          showWaitingScreen(waitingData);
+          
+          // Start periodic status checking
+          startPeriodicStatusCheck();
+        
+          showMessage("Recharge request submitted successfully!", "success");
+      } else if (data.error) {
+          showMessage(data.error, "error");
+      } else {
+          showMessage("Failed to process request. Please try again.", "error");
+      }
+    } catch (e) {
+      console.error('Recharge error:', e);
+        showMessage("Network error. Please check your connection and try again.", "error");
+      } finally {
+        // Re-enable submit button
+        submitBtn.disabled = false;
+        submitBtn.textContent = '🚀 Submit Recharge Request';
+      }
+    });
+    
+    // Initialize page when loaded
+    initializePage();
+    
+    // Add page visibility change listener to check for pending payments
+    document.addEventListener('visibilitychange', function() {
+      if (!document.hidden) {
+        // Page became visible again, check for pending payments
+        const waitingData = localStorage.getItem('waitingApproval');
+        if (waitingData) {
+          try {
+            const data = JSON.parse(waitingData);
+            showWaitingScreen(data);
+            startPeriodicStatusCheck();
+          } catch (error) {
+            console.error('Error handling page visibility change:', error);
+          }
+        }
+      }
+    });
+    
+    // Add beforeunload event to warn user about leaving with pending payment
+    window.addEventListener('beforeunload', function(e) {
+      const waitingData = localStorage.getItem('waitingApproval');
+      if (waitingData) {
+        e.preventDefault();
+        e.returnValue = 'You have a pending recharge request. Are you sure you want to leave?';
+        return 'You have a pending recharge request. Are you sure you want to leave?';
+      }
+    });
+</script>
+</body>
+</html>

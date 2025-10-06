@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>UAI Task List</title>
+  <style>
+    body {
+      margin: 0; padding: 0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(to bottom, #2979ff 0%, #e3f0ff 100%);
+      min-height: 100vh;
+      color: #1a237e;
+    }
+    .top-bar {
+      position: fixed; top: 0; left: 0; width: 100%;
+      background: #2979ff;
+      display: flex; align-items: center;
+      height: 54px;
+      z-index: 1002;
+      box-shadow: 0 2px 8px rgba(41,121,255,0.10);
+      border-bottom: 1px solid #2979ff33;
+    }
+    .logo-row {
+      width:48px; height:54px; display:flex; align-items:center; justify-content:center; position:relative;
+    }
+    .hexagon {
+      width:40px; height:40px;
+      background:#2979ff;
+      clip-path:polygon(25% 6%,75% 6%,100% 50%,75% 94%,25% 94%,0% 50%);
+      box-shadow:0 2px 10px rgba(41,121,255,0.18);
+      display:flex; align-items:center; justify-content:center; position:relative;
+    }
+    .hexagon-text {
+      color:white; font-weight:700; letter-spacing:2px; font-size:1.2em;
+      position:absolute; width:100%; text-align:center; top:50%; transform:translateY(-50%);
+      user-select:none;
+    }
+    .company-logo-box {
+      width: 60px; height: 40px; margin-left: 4px; display: flex; align-items: center; justify-content: center;
+    }
+    .uai-logo {
+      width: 60px; height: 40px; display: block;
+    }
+    .task-header-title {
+      color: #fff;
+      font-weight: 700;
+      font-size: 1.15em;
+      margin-left: 14px;
+      flex: 1;
+      text-align: left;
+      letter-spacing: 1.2px;
+    }
+    main {
+      margin-top: 70px;
+      padding-bottom: 80px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+     /* Bottom nav */
+    nav.bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 56px;
+      background: #fff;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      border-top: 1px solid #e3f0ff;
+      z-index: 1000;
+    }
+    nav.bottom-nav a {
+      background: transparent;
+      border: none;
+      color: #282828;
+      font-size: 0.85em;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      user-select: none;
+      transition: color 0.3s;
+      padding: 2px 4px;
+      flex-shrink: 0;
+      text-decoration: none;
+    }
+    nav.bottom-nav a.active,
+    nav.bottom-nav a:focus {
+      color: var(--menu-icon-active);
+    }
+    nav.bottom-nav a svg {
+      width: 22px;
+      height: 22px;
+      margin-bottom: 2px;
+      fill: currentColor;
+    }
+    /* News Styles */
+    .news-container {
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .news-title {
+      color: #1a237e;
+      font-size: 2em;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 30px;
+      text-shadow: 0 2px 4px rgba(26,35,126,0.1);
+    }
+    
+    .news-article {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 12px rgba(41,121,255,0.1);
+      border: 1px solid #e3f0ff;
+    }
+    
+    .news-article h2 {
+      color: #1a237e;
+      font-size: 1.4em;
+      font-weight: 700;
+      margin-bottom: 10px;
+      line-height: 1.3;
+    }
+    
+    .news-meta {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+    
+    .news-date {
+      background: #2979ff;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85em;
+      font-weight: 600;
+    }
+    
+    .news-category {
+      background: #e3f0ff;
+      color: #1a237e;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85em;
+      font-weight: 600;
+    }
+    
+    .news-content {
+      color: #333;
+      line-height: 1.6;
+      margin-bottom: 15px;
+      font-size: 1em;
+    }
+    
+    .news-list {
+      margin: 15px 0;
+      padding-left: 20px;
+    }
+    
+    .news-list li {
+      color: #333;
+      line-height: 1.6;
+      margin-bottom: 8px;
+      font-size: 1em;
+    }
+    
+    @media (max-width: 720px) {
+      .news-container {
+        padding: 15px;
+      }
+      
+      .news-title {
+        font-size: 1.6em;
+      }
+      
+      .news-article {
+        padding: 20px;
+      }
+      
+      .news-article h2 {
+        font-size: 1.2em;
+      }
+    }
+    
+    @media (max-width:540px) {
+      main { margin-top: 64px; }
+      .task-thumb { width: 54px; height: 54px;}
+      .company-logo-box { display: none; }
+    }
+  </style>
+</head>
+<body>
+<div class="top-bar">
+          <div class="task-header-title">News</div>
+  <div class="logo-row">
+    <div class="hexagon">
+      <span class="hexagon-text">UAI</span>
+    </div>
+  </div>
+  <div class="company-logo-box">
+    <svg class="uai-logo" viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" aria-label="UAI Creative Logo">
+      <defs>
+        <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style="stop-color:#2979ff;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#90caf9;stop-opacity:1" />
+        </linearGradient>
+      </defs>
+      <polygon points="50,5 90,50 50,95 10,50" fill="url(#grad1)" />
+      <text x="110" y="65" font-family="Segoe UI, Arial" font-size="50" fill="#2979ff" font-weight="700">UAI</text>
+    </svg>
+  </div>
+</div>
+<main>
+  <div class="news-container">
+    <h1 class="news-title">UAI Company News</h1>
+    
+    <article class="news-article">
+      <h2>🎉 UAI Company Celebrates 5+ Years of Innovation</h2>
+      <div class="news-meta">
+        <span class="news-date">August 8, 2024</span>
+        <span class="news-category">Company Milestone</span>
+      </div>
+      <p class="news-content">
+        UAI (United American Investments) was founded on August 8th, 2019, in Florida, USA, with a vision to revolutionize the digital investment landscape. 
+        What started as a small startup has grown into a leading financial technology company serving thousands of users worldwide.
+      </p>
+      <p class="news-content">
+        Our journey began with a simple mission: to make investment opportunities accessible to everyone, regardless of their background or location. 
+        Over the past 5+ years, we've expanded our services to include wealth management, digital task systems, and innovative financial solutions.
+      </p>
+    </article>
+
+    <article class="news-article">
+      <h2>📈 UAI Wealth Fund Launch</h2>
+      <div class="news-meta">
+        <span class="news-date">July 2024</span>
+        <span class="news-category">Product Launch</span>
+      </div>
+      <p class="news-content">
+        We're excited to announce the launch of our UAI Wealth Fund platform, offering diverse investment opportunities including:
+      </p>
+      <ul class="news-list">
+        <li>UAI Starter Fund - Perfect for beginners</li>
+        <li>UAI Micro Fund - Small-scale investments</li>
+        <li>Agriculture Fund - Sustainable farming investments</li>
+        <li>Tech Growth Fund - Technology sector focus</li>
+        <li>Real Estate Fund - Property investments</li>
+        <li>Crypto Mining Fund - Digital currency mining</li>
+        <li>Wells Fargo & Citibank Partnerships</li>
+        <li>Gold Investment Fund - Precious metals</li>
+        <li>Diamond Elite Fund - Premium investment options</li>
+      </ul>
+    </article>
+
+    <article class="news-article">
+      <h2>🌍 Global Expansion</h2>
+      <div class="news-meta">
+        <span class="news-date">June 2024</span>
+        <span class="news-category">Company Growth</span>
+      </div>
+      <p class="news-content">
+        UAI has expanded its operations globally, now serving users in multiple countries. Our platform supports multiple languages and currencies, 
+        making it easier for international users to access our investment opportunities and task management systems.
+      </p>
+    </article>
+
+    <article class="news-article">
+      <h2>🔒 Enhanced Security Features</h2>
+      <div class="news-meta">
+        <span class="news-date">May 2024</span>
+        <span class="news-category">Technology</span>
+      </div>
+      <p class="news-content">
+        We've implemented advanced security measures to protect our users' investments and personal information. 
+        Our platform now features multi-factor authentication, encrypted transactions, and real-time fraud detection systems.
+      </p>
+    </article>
+
+    <article class="news-article">
+      <h2>💼 New Partnership Opportunities</h2>
+      <div class="news-meta">
+        <span class="news-date">April 2024</span>
+        <span class="news-category">Partnerships</span>
+      </div>
+      <p class="news-content">
+        UAI is actively seeking partnerships with financial institutions, technology companies, and investment firms worldwide. 
+        These partnerships will enable us to offer even more diverse investment opportunities and better services to our users.
+      </p>
+    </article>
+
+    <article class="news-article">
+      <h2>🎯 Mission & Vision</h2>
+      <div class="news-meta">
+        <span class="news-date">August 8, 2019 - Present</span>
+        <span class="news-category">Company Values</span>
+      </div>
+      <p class="news-content">
+        <strong>Our Mission:</strong> To democratize investment opportunities and create financial freedom for people worldwide through innovative technology and transparent financial services.
+      </p>
+      <p class="news-content">
+        <strong>Our Vision:</strong> To become the leading global platform for accessible, secure, and profitable investment opportunities, serving millions of users across all continents.
+      </p>
+    </article>
+  </div>
+</main>
+
+ <nav class="bottom-nav" role="navigation" aria-label="Bottom Navigation">
+    <a href="home.html" class="active" aria-current="page" id="nav-home">
+      <svg viewBox="0 0 24 24"><path d="M3 21v-7.5l9-6.5 9 6.5V21H3z"/></svg>
+      <span id="nav-home-label">Home</span>
+    </a>
+    <a href="task.html" id="nav-task">
+      <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 10h8M8 14h4"/></svg>
+      <span id="nav-task-label">Task</span>
+    </a>
+    <a href="team management.html" id="nav-team">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3"/><path d="M12 15c-4 0-8 2-8 4v1h16v-1c0-2-4-4-8-4z"/></svg>
+      <span id="nav-team-label">Team Management</span>
+    </a>
+    <a href="level.html" id="nav-level">
+      <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 7v10l10 5 10-5V7"/></svg>
+      <span id="nav-level-label">Level</span>
+    </a>
+    <a href="profile.html" id="nav-profile">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M2 20v-2a8 8 0 0 1 16 0v2"/></svg>
+      <span id="nav-profile-label">Profile</span>
+    </a>
+  </nav>
+<script>
+</body>
+</html>

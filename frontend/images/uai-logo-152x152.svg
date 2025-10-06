@@ -1,0 +1,21 @@
+
+<svg width="152" height="152" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2979ff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ad7ce6;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="76" cy="76" r="72" fill="url(#grad)" stroke="#fff" stroke-width="2"/>
+  
+  <!-- UAI text -->
+  <text x="76" y="83.6" font-family="Arial, sans-serif" font-size="38" font-weight="bold" text-anchor="middle" fill="#fff" stroke="#000" stroke-width="1">UAI</text>
+  
+  <!-- Decorative dots -->
+  <circle cx="76" cy="50.666666666666664" r="6.08" fill="rgba(255,255,255,0.3)"/>
+  <circle cx="76" cy="101.33333333333333" r="5.066666666666666" fill="rgba(255,255,255,0.3)"/>
+  <circle cx="50.666666666666664" cy="76" r="5.428571428571429" fill="rgba(255,255,255,0.3)"/>
+  <circle cx="101.33333333333333" cy="76" r="5.428571428571429" fill="rgba(255,255,255,0.3)"/>
+</svg>

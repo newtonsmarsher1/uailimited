@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UAI Management Dashboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .header h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin: 0;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+            margin: 10px 0 0 0;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            transition: transform 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .stat-card h3 {
+            margin: 0 0 15px 0;
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        .stat-card .number {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 0;
+        }
+        .stat-card .label {
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-top: 10px;
+        }
+        .management-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        .section-title {
+            color: #333;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .action-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+            display: block;
+        }
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        .action-btn.secondary {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        .action-btn.success {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+        .action-btn.warning {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+        .info-box {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+        }
+        .info-box h4 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        .info-box p {
+            margin: 0;
+            color: #666;
+            line-height: 1.6;
+        }
+        .refresh-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 1.5em;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+        }
+        .refresh-btn:hover {
+            transform: scale(1.1);
+            background: #764ba2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 UAI Management Dashboard</h1>
+            <p>Centralized management for recharges and withdrawals</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>📊 Total Recharges</h3>
+                <div class="number" id="total-recharges">-</div>
+                <div class="label">All time</div>
+            </div>
+            <div class="stat-card">
+                <h3>⏳ Pending Recharges</h3>
+                <div class="number" id="pending-recharges">-</div>
+                <div class="label">Awaiting approval</div>
+            </div>
+            <div class="stat-card">
+                <h3>💰 Total Withdrawals</h3>
+                <div class="number" id="total-withdrawals">-</div>
+                <div class="label">All time</div>
+            </div>
+            <div class="stat-card">
+                <h3>⏳ Pending Withdrawals</h3>
+                <div class="number" id="pending-withdrawals">-</div>
+                <div class="label">Awaiting approval</div>
+            </div>
+        </div>
+
+        <div class="management-section">
+            <h2 class="section-title">🔧 Recharge Management</h2>
+            <div class="action-buttons">
+                <a href="recharges.html" class="action-btn">
+                    📋 View All Recharges
+                </a>
+                <a href="recharges.html?filter=pending" class="action-btn secondary">
+                    ⏳ Pending Recharges
+                </a>
+                <a href="recharges.html?filter=approved" class="action-btn success">
+                    ✅ Approved Recharges
+                </a>
+                <a href="recharges.html?filter=rejected" class="action-btn warning">
+                    ❌ Rejected Recharges
+                </a>
+            </div>
+        </div>
+
+        <div class="management-section">
+            <h2 class="section-title">💸 Withdrawal Management</h2>
+            <div class="action-buttons">
+                <a href="withdrawals.html" class="action-btn">
+                    📋 View All Withdrawals
+                </a>
+                <a href="withdrawals.html?filter=pending" class="action-btn secondary">
+                    ⏳ Pending Withdrawals
+                </a>
+                <a href="withdrawals.html?filter=approved" class="action-btn success">
+                    ✅ Approved Withdrawals
+                </a>
+                <a href="withdrawals.html?filter=rejected" class="action-btn warning">
+                    ❌ Rejected Withdrawals
+                </a>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <h4>ℹ️ Management Guidelines</h4>
+            <p>
+                • <strong>Recharges:</strong> Review payment proof and verification messages before approval<br>
+                • <strong>Withdrawals:</strong> Verify bank details and ensure sufficient balance<br>
+                • <strong>Processing Time:</strong> Aim to process requests within 24 hours<br>
+                • <strong>Documentation:</strong> Always provide clear reasons for rejections
+            </p>
+        </div>
+
+        <div class="info-box">
+            <h4>🔒 Security Notes</h4>
+            <p>
+                • All actions are logged for audit purposes<br>
+                • Double-check amounts before processing<br>
+                • Verify user identity through multiple channels<br>
+                • Report any suspicious activity immediately
+            </p>
+        </div>
+    </div>
+
+    <button class="refresh-btn" onclick="refreshData()" title="Refresh Data">
+        🔄
+    </button>
+
+    <script>
+        // Load initial data
+        async function loadStats() {
+            try {
+                // Load recharge stats
+                const rechargeResponse = await fetch('/api/admin/payment-requests');
+                if (rechargeResponse.ok) {
+                    const rechargeData = await rechargeResponse.json();
+                    document.getElementById('total-recharges').textContent = rechargeData.stats.pending + rechargeData.stats.approved + rechargeData.stats.rejected;
+                    document.getElementById('pending-recharges').textContent = rechargeData.stats.pending;
+                }
+
+                // Load withdrawal stats
+                const withdrawalResponse = await fetch('/api/admin/withdrawal-requests');
+                if (withdrawalResponse.ok) {
+                    const withdrawalData = await withdrawalResponse.json();
+                    document.getElementById('total-withdrawals').textContent = withdrawalData.stats.pending + withdrawalData.stats.approved + withdrawalData.stats.rejected;
+                    document.getElementById('pending-withdrawals').textContent = withdrawalData.stats.pending;
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        function refreshData() {
+            loadStats();
+            // Add visual feedback
+            const refreshBtn = document.querySelector('.refresh-btn');
+            refreshBtn.style.transform = 'rotate(360deg)';
+            setTimeout(() => {
+                refreshBtn.style.transform = 'rotate(0deg)';
+            }, 500);
+        }
+
+        // Load data on page load
+        document.addEventListener('DOMContentLoaded', loadStats);
+
+        // Auto-refresh every 30 seconds
+        setInterval(loadStats, 30000);
+    </script>
+</body>
+</html>

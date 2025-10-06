@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clear Records - UAI Admin</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #333;
+            font-size: 2.2em;
+            margin: 0;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .warning-box {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .warning-box h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.3em;
+        }
+        .stats-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        .section-title {
+            color: #333;
+            font-size: 1.4em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .stat-number {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #667eea;
+            margin: 0;
+        }
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+        .clearing-options {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        .option-group {
+            margin-bottom: 20px;
+        }
+        .option-group h4 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .checkbox-item input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+        .checkbox-item label {
+            color: #333;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .action-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        .action-btn.danger {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+        }
+        .action-btn.danger:hover {
+            box-shadow: 0 10px 25px rgba(255, 107, 107, 0.4);
+        }
+        .action-btn.success {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+        .action-btn.success:hover {
+            box-shadow: 0 10px 25px rgba(67, 233, 123, 0.4);
+        }
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .backup-info {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+        }
+        .backup-info h4 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        .backup-info p {
+            margin: 0;
+            color: #666;
+            line-height: 1.6;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        .loading.show {
+            display: block;
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .result-message {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: none;
+        }
+        .result-message.show {
+            display: block;
+        }
+        .result-message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .result-message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧹 Clear Records</h1>
+            <p>Safe record clearing with automatic backups</p>
+        </div>
+
+        <div class="warning-box">
+            <h3>⚠️ Important Warning</h3>
+            <p>This action will permanently delete records from the database. Automatic backups will be created, but this action cannot be undone!</p>
+        </div>
+
+        <div class="stats-section">
+            <h2 class="section-title">📊 Current Records</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number" id="recharge-total">-</div>
+                    <div class="stat-label">Total Recharges</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="recharge-pending">-</div>
+                    <div class="stat-label">Pending Recharges</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="recharge-approved">-</div>
+                    <div class="stat-label">Approved Recharges</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="recharge-rejected">-</div>
+                    <div class="stat-label">Rejected Recharges</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="withdrawal-total">-</div>
+                    <div class="stat-label">Total Withdrawals</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="withdrawal-pending">-</div>
+                    <div class="stat-label">Pending Withdrawals</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="withdrawal-approved">-</div>
+                    <div class="stat-label">Approved Withdrawals</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="withdrawal-rejected">-</div>
+                    <div class="stat-label">Rejected Withdrawals</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="clearing-options">
+            <h2 class="section-title">🔧 Clearing Options</h2>
+            
+            <div class="option-group">
+                <h4>Recharge Records</h4>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="clear-recharge-pending" checked>
+                        <label for="clear-recharge-pending">Pending Recharges</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="clear-recharge-approved">
+                        <label for="clear-recharge-approved">Approved Recharges</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="clear-recharge-rejected">
+                        <label for="clear-recharge-rejected">Rejected Recharges</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="option-group">
+                <h4>Withdrawal Records</h4>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="clear-withdrawal-pending" checked>
+                        <label for="clear-withdrawal-pending">Pending Withdrawals</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="clear-withdrawal-approved">
+                        <label for="clear-withdrawal-approved">Approved Withdrawals</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="clear-withdrawal-rejected">
+                        <label for="clear-withdrawal-rejected">Rejected Withdrawals</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="backup-info">
+                <h4>🛡️ Automatic Backup</h4>
+                <p>Before clearing any records, automatic backups will be created in the <code>./backups/</code> directory. These backups can be used to restore data if needed.</p>
+            </div>
+
+            <div class="action-buttons">
+                <button class="action-btn success" onclick="refreshStats()">
+                    🔄 Refresh Stats
+                </button>
+                <button class="action-btn" onclick="clearSelectedRecords()">
+                    🧹 Clear Selected Records
+                </button>
+                <button class="action-btn danger" onclick="clearAllRecords()">
+                    ⚠️ Clear All Records
+                </button>
+            </div>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Processing request...</p>
+        </div>
+
+        <div class="result-message" id="result-message"></div>
+    </div>
+
+    <script>
+        // Load initial stats
+        async function loadStats() {
+            try {
+                // Load recharge stats
+                const rechargeResponse = await fetch('/api/admin/payment-requests');
+                if (rechargeResponse.ok) {
+                    const rechargeData = await rechargeResponse.json();
+                    document.getElementById('recharge-total').textContent = rechargeData.stats.pending + rechargeData.stats.approved + rechargeData.stats.rejected;
+                    document.getElementById('recharge-pending').textContent = rechargeData.stats.pending;
+                    document.getElementById('recharge-approved').textContent = rechargeData.stats.approved;
+                    document.getElementById('recharge-rejected').textContent = rechargeData.stats.rejected;
+                }
+
+                // Load withdrawal stats
+                const withdrawalResponse = await fetch('/api/admin/withdrawal-requests');
+                if (withdrawalResponse.ok) {
+                    const withdrawalData = await withdrawalResponse.json();
+                    document.getElementById('withdrawal-total').textContent = withdrawalData.stats.pending + withdrawalData.stats.approved + withdrawalData.stats.rejected;
+                    document.getElementById('withdrawal-pending').textContent = withdrawalData.stats.pending;
+                    document.getElementById('withdrawal-approved').textContent = withdrawalData.stats.approved;
+                    document.getElementById('withdrawal-rejected').textContent = withdrawalData.stats.rejected;
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+                showMessage('Error loading statistics', 'error');
+            }
+        }
+
+        function refreshStats() {
+            loadStats();
+        }
+
+        function showMessage(message, type) {
+            const messageDiv = document.getElementById('result-message');
+            messageDiv.textContent = message;
+            messageDiv.className = `result-message show ${type}`;
+            
+            setTimeout(() => {
+                messageDiv.classList.remove('show');
+            }, 5000);
+        }
+
+        function showLoading(show) {
+            document.getElementById('loading').classList.toggle('show', show);
+        }
+
+        async function clearSelectedRecords() {
+            const options = {
+                clearRechargePending: document.getElementById('clear-recharge-pending').checked,
+                clearRechargeApproved: document.getElementById('clear-recharge-approved').checked,
+                clearRechargeRejected: document.getElementById('clear-recharge-rejected').checked,
+                clearWithdrawalPending: document.getElementById('clear-withdrawal-pending').checked,
+                clearWithdrawalApproved: document.getElementById('clear-withdrawal-approved').checked,
+                clearWithdrawalRejected: document.getElementById('clear-withdrawal-rejected').checked
+            };
+
+            // Check if any option is selected
+            const hasSelection = Object.values(options).some(checked => checked);
+            if (!hasSelection) {
+                showMessage('Please select at least one record type to clear', 'error');
+                return;
+            }
+
+            // Confirm action
+            const confirmMessage = 'Are you sure you want to clear the selected records? This action cannot be undone!';
+            if (!confirm(confirmMessage)) {
+                return;
+            }
+
+            showLoading(true);
+
+            try {
+                // Get admin info from localStorage
+                const adminId = localStorage.getItem('adminId');
+                const adminName = localStorage.getItem('adminName');
+                
+                if (!adminId || !adminName) {
+                    throw new Error('Admin information not found. Please log in again.');
+                }
+
+                let totalCleared = 0;
+                let messages = [];
+
+                // Clear recharge records if any recharge options are selected
+                const rechargeOptions = {
+                    clearRechargePending: options.clearRechargePending,
+                    clearRechargeApproved: options.clearRechargeApproved,
+                    clearRechargeRejected: options.clearRechargeRejected
+                };
+
+                if (rechargeOptions.clearRechargePending || rechargeOptions.clearRechargeApproved || rechargeOptions.clearRechargeRejected) {
+                    console.log('🧹 Clearing recharge records...');
+                    
+                    const rechargeRequestData = {
+                        ...rechargeOptions,
+                        adminId: parseInt(adminId),
+                        adminName: adminName
+                    };
+
+                    const rechargeResponse = await fetch('/api/admin/clear-recharge-records', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(rechargeRequestData)
+                    });
+
+                    const rechargeResult = await rechargeResponse.json();
+
+                    if (rechargeResponse.ok) {
+                        totalCleared += rechargeResult.clearedCount || 0;
+                        messages.push(rechargeResult.message);
+                    } else {
+                        throw new Error(`Recharge clearing failed: ${rechargeResult.error}`);
+                    }
+                }
+
+                // Clear withdrawal records if any withdrawal options are selected
+                const withdrawalOptions = {
+                    clearWithdrawalPending: options.clearWithdrawalPending,
+                    clearWithdrawalApproved: options.clearWithdrawalApproved,
+                    clearWithdrawalRejected: options.clearWithdrawalRejected
+                };
+
+                if (withdrawalOptions.clearWithdrawalPending || withdrawalOptions.clearWithdrawalApproved || withdrawalOptions.clearWithdrawalRejected) {
+                    console.log('🧹 Clearing withdrawal records...');
+                    
+                    const withdrawalRequestData = {
+                        ...withdrawalOptions,
+                        adminId: parseInt(adminId),
+                        adminName: adminName
+                    };
+
+                    const withdrawalResponse = await fetch('/api/admin/clear-withdrawal-records', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(withdrawalRequestData)
+                    });
+
+                    const withdrawalResult = await withdrawalResponse.json();
+
+                    if (withdrawalResponse.ok) {
+                        totalCleared += withdrawalResult.clearedCount || 0;
+                        messages.push(withdrawalResult.message);
+                    } else {
+                        throw new Error(`Withdrawal clearing failed: ${withdrawalResult.error}`);
+                    }
+                }
+
+                // Show success message
+                if (totalCleared > 0) {
+                    showMessage(`✅ Successfully cleared ${totalCleared} records total!`, 'success');
+                    loadStats(); // Refresh stats
+                } else {
+                    showMessage('✅ No records found matching the selected criteria.', 'success');
+                }
+
+            } catch (error) {
+                console.error('❌ Error clearing records:', error);
+                showMessage('Error clearing records: ' + error.message, 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function clearAllRecords() {
+            const confirmMessage = 'Are you sure you want to clear ALL records? This will delete all recharge and withdrawal records. This action cannot be undone!';
+            if (!confirm(confirmMessage)) {
+                return;
+            }
+
+            const doubleConfirm = confirm('This is your final warning. ALL records will be permanently deleted. Type "YES" to confirm:');
+            if (!doubleConfirm) {
+                return;
+            }
+
+            showLoading(true);
+
+            try {
+                // Get admin info from localStorage
+                const adminId = localStorage.getItem('adminId');
+                const adminName = localStorage.getItem('adminName');
+                
+                if (!adminId || !adminName) {
+                    throw new Error('Admin information not found. Please log in again.');
+                }
+
+                let totalCleared = 0;
+
+                // Clear ALL recharge records
+                console.log('🧹 Clearing ALL recharge records...');
+                const allRechargeOptions = {
+                    clearRechargePending: true,
+                    clearRechargeApproved: true,
+                    clearRechargeRejected: true,
+                    adminId: parseInt(adminId),
+                    adminName: adminName
+                };
+
+                const rechargeResponse = await fetch('/api/admin/clear-recharge-records', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(allRechargeOptions)
+                });
+
+                const rechargeResult = await rechargeResponse.json();
+
+                if (rechargeResponse.ok) {
+                    totalCleared += rechargeResult.clearedCount || 0;
+                } else {
+                    throw new Error(`Recharge clearing failed: ${rechargeResult.error}`);
+                }
+
+                // Clear ALL withdrawal records
+                console.log('🧹 Clearing ALL withdrawal records...');
+                const allWithdrawalOptions = {
+                    clearWithdrawalPending: true,
+                    clearWithdrawalApproved: true,
+                    clearWithdrawalRejected: true,
+                    adminId: parseInt(adminId),
+                    adminName: adminName
+                };
+
+                const withdrawalResponse = await fetch('/api/admin/clear-withdrawal-records', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(allWithdrawalOptions)
+                });
+
+                const withdrawalResult = await withdrawalResponse.json();
+
+                if (withdrawalResponse.ok) {
+                    totalCleared += withdrawalResult.clearedCount || 0;
+                } else {
+                    throw new Error(`Withdrawal clearing failed: ${withdrawalResult.error}`);
+                }
+
+                showMessage(`✅ All records cleared successfully! Total: ${totalCleared} records deleted.`, 'success');
+                loadStats(); // Refresh stats
+            } catch (error) {
+                console.error('❌ Error clearing all records:', error);
+                showMessage('Error clearing records: ' + error.message, 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Load data on page load
+        document.addEventListener('DOMContentLoaded', loadStats);
+    </script>
+</body>
+</html>

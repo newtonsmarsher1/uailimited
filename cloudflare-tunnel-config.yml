@@ -1,0 +1,7 @@
+tunnel: 29eb6e2f-3961-42b1-a342-5dfd9a713b63
+credentials-file: C:\Users\PC\.cloudflared\29eb6e2f-3961-42b1-a342-5dfd9a713b63.json
+
+ingress:
+  - hostname: uaigency.trycloudflare.com
+    service: http://localhost:3000
+  - service: http_status:404

@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title data-translate="recharge-title">Enhanced Recharge Method - UAI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #2979ff 0%, #ad7ce6 100%);
+      margin: 0; padding: 0;
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .container {
+      background: rgba(255,255,255,0.96);
+      margin-top: 60px;
+      padding: 36px 24px 28px 24px;
+      border-radius: 22px;
+      max-width: 410px;
+      width: 97vw;
+      box-shadow: 0 2px 24px #ad7ce62a;
+      text-align: center;
+      position: relative;
+    }
+    .uai-logo {
+      position: absolute;
+      left: 50%; top: -38px;
+      transform: translateX(-50%);
+      width: 70px; height: 70px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ad7ce6 0%, #2979ff 100%);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 18px #7a09c555;
+      border: 4px solid #fff;
+    }
+    .uai-logo span {
+      color: #fff;
+      font-size: 2em;
+      font-weight: 800;
+      letter-spacing: 3px;
+      text-shadow: 0 2px 8px #7a09c577, 0 0 2px #4f2b7c;
+    }
+    h2 { color: #2979ff; margin-bottom: 1.5em;}
+    
+    /* Deposit Details Section */
+    .deposit-section {
+      background: linear-gradient(135deg, #e3f0ff 0%, #f0e6ff 100%);
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 25px;
+      border: 2px solid #ad7ce6;
+      position: relative;
+    }
+    .deposit-title {
+      color: #2979ff;
+      font-weight: 700;
+      font-size: 1.1em;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .deposit-details {
+      background: #fff;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
+      border: 1px solid #ad7ce6;
+      font-family: monospace;
+      font-size: 0.9em;
+      color: #333;
+      word-break: break-all;
+      position: relative;
+    }
+    .copy-btn {
+      background: linear-gradient(90deg, #2979ff 0%, #ad7ce6 100%);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 0.95em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(45, 121, 255, 0.3);
+    }
+    .copy-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(45, 121, 255, 0.4);
+    }
+    .copy-btn:active { 
+      transform: translateY(0);
+      background: linear-gradient(90deg, #ad7ce6 0%, #2979ff 100%);
+    }
+    .copy-btn.copied {
+      background: #4caf50;
+      color: white;
+    }
+    
+    /* Form Section */
+    .form-section {
+      background: #f8f9ff;
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border: 1px solid #e0e6ff;
+    }
+    .step-indicator {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+      gap: 10px;
+    }
+    .step {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #e0e6ff;
+      color: #ad7ce6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 0.9em;
+    }
+    .step.active {
+      background: linear-gradient(90deg, #2979ff 0%, #ad7ce6 100%);
+      color: white;
+    }
+    .step.completed {
+      background: #4caf50;
+      color: white;
+    }
+    
+    .input-group { 
+      margin-bottom: 1.1em; 
+      text-align: left;
+    }
+    .input-group label { 
+      display: block; 
+      margin-bottom: 0.35em; 
+      color: #ad7ce6; 
+      font-weight: 600;
+    }
+    .input-group input[type="text"], 
+    .input-group input[type="number"],
+    .input-group textarea {
+      width: 100%; 
+      padding: 12px 10px; 
+      border-radius: 9px; 
+      border: 2px solid #e0e6ff;
+      font-size: 1em; 
+      margin-bottom: 0.7em; 
+      box-sizing: border-box;
+      transition: border-color 0.3s ease;
+    }
+    .input-group input:focus,
+    .input-group textarea:focus {
+      outline: none;
+      border-color: #ad7ce6;
+      box-shadow: 0 0 0 3px rgba(173, 124, 230, 0.1);
+    }
+    .input-group textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+    
+    .submit-btn {
+      background: linear-gradient(90deg, #2979ff 0%, #ad7ce6 100%);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 15px 30px;
+      font-size: 1.1em;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+      box-shadow: 0 4px 15px rgba(45, 121, 255, 0.3);
+    }
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(45, 121, 255, 0.4);
+    }
+    .submit-btn:active {
+      transform: translateY(0);
+    }
+    .submit-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    /* Waiting Approval Screen */
+    .waiting-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      backdrop-filter: blur(5px);
+    }
+    .waiting-content {
+      background: white;
+      border-radius: 20px;
+      padding: 40px 30px;
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+    .waiting-icon {
+      font-size: 4em;
+      margin-bottom: 20px;
+      animation: pulse 2s infinite;
+    }
+    .waiting-title {
+      color: #2979ff;
+      font-size: 1.5em;
+      font-weight: 700;
+      margin-bottom: 15px;
+    }
+    .waiting-message {
+      color: #666;
+      font-size: 1.1em;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+    .waiting-details {
+      background: #f0f8ff;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+    .waiting-details h4 {
+      color: #2979ff;
+      margin: 0 0 10px 0;
+      font-size: 1em;
+    }
+    .waiting-details p {
+      margin: 5px 0;
+      color: #555;
+      font-size: 0.9em;
+    }
+    .system-note {
+      background: #fff3cd;
+      border: 1px solid #ffeaa7;
+      border-radius: 8px;
+      padding: 10px;
+      color: #856404;
+      font-size: 0.9em;
+      margin-top: 15px;
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+    
+    .message {
+      padding: 12px;
+      border-radius: 8px;
+      margin: 15px 0;
+      font-weight: 600;
+      text-align: center;
+    }
+    .message.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .message.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    .message.info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+    
+    @media (max-width: 600px) {
+      .container { 
+        margin-top: 40px;
+        padding: 20px 15px;
+      }
+      .uai-logo { 
+        width: 60px; 
+        height: 60px; 
+        top: -30px; 
+      }
+      .uai-logo span { 
+        font-size: 1.5em;
+      }
+      .waiting-content {
+        padding: 30px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="uai-logo"><span>UAI</span></div>
+    <h2 id="methodTitle" data-translate="recharge-title">Enhanced Recharge Method</h2>
+    
+    <!-- Deposit Details Section -->
+    <div class="deposit-section">
+      <div class="deposit-title">
+        📋 Step 1: Copy Deposit Details
+      </div>
+      <div class="deposit-details" id="depositDetails">
+        <!-- Deposit details will be loaded dynamically -->
+      </div>
+      <button class="copy-btn" id="copyBtn" onclick="copyDepositDetails()">
+        📋 Copy Deposit Details
+      </button>
+    </div>
+    
+    <!-- Form Section -->
+    <div class="form-section">
+      <div class="step-indicator">
+        <div class="step" id="step1">1</div>
+        <div class="step" id="step2">2</div>
+        <div class="step" id="step3">3</div>
+      </div>
+      
+      <form id="rechargeForm">
+        <div class="input-group">
+          <label for="phone">📱 Phone Number:</label>
+                     <input type="text" id="phone" placeholder="Enter your phone number (e.g., 0712345678, 0112345678, +254712345678)" required>
+        </div>
+        
+        <div class="input-group">
+          <label for="amount">💰 Amount (KES):</label>
+          <input type="number" id="amount" placeholder="Enter amount (minimum KES 10)" min="10" required>
+        </div>
+        
+        <div class="input-group">
+          <label for="message">📝 Paste Deposit Message (Required):</label>
+          <textarea id="message" placeholder="Paste the deposit message here after copying the details above..." required></textarea>
+        </div>
+        
+        <button type="submit" class="submit-btn" id="submitBtn">
+          🚀 Submit Recharge Request
+        </button>
+      </form>
+    </div>
+    
+    <div id="statusMessage" class="message" style="display: none;"></div>
+  </div>
+
+  <!-- Waiting Approval Screen -->
+  <div class="waiting-screen" id="waitingScreen" style="display: none;">
+    <div class="waiting-content">
+      <div class="waiting-icon">⏳</div>
+      <div class="waiting-title">Payment Under Review</div>
+      <div class="waiting-message">
+        Your recharge request is being processed by our Financial Department.
+        Please wait while we verify your payment details.
+      </div>
+      
+      <div class="waiting-details" id="waitingDetails">
+        <h4>📋 Request Details:</h4>
+        <p><strong>Amount:</strong> <span id="waitingAmount"></span></p>
+        <p><strong>Phone:</strong> <span id="waitingPhone"></span></p>
+        <p><strong>Transaction:</strong> <span id="waitingTransaction"></span></p>
+        <p><strong>Status:</strong> <span id="waitingStatus">Pending Approval</span></p>
+      </div>
+      
+      <div class="system-note">
+        💡 <strong>Note:</strong> Our system might be slow due to high traffic. 
+        Please be patient while we process your request.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let userToken = localStorage.getItem('token');
+    let hasCopiedDetails = false;
+    let currentStep = 1;
+    let currentMethod = 1; // Default method
+    
+    // Get method from URL parameter
+    function getMethodFromURL() {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get('method') || 1;
+    }
+    
+    // Load deposit details based on method
+    function loadDepositDetails(method) {
+      const depositDetails = {
+        1: `UAI AGENCY
+Account: 1234567890
+Bank: KCB Bank
+Branch: Nairobi Main
+Swift Code: KCBLKENX
+Reference: UAI-RECHARGE-1`,
+        2: `UAI AGENCY
+Account: 0987654321
+Bank: Equity Bank
+Branch: Westlands
+Swift Code: EQBLKENX
+Reference: UAI-RECHARGE-2`,
+        3: `UAI AGENCY
+Account: 1122334455
+Bank: Co-operative Bank
+Branch: CBD
+Swift Code: COOPKENX
+Reference: UAI-RECHARGE-3`,
+        4: `UAI AGENCY
+Account: 5566778899
+Bank: NCBA Bank
+Branch: Upperhill
+Swift Code: NCBAKENX
+Reference: UAI-RECHARGE-4`
+      };
+      
+      document.getElementById('depositDetails').textContent = depositDetails[method] || depositDetails[1];
+      document.getElementById('methodTitle').textContent = `Recharge Method ${method}`;
+    }
+    
+    // Check if user is already waiting for approval
+    function checkWaitingApproval() {
+      const waitingData = localStorage.getItem('waitingApproval');
+      if (waitingData) {
+        const data = JSON.parse(waitingData);
+        showWaitingScreen(data);
+        return true;
+      }
+      return false;
+    }
+    
+    // Copy deposit details
+    function copyDepositDetails() {
+      const depositText = document.getElementById('depositDetails').textContent;
+      navigator.clipboard.writeText(depositText).then(() => {
+        const copyBtn = document.getElementById('copyBtn');
+        copyBtn.textContent = '✅ Copied!';
+        copyBtn.classList.add('copied');
+        hasCopiedDetails = true;
+        updateStepIndicator();
+        
+        setTimeout(() => {
+          copyBtn.textContent = '📋 Copy Deposit Details';
+          copyBtn.classList.remove('copied');
+        }, 2000);
+      }).catch(err => {
+        console.error('Failed to copy:', err);
+        alert('Please manually copy the deposit details');
+      });
+    }
+    
+    // Update step indicator
+    function updateStepIndicator() {
+      const step1 = document.getElementById('step1');
+      const step2 = document.getElementById('step2');
+      const step3 = document.getElementById('step3');
+      
+      // Reset all steps
+      step1.className = 'step';
+      step2.className = 'step';
+      step3.className = 'step';
+      
+      // Mark completed steps
+      if (hasCopiedDetails) {
+        step1.className = 'step completed';
+        step2.className = 'step active';
+      }
+      
+      // Check if form is filled
+      const phone = document.getElementById('phone').value.trim();
+      const amount = document.getElementById('amount').value.trim();
+      const message = document.getElementById('message').value.trim();
+      
+      if (phone && amount && message) {
+        step2.className = 'step completed';
+        step3.className = 'step active';
+      }
+    }
+    
+    // Show waiting screen
+    function showWaitingScreen(data) {
+      document.getElementById('waitingAmount').textContent = `KES ${data.amount}`;
+      document.getElementById('waitingPhone').textContent = data.phone;
+      document.getElementById('waitingTransaction').textContent = data.transactionNumber;
+      document.getElementById('waitingScreen').style.display = 'flex';
+      
+      // Hide the main form
+      document.querySelector('.container').style.display = 'none';
+    }
+    
+    // Hide waiting screen
+    function hideWaitingScreen() {
+      document.getElementById('waitingScreen').style.display = 'none';
+      document.querySelector('.container').style.display = 'block';
+      localStorage.removeItem('waitingApproval');
+    }
+    
+    // Show message
+    function showMessage(message, type) {
+      const msgDiv = document.getElementById('statusMessage');
+      msgDiv.textContent = message;
+      msgDiv.className = `message ${type}`;
+      msgDiv.style.display = 'block';
+      
+      setTimeout(() => {
+        msgDiv.style.display = 'none';
+      }, 5000);
+    }
+    
+    // Initialize page
+    async function initializePage() {
+      // Load method and deposit details
+      currentMethod = getMethodFromURL();
+      loadDepositDetails(currentMethod);
+      
+      if (!userToken) {
+        showMessage("Please log in to recharge your account.", "error");
+        document.getElementById('rechargeForm').style.display = 'none';
+        return;
+      }
+      
+      // Check if already waiting for approval
+      if (checkWaitingApproval()) {
+        return;
+      }
+      
+      // Add event listeners for step tracking
+      document.getElementById('phone').addEventListener('input', updateStepIndicator);
+      document.getElementById('amount').addEventListener('input', updateStepIndicator);
+      document.getElementById('message').addEventListener('input', updateStepIndicator);
+    }
+    
+    // Form submission
+    document.getElementById('rechargeForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const phone = document.getElementById('phone').value.trim();
+      const amount = document.getElementById('amount').value.trim();
+      const message = document.getElementById('message').value.trim();
+      
+      // Validation
+      if (!hasCopiedDetails) {
+        showMessage("Please copy the deposit details first.", "error");
+        return;
+      }
+      
+      if (!phone || !amount || !message) {
+        showMessage("Please fill in all fields including the deposit message.", "error");
+        return;
+      }
+      
+      // Phone number validation - accept 01, 07, or country codes
+      if (!phone.match(/^(01|07|\+254|\+1|\+44|\+91|\+86|\+81|\+49|\+33|\+39|\+34|\+55|\+61)\d{7,15}$/)) {
+        showMessage("Please enter a valid phone number (e.g., 0712345678, 0112345678, +254712345678).", "error");
+        return;
+      }
+      
+      // Amount validation
+      const amountNum = parseFloat(amount);
+      if (isNaN(amountNum) || amountNum < 10) {
+        showMessage("Please enter a valid amount (minimum KES 10).", "error");
+        return;
+      }
+      
+      // Disable submit button
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = '⏳ Processing...';
+      
+      try {
+        // Get the main backend URL
+        const currentProtocol = window.location.protocol;
+        const currentHostname = window.location.hostname;
+        const mainPort = '3000';
+        const mainBackendUrl = `${currentProtocol}//${currentHostname}:${mainPort}`;
+        
+        const res = await fetch(`${mainBackendUrl}/api/recharge-method${currentMethod}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + userToken
+          },
+          body: JSON.stringify({ phone, amount: amountNum, message })
+        });
+        
+        const data = await res.json();
+        
+        if (data.success) {
+          // Store waiting approval data
+          const waitingData = {
+            amount: amountNum,
+            phone: phone,
+            message: message,
+            transactionNumber: data.transactionNumber,
+            created_at: new Date().toISOString(),
+            status: 'pending',
+            method: currentMethod
+          };
+          localStorage.setItem('waitingApproval', JSON.stringify(waitingData));
+          
+          // Show waiting screen
+          showWaitingScreen(waitingData);
+          
+          showMessage("Recharge request submitted successfully!", "success");
+        } else if (data.error) {
+          showMessage(data.error, "error");
+        } else {
+          showMessage("Failed to process request. Please try again.", "error");
+        }
+      } catch (e) {
+        console.error('Recharge error:', e);
+        showMessage("Network error. Please check your connection and try again.", "error");
+      } finally {
+        // Re-enable submit button
+        submitBtn.disabled = false;
+        submitBtn.textContent = '🚀 Submit Recharge Request';
+      }
+    });
+    
+    // Initialize page when loaded
+    initializePage();
+    
+    // Initialize language manager immediately
+    (async function() {
+      // Load language manager
+      const script = document.createElement('script');
+      script.src = 'js/language-manager.js';
+      document.head.appendChild(script);
+      
+      script.onload = async function() {
+        if (window.languageManager) {
+          await window.languageManager.init();
+          console.log('🌍 Language manager loaded and initialized on recharge page');
+        }
+      };
+    })();
+  </script>
+</body>
+</html>
+
+
+

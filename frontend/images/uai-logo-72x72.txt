@@ -1,0 +1,9 @@
+UAI Logo 72x72 PNG placeholder
+        
+To generate the actual PNG file:
+1. Open ../frontend/logo-generator.html in your browser
+2. Click "Download 72x72 PNG"
+3. Rename the downloaded file to uai-logo-72x72.png
+4. Place it in this directory
+
+This is a placeholder file for the PWA manifest.

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>User Details - UAI Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: linear-gradient(to bottom, #2979ff 0%, #e3f0ff 100%); margin: 0; }
+    .container { max-width: 400px; margin: 40px auto; background: #fff; border-radius: 18px; box-shadow: 0 2px 16px #2979ff22; padding: 32px 24px; }
+    .back-btn { margin-bottom:18px;background:#2979ff;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:1em;cursor:pointer;box-shadow:0 2px 8px #2979ff22; }
+    .card { background: #f7faff; border-radius: 12px; box-shadow: 0 2px 8px #2979ff11; padding: 24px 18px; margin-bottom: 18px; }
+    .label { color: #2979ff; font-weight: 600; margin-right: 8px; }
+    .value { color: #333; font-weight: 500; }
+    h2 { color: #2979ff; text-align: center; margin-bottom: 18px; }
+    .action-section { background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 12px; padding: 20px; margin-top: 20px; }
+    .action-section h3 { color: #856404; margin-bottom: 15px; }
+    .input-group { margin-bottom: 15px; }
+    .input-group label { display: block; color: #856404; font-weight: 600; margin-bottom: 5px; }
+    .input-group input { width: 100%; padding: 10px; border: 1px solid #ffeaa7; border-radius: 8px; font-size: 16px; }
+    .btn { padding: 10px 20px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; margin-right: 10px; }
+    .btn-primary { background: #2979ff; color: white; }
+    .btn-primary:hover { background: #1565c0; }
+    .btn-warning { background: #ff9800; color: white; }
+    .btn-warning:hover { background: #f57c00; }
+    .btn-danger { background: #f44336; color: white; }
+    .btn-danger:hover { background: #d32f2f; }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .message { padding: 10px; border-radius: 8px; margin-top: 10px; }
+    .message.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    .message.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+  </style>
+</head>
+<body>
+      <div class="container">
+      <button class="back-btn" onclick="window.location.href='users.html'">&larr; Back</button>
+      <h2>User Details</h2>
+      <div class="card" id="userCard">Loading...</div>
+      
+      <div class="action-section" id="actionSection" style="display: none;">
+        <h3>Admin Actions</h3>
+        
+        <!-- Password Change Section -->
+        <div class="password-section" style="background: #e8f5e8; border: 1px solid #4caf50; border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+          <h4 style="color: #2e7d32; margin-bottom: 15px;">🔐 Change User Password</h4>
+          <p style="color: #666; font-size: 14px; margin-bottom: 15px;">Use this section to reset a user's password if they have forgotten it.</p>
+          
+          <div class="input-group">
+            <label for="newPassword">New Password</label>
+            <input type="password" id="newPassword" placeholder="Enter new password" minlength="6">
+          </div>
+          
+          <div class="input-group">
+            <label for="confirmPassword">Confirm New Password</label>
+            <input type="password" id="confirmPassword" placeholder="Confirm new password" minlength="6">
+          </div>
+          
+          <button class="btn btn-primary" onclick="changeUserPassword()" style="background: #4caf50; margin-bottom: 10px;">
+            🔄 Change Password
+          </button>
+          
+          <div style="margin-top: 10px;">
+            <button class="btn" onclick="generateRandomPassword()" style="background: #ff9800; color: white;">
+              🎲 Generate Random Password
+            </button>
+          </div>
+        </div>
+        
+        <!-- Add Funds Section -->
+        <div class="funds-section" style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+          <h4 style="color: #856404; margin-bottom: 15px;">💰 Add Funds to Wallet</h4>
+          
+          <div class="input-group">
+            <label for="amountInput">Add Amount to Wallet (KES)</label>
+            <input type="number" id="amountInput" placeholder="Enter amount" min="0" step="0.01">
+          </div>
+          
+          <button class="btn btn-primary" onclick="addFunds()">Add Funds</button>
+        </div>
+        
+        <!-- User Management Section -->
+        <div class="management-section" style="background: #fff5f5; border: 1px solid #ffcdd2; border-radius: 12px; padding: 20px;">
+          <h4 style="color: #c62828; margin-bottom: 15px;">⚙️ User Management</h4>
+          
+          <button class="btn btn-warning" onclick="toggleUserStatus()" id="statusBtn">Suspend User</button>
+          <button class="btn btn-danger" onclick="deleteUser()">Delete User</button>
+        </div>
+        
+        <div id="messageDiv"></div>
+      </div>
+    </div>
+  <script>
+    async function loadUser() {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get('id');
+      if (!id) {
+        document.getElementById('userCard').textContent = 'No user ID provided.';
+        return;
+      }
+      try {
+        const token = localStorage.getItem('adminToken');
+        if (!token) {
+          document.getElementById('userCard').textContent = 'No admin token found. Please login again.';
+          return;
+        }
+        
+        const res = await fetch(`/api/admin/user-details?id=${id}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        const data = await res.json();
+        if (!res.ok || !data.id) {
+          document.getElementById('userCard').textContent = data.error || 'User not found.';
+          return;
+        }
+        document.getElementById('userCard').innerHTML = `
+          <div><span class="label">ID:</span> <span class="value">${data.id}</span></div>
+          <div><span class="label">Phone:</span> <span class="value">${data.phone}</span></div>
+          <div><span class="label">Name:</span> <span class="value">${data.name || ''}</span></div>
+          <div><span class="label">Level:</span> <span class="value">${data.level || 0}</span></div>
+          <div><span class="label">Balance:</span> <span class="value">KES ${parseFloat(data.balance || 0).toLocaleString()}</span></div>
+          <div><span class="label">Total Withdrawn:</span> <span class="value">KES ${parseFloat(data.total_withdrawn || 0).toLocaleString()}</span></div>
+          <div><span class="label">Total Profit:</span> <span class="value">KES ${(parseFloat(data.balance || 0) + parseFloat(data.total_withdrawn || 0)).toLocaleString()}</span></div>
+          <div><span class="label">Referral Code:</span> <span class="value">${data.referral_code || ''}</span></div>
+          <div><span class="label">Invitation Code:</span> <span class="value">${data.invitation_code || ''}</span></div>
+          <div><span class="label">Admin:</span> <span class="value">${data.is_admin ? 'Yes' : 'No'}</span></div>
+          <div><span class="label">Active:</span> <span class="value">${data.is_active ? 'Yes' : 'No'}</span></div>
+          <div><span class="label">Created:</span> <span class="value">${new Date(data.created_at).toLocaleDateString()}</span></div>
+        `;
+        
+        // Show action section and update status button
+        document.getElementById('actionSection').style.display = 'block';
+        updateStatusButton(data.is_active);
+        
+        // Show/hide add funds section based on admin role - ONLY CEO can add funds
+        const adminRole = localStorage.getItem('userRole');
+        const fundsSection = document.querySelector('.funds-section');
+        if (fundsSection) {
+          if (adminRole === 'CEO') {
+            fundsSection.style.display = 'block';
+            const label = fundsSection.querySelector('label');
+            label.textContent = `Add Amount to Wallet (KES) - CEO Only`;
+          } else {
+            fundsSection.style.display = 'none';
+          }
+        }
+        
+        // Store user data globally
+        window.currentUser = data;
+      } catch (err) {
+        document.getElementById('userCard').textContent = 'Network error.';
+      }
+    }
+    
+    function updateStatusButton(isActive) {
+      const statusBtn = document.getElementById('statusBtn');
+      if (isActive) {
+        statusBtn.textContent = 'Suspend User';
+        statusBtn.className = 'btn btn-warning';
+      } else {
+        statusBtn.textContent = 'Activate User';
+        statusBtn.className = 'btn btn-primary';
+      }
+    }
+    
+    function showMessage(message, isSuccess = true) {
+      const messageDiv = document.getElementById('messageDiv');
+      messageDiv.innerHTML = `<div class="message ${isSuccess ? 'success' : 'error'}">${message}</div>`;
+      setTimeout(() => {
+        messageDiv.innerHTML = '';
+      }, 5000);
+    }
+    
+    async function addFunds() {
+      const amount = parseFloat(document.getElementById('amountInput').value);
+      if (!amount || amount <= 0) {
+        showMessage('Please enter a valid amount', false);
+        return;
+      }
+      
+      // Get admin role from localStorage - ONLY CEO can add funds
+      const adminRole = localStorage.getItem('userRole');
+      if (adminRole !== 'CEO') {
+        showMessage('Only CEO can add funds to user accounts. Please contact the CEO for this action.', false);
+        return;
+      }
+      
+             try {
+         const response = await fetch('/api/admin/add-funds', {
+           method: 'POST',
+           headers: {
+             'Content-Type': 'application/json',
+             'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+           },
+           body: JSON.stringify({
+             userId: window.currentUser.id,
+             amount: amount,
+             adminRole: adminRole,
+             adminId: localStorage.getItem('adminId') // Fixed: use adminId instead of userId
+           })
+         });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+          showMessage(`✅ SUCCESS: Added KES ${amount.toLocaleString()} to user's wallet! New balance: KES ${result.newBalance.toLocaleString()}`, true);
+          document.getElementById('amountInput').value = '';
+          // Reload user data to show updated balance
+          loadUser();
+        } else {
+          showMessage(result.error || 'Failed to add funds', false);
+        }
+      } catch (error) {
+        showMessage('Network error occurred', false);
+      }
+    }
+    
+    async function toggleUserStatus() {
+      if (!confirm(`Are you sure you want to ${window.currentUser.is_active ? 'suspend' : 'activate'} this user?`)) {
+        return;
+      }
+      
+      try {
+        const response = await fetch('/api/admin/toggle-user-status', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+          },
+          body: JSON.stringify({
+            userId: window.currentUser.id
+          })
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+          showMessage(`User ${window.currentUser.is_active ? 'suspended' : 'activated'} successfully`);
+          // Reload user data to show updated status
+          loadUser();
+        } else {
+          showMessage(result.error || 'Failed to update user status', false);
+        }
+      } catch (error) {
+        showMessage('Network error occurred', false);
+      }
+    }
+    
+    async function deleteUser() {
+      if (!confirm('Are you sure you want to delete this user? This action cannot be undone!')) {
+        return;
+      }
+      
+      if (!confirm('This will permanently delete the user and all their data. Are you absolutely sure?')) {
+        return;
+      }
+      
+      try {
+        const response = await fetch('/api/admin/delete-user', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+          },
+          body: JSON.stringify({
+            userId: window.currentUser.id
+          })
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+          showMessage('User deleted successfully');
+          setTimeout(() => {
+            window.location.href = 'users.html';
+          }, 2000);
+        } else {
+          showMessage(result.error || 'Failed to delete user', false);
+        }
+      } catch (error) {
+        showMessage('Network error occurred', false);
+      }
+    }
+    
+    // Password change functions
+    function generateRandomPassword() {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+      let password = '';
+      for (let i = 0; i < 12; i++) {
+        password += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      document.getElementById('newPassword').value = password;
+      document.getElementById('confirmPassword').value = password;
+      showMessage('🎲 Random password generated! Please review and confirm.', true);
+    }
+    
+    async function changeUserPassword() {
+      const newPassword = document.getElementById('newPassword').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      
+      // Validation
+      if (!newPassword || !confirmPassword) {
+        showMessage('Please fill in both password fields', false);
+        return;
+      }
+      
+      if (newPassword.length < 6) {
+        showMessage('Password must be at least 6 characters long', false);
+        return;
+      }
+      
+      if (newPassword !== confirmPassword) {
+        showMessage('Passwords do not match', false);
+        return;
+      }
+      
+      if (!confirm('Are you sure you want to change this user\'s password? They will need to use the new password to log in.')) {
+        return;
+      }
+      
+      try {
+        const response = await fetch('/api/admin/change-user-password', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+          },
+          body: JSON.stringify({
+            userId: window.currentUser.id,
+            newPassword: newPassword,
+            adminId: localStorage.getItem('adminId'),
+            adminRole: localStorage.getItem('userRole')
+          })
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+          showMessage(`✅ SUCCESS: Password changed successfully! New password: ${newPassword}`, true);
+          // Clear password fields
+          document.getElementById('newPassword').value = '';
+          document.getElementById('confirmPassword').value = '';
+        } else {
+          showMessage(result.error || 'Failed to change password', false);
+        }
+      } catch (error) {
+        showMessage('Network error occurred', false);
+      }
+    }
+    
+    loadUser();
+  </script>
+</body>
+</html> 

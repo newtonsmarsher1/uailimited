@@ -40,7 +40,7 @@ define('DARAJA_ENVIRONMENT', (array_key_exists('NODE_ENV', $_ENV) && $_ENV['NODE
 // CORS Configuration
 define('ALLOWED_ORIGINS', [
     'http://localhost:3000',
-    'http://localhost:8080',
+    'http://localhost:3000',
     'https://your-app-name.vercel.app'
 ]);
 

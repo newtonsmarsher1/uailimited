@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manage Payments - UAI Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { 
+      font-family: 'Segoe UI', Arial, sans-serif; 
+      background: linear-gradient(to bottom, #2979ff 0%, #e3f0ff 100%); 
+      margin: 0; 
+    }
+    .container { 
+      max-width: 1200px; 
+      margin: 40px auto; 
+      background: #fff; 
+      border-radius: 18px; 
+      box-shadow: 0 2px 16px #2979ff22; 
+      padding: 32px 24px; 
+    }
+    h1 { color: #2979ff; text-align: center; margin-bottom: 24px; }
+    .back-btn {
+      background: #2979ff;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 18px;
+      font-size: 1em;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    th, td { padding: 12px 8px; border-bottom: 1px solid #e3f0ff; text-align: left; }
+    th { background: #2979ff; color: #fff; font-weight: 600; }
+    tr:hover { background: #e3f0ff; }
+    .action-btn { 
+      background: #2979ff; 
+      color: #fff; 
+      border: none; 
+      border-radius: 8px; 
+      padding: 8px 16px; 
+      font-size: 0.9em; 
+      cursor: pointer; 
+      margin-right: 6px; 
+    }
+    .approve-btn { background: #43e97b; }
+    .reject-btn { background: #e32f2f; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <button onclick="window.location.href='dashboard.html'" class="back-btn">&larr; Back to Dashboard</button>
+    <h1>Manage Payments</h1>
+    
+    <table id="paymentsTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>User</th>
+          <th>Amount</th>
+          <th>Method</th>
+          <th>Status</th>
+          <th>Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script>
+    const userToken = localStorage.getItem('token');
+    const userRole = localStorage.getItem('userRole');
+    const userId = localStorage.getItem('userId');
+    
+    if (!userToken || !userRole || !userId) {
+      window.location.href = 'index.html';
+    }
+
+    async function loadPayments() {
+      try {
+        const res = await fetch('/api/admin/payment-requests');
+        const data = await res.json();
+        renderPayments(data.requests || []);
+      } catch (error) {
+        console.error('Error loading payments:', error);
+        document.querySelector('#paymentsTable tbody').innerHTML = 
+          '<tr><td colspan="7" style="text-align: center; padding: 40px; color: #666;">Failed to load payments</td></tr>';
+      }
+    }
+
+    function renderPayments(payments) {
+      const tbody = document.querySelector('#paymentsTable tbody');
+      tbody.innerHTML = '';
+      
+      if (payments.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px; color: #666;">No payments found</td></tr>';
+        return;
+      }
+      
+      payments.forEach(payment => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${payment.id}</td>
+          <td>${payment.user_name || 'Unknown'}</td>
+          <td>KES ${payment.amount}</td>
+          <td>${payment.payment_method || 'N/A'}</td>
+          <td>${payment.status}</td>
+          <td>${new Date(payment.created_at).toLocaleDateString()}</td>
+          <td>
+            ${payment.status === 'pending' ? `
+              <button class="action-btn approve-btn" onclick="approvePayment(${payment.id})">Approve</button>
+              <button class="action-btn reject-btn" onclick="rejectPayment(${payment.id})">Reject</button>
+            ` : 'Processed'}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function approvePayment(id) {
+      if (!confirm('Are you sure you want to approve this payment?')) return;
+      
+      try {
+        const res = await fetch('/api/admin/approve-payment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ paymentId: id })
+        });
+        
+        if (res.ok) {
+          alert('Payment approved!');
+          loadPayments();
+        } else {
+          alert('Failed to approve payment');
+        }
+      } catch (error) {
+        alert('Error approving payment');
+      }
+    }
+
+    async function rejectPayment(id) {
+      const reason = prompt('Reason for rejection:');
+      if (!reason) return;
+      
+      try {
+        const res = await fetch('/api/admin/reject-payment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ paymentId: id, reason })
+        });
+        
+        if (res.ok) {
+          alert('Payment rejected!');
+          loadPayments();
+        } else {
+          alert('Failed to reject payment');
+        }
+      } catch (error) {
+        alert('Error rejecting payment');
+      }
+    }
+
+    loadPayments();
+  </script>
+</body>
+</html>

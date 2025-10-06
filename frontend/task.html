@@ -1,0 +1,2228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title data-translate="task-list-title">Task List - UAI</title>
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#2979ff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="UAI">
+  <link rel="apple-touch-icon" href="images/uai-logo-192x192.png">
+  
+  <!-- PWA Icons -->
+  <link rel="icon" type="image/png" sizes="32x32" href="images/uai-logo-72x72.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="images/uai-logo-72x72.png">
+  <style>
+    :root {
+      --brand-yellow: #2979ff;
+      --brand-dark: #282828;
+      --brand-accent: #2979ff;
+      --icon-bg: #fff200;
+      --icon-color: #282828;
+      --menu-bg: #fff;
+      --menu-icon-active: var(--brand-accent);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #e3f2fd;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+    
+    /* Header */
+    .header {
+      background: #fff;
+      padding: 20px 16px 16px 16px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    /* Restriction Banner */
+    .restriction-banner {
+      background: linear-gradient(135deg, #ff9800, #f57c00);
+      color: white;
+      padding: 16px;
+      margin: 0 16px 16px 16px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+      animation: slideDown 0.5s ease-out;
+    }
+    
+    .restriction-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .restriction-icon {
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+    
+    .restriction-text {
+      flex: 1;
+    }
+    
+    .restriction-title {
+      font-weight: 600;
+      font-size: 16px;
+      margin-bottom: 4px;
+    }
+    
+    .restriction-message {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+    
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .header-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #333;
+      margin: 0 0 16px 0;
+    }
+    
+    /* Summary Section */
+    .summary-section {
+      background: var(--brand-accent);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 0 16px 20px 16px;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    /* Task Limit Display */
+    .task-limit-display {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 0 16px 16px 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .task-limit-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #2979ff;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+    
+    .task-limit-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 15px;
+    }
+    
+    .task-limit-table th,
+    .task-limit-table td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    
+    .task-limit-table th {
+      background: #f5f5f5;
+      font-weight: 600;
+      color: #333;
+    }
+    
+    .task-limit-table td {
+      color: #666;
+    }
+    
+    .task-limit-progress {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    
+    .task-limit-bar {
+      flex: 1;
+      height: 8px;
+      background: #e0e0e0;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    
+    .task-limit-bar-fill {
+      height: 100%;
+      background: #2979ff;
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+    
+    .task-limit-stats {
+      font-size: 14px;
+      color: #666;
+      text-align: center;
+    }
+    
+
+    
+    .summary-left {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .ongoing-count {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    
+    .ongoing-label {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+    
+    .progress-circle {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 600;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .progress-circle::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: var(--progress-height, 0%);
+      background: linear-gradient(180deg, #4CAF50 0%, #45a049 100%);
+      transition: height 1s ease-in-out;
+      z-index: 1;
+    }
+    
+    /* Wave animation on water surface */
+    .progress-circle::after {
+      content: '';
+      position: absolute;
+      bottom: var(--progress-height, 0%);
+      left: 0;
+      width: 100%;
+      height: 6px;
+      background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(255,255,255,0.4) 25%, 
+        rgba(255,255,255,0.8) 50%, 
+        rgba(255,255,255,0.4) 75%, 
+        transparent 100%);
+      animation: wave 3s ease-in-out infinite;
+      z-index: 2;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    
+    /* Show waves only when there's water */
+    .progress-circle.has-water::after {
+      opacity: 1;
+    }
+    
+    /* Second wave layer for more depth */
+    .progress-circle .wave-layer {
+      position: absolute;
+      bottom: var(--progress-height, 0%);
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(255,255,255,0.2) 20%, 
+        rgba(255,255,255,0.5) 50%, 
+        rgba(255,255,255,0.2) 80%, 
+        transparent 100%);
+      animation: wave2 2s ease-in-out infinite reverse;
+      z-index: 3;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    
+    /* Show waves only when there's water */
+    .progress-circle.has-water .wave-layer {
+      opacity: 1;
+    }
+    
+    @keyframes wave {
+      0% {
+        transform: translateX(-100%);
+        opacity: 0.6;
+      }
+      50% {
+        transform: translateX(0%);
+        opacity: 0.9;
+      }
+      100% {
+        transform: translateX(100%);
+        opacity: 0.6;
+      }
+    }
+    
+    @keyframes wave2 {
+      0% {
+        transform: translateX(100%);
+        opacity: 0.4;
+      }
+      50% {
+        transform: translateX(0%);
+        opacity: 0.7;
+      }
+      100% {
+        transform: translateX(-100%);
+        opacity: 0.4;
+      }
+    }
+    
+    /* Ripple effect when progress changes */
+    .progress-circle.ripple::before {
+      animation: ripple 1s ease-out;
+    }
+    
+    @keyframes ripple {
+      0% {
+        box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.4);
+      }
+      100% {
+        box-shadow: 0 0 0 20px rgba(76, 175, 80, 0);
+      }
+    }
+    
+    .progress-circle span {
+      position: relative;
+      z-index: 2;
+      color: #333;
+      font-weight: 700;
+    }
+    
+    .completed-section {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+    
+    .completed-count {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    
+    .completed-label {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+    
+    /* Filter Buttons */
+    .filter-section {
+      padding: 0 16px 16px 16px;
+      display: flex;
+      gap: 12px;
+    }
+    
+    .filter-btn {
+      background: #fff;
+      border: 1px solid #e0e0e0;
+      border-radius: 20px;
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #666;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .filter-btn.active {
+      background: var(--brand-accent);
+      color: white;
+      border-color: var(--brand-accent);
+    }
+    
+    /* Task List */
+    .task-list {
+      flex: 1;
+      padding: 0 16px 80px 16px;
+    }
+    
+    .task-card {
+      background: white;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
+    
+    .task-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      background: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 16px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    
+    .task-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+    
+    .task-icon img:not([src]),
+    .task-icon img[src=""],
+    .task-icon img[src*="error"] {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    
+    .task-icon img:not([src])::before,
+    .task-icon img[src=""]::before,
+    .task-icon img[src*="error"]::before {
+      content: "📱";
+      font-size: 20px;
+    }
+    
+    .task-info {
+      flex: 1;
+    }
+    
+    .task-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 4px;
+    }
+    
+    .task-earning {
+      font-size: 14px;
+      color: #666;
+    }
+    
+    .task-user-label {
+      font-size: 12px;
+      color: #666;
+      margin-top: 2px;
+      font-style: italic;
+    }
+    
+    .install-btn {
+      background: var(--brand-accent);
+      color: white;
+      border: none;
+      border-radius: 20px;
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.3s;
+      flex-shrink: 0;
+    }
+    
+    .install-btn:hover {
+      background: #1e5bb8;
+    }
+    
+    .install-btn.downloading {
+      background: #666;
+      cursor: not-allowed;
+    }
+    
+    .install-btn.completed {
+      background: #4caf50 !important;
+      color: white !important;
+      cursor: not-allowed;
+    }
+    
+    .task-card.completed {
+      opacity: 0.8;
+      background: #f8f9fa;
+    }
+    
+    .task-card.completed .task-name {
+      color: #666;
+    }
+    
+    .task-card.in-progress {
+      border: 2px solid #ff9800;
+      background: #fff8e1;
+    }
+    
+    .task-card.in-progress .task-name {
+      color: #ff9800;
+      font-weight: 600;
+    }
+    
+    /* Download Progress Bar */
+    .download-progress {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+      background: #e0e0e0;
+      border-radius: 0 0 12px 12px;
+      overflow: hidden;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 10;
+      display: block !important; /* Force display for all users */
+    }
+    
+    .download-progress.show {
+      opacity: 1 !important; /* Force visibility when shown */
+    }
+    
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #4CAF50, #8BC34A);
+      width: 0%;
+      transition: width 0.1s ease;
+      border-radius: 0 0 12px 12px;
+      display: block !important; /* Force display for all users */
+    }
+    
+    /* Ensure progress bar is visible for temporary workers */
+    .task-card .download-progress {
+      display: block !important;
+    }
+    
+    .task-card .download-progress.show {
+      opacity: 1 !important;
+    }
+    
+    .download-status {
+      font-size: 12px;
+      color: #666;
+      margin-top: 4px;
+      text-align: center;
+    }
+    
+
+    
+    /* Bottom Navigation */
+    nav.bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: #fff;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      border-top: 1px solid #e0e0e0;
+      z-index: 1000;
+    }
+    
+    nav.bottom-nav a {
+      background: transparent;
+      border: none;
+      color: #666;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-decoration: none;
+      transition: color 0.3s;
+      padding: 4px 8px;
+    }
+    
+    nav.bottom-nav a.active {
+      color: var(--menu-icon-active);
+    }
+    
+    nav.bottom-nav a svg {
+      width: 24px;
+      height: 24px;
+      margin-bottom: 4px;
+      fill: currentColor;
+    }
+    
+    /* Modal styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 3000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-content {
+      background: #fff;
+      border-radius: 18px;
+      max-width: 320px;
+      width: 90%;
+      padding: 32px 20px;
+      text-align: center;
+      box-shadow: 0 4px 32px rgba(0,0,0,0.3);
+      margin: 20px;
+    }
+    .modal-emoji {
+      font-size: 3em;
+      margin-bottom: 15px;
+    }
+    .modal-title {
+      font-size: 1.3em;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .modal-message {
+      font-size: 1.1em;
+      margin-bottom: 20px;
+      line-height: 1.4;
+    }
+    .modal-button {
+      background: #2979ff;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 28px;
+      font-size: 1.1em;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .modal-button:hover {
+      background: #1565c0;
+    }
+    
+    /* Responsive */
+    @media (max-width: 480px) {
+      .header-title {
+        font-size: 20px;
+      }
+      
+      .summary-section {
+        margin: 0 12px 16px 12px;
+        padding: 16px;
+      }
+      
+      .filter-section {
+        padding: 0 12px 12px 12px;
+      }
+      
+      .task-list {
+        padding: 0 12px 80px 12px;
+      }
+      
+      .modal-content { 
+        max-width: 240px; 
+        padding: 20px 12px; 
+        margin: 12px;
+      }
+      .modal-emoji { font-size: 2em; }
+      .modal-title { font-size: 1em; }
+      .modal-message { font-size: 0.9em; }
+      .modal-button { 
+        padding: 8px 20px; 
+        font-size: 0.95em; 
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1 class="header-title" data-translate="task-list-title">Task list</h1>
+  </div>
+  
+  <!-- Restriction Banner -->
+  <div class="restriction-banner" id="restriction-banner" style="display: none;">
+    <div class="restriction-content">
+      <div class="restriction-icon">🚫</div>
+      <div class="restriction-text">
+        <div class="restriction-title" id="restriction-title">Tasks Not Available</div>
+        <div class="restriction-message" id="restriction-message">Please try again tomorrow</div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="summary-section">
+    <div class="summary-left">
+      <div class="ongoing-count">50</div>
+      <div class="ongoing-label">Available</div>
+    </div>
+    <div class="progress-circle">
+      <span>0%</span>
+      <div class="wave-layer"></div>
+    </div>
+    <div class="completed-section">
+      <div class="completed-count">0</div>
+      <div class="completed-label">Completed Today</div>
+    </div>
+  </div>
+  
+  <!-- Task Limit Display -->
+  <div class="task-limit-display" id="task-limit-display" style="display: none;">
+    <div class="task-limit-title">Daily Task Progress</div>
+    <table class="task-limit-table">
+      <tr>
+        <th>Time Unit</th>
+        <th>Tasks Completed</th>
+        <th>Daily Limit</th>
+        <th>Reward per Task</th>
+      </tr>
+      <tr>
+        <td>Daily</td>
+        <td><span id="completed-today">0</span></td>
+        <td><span id="max-tasks-per-day">5</span></td>
+        <td>KES <span id="reward-per-task">11.00</span></td>
+      </tr>
+    </table>
+    <div class="task-limit-progress">
+      <div class="task-limit-bar">
+        <div class="task-limit-bar-fill" id="task-limit-bar-fill" style="width: 0%"></div>
+      </div>
+      <div class="task-limit-stats">
+        Level <span id="current-user-level">0</span> • <span id="progress-text">0% Complete</span>
+      </div>
+
+    </div>
+  </div>
+  
+  <div class="filter-section">
+    <button class="filter-btn active" onclick="filterTasks('ongoing')" data-translate="ongoing-label">Ongoing</button>
+    <button class="filter-btn" onclick="filterTasks('all')" data-translate="all-label">All</button>
+    <button class="filter-btn" onclick="filterTasks('completed')" data-translate="completed-label">Completed</button>
+  </div>
+  
+  <div class="task-list" id="task-list">
+    <!-- Tasks will be loaded here -->
+  </div>
+  
+  <!-- Modal for task completion notifications -->
+  <div id="notification-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div id="modal-emoji" class="modal-emoji">🎉</div>
+      <div id="modal-title" class="modal-title">Congratulations!</div>
+      <div id="modal-message" class="modal-message">You have successfully completed the task.</div>
+      <button id="modal-button" class="modal-button" type="button" onclick="hideModal()">OK</button>
+    </div>
+  </div>
+
+  <nav class="bottom-nav" role="navigation" aria-label="Bottom Navigation">
+    <a href="home.html" id="nav-home">
+      <svg viewBox="0 0 24 24"><path d="M3 21v-7.5l9-6.5 9 6.5V21H3z"/></svg>
+      <span id="nav-home-label" data-translate="nav-home-label">Home</span>
+    </a>
+    <a href="task.html" class="active" id="nav-task">
+      <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 10h8M8 14h4"/></svg>
+      <span id="nav-task-label" data-translate="nav-task-label">Task</span>
+    </a>
+    <a href="team management.html" id="nav-team">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3"/><path d="M12 15c-4 0-8 2-8 4v1h16v-1c0-2-4-4-8-4z"/></svg>
+      <span id="nav-team-label" data-translate="nav-team-label">Team Management</span>
+    </a>
+    <a href="level.html" id="nav-level">
+      <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 7v10l10 5 10-5V7"/></svg>
+      <span id="nav-level-label" data-translate="nav-level-label">Level</span>
+    </a>
+    <a href="profile.html" id="nav-profile">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M2 20v-2a8 8 0 0 1 16 0v2"/></svg>
+      <span id="nav-profile-label" data-translate="nav-profile-label">Profile</span>
+    </a>
+  </nav>
+
+  <script>
+    // Register service worker for PWA functionality
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then((registration) => {
+            console.log('✅ UAI Service Worker registered:', registration);
+          })
+          .catch((error) => {
+            console.log('❌ UAI Service Worker registration failed:', error);
+          });
+      });
+    }
+    
+    // Updated task data with 50 popular apps and services
+    // Reference format: <a href="../assets/app-icon.png">App Name</a>
+    const sampleTasks = [
+      {
+        id: 1,
+        name: "TikTok",
+        icon: "https://cdn-icons-png.flaticon.com/512/3046/3046120.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 2,
+        name: "Instagram",
+        icon: "https://cdn-icons-png.flaticon.com/512/174/174855.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 3,
+        name: "WhatsApp",
+        icon: "https://cdn-icons-png.flaticon.com/512/1384/1384023.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 4,
+        name: "Spotify",
+        icon: "https://cdn-icons-png.flaticon.com/512/174/174872.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 5,
+        name: "Netflix",
+        icon: "https://cdn-icons-png.flaticon.com/512/174/174872.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 6,
+        name: "YouTube",
+        icon: "https://cdn-icons-png.flaticon.com/512/1384/1384023.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 7,
+        name: "Facebook",
+        icon: "https://cdn-icons-png.flaticon.com/512/174/174848.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 8,
+        name: "Twitter",
+        icon: "https://cdn-icons-png.flaticon.com/512/174/174876.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 9,
+        name: "Snapchat",
+        icon: "https://cdn-icons-png.flaticon.com/512/174/174863.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 10,
+        name: "LinkedIn",
+        icon: "https://cdn-icons-png.flaticon.com/512/174/174857.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 11,
+        name: "Telegram",
+        icon: "https://cdn-icons-png.flaticon.com/512/174/174864.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 12,
+        name: "Discord",
+        icon: "https://cdn-icons-png.flaticon.com/512/174/174865.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 13,
+        name: "Amazon",
+        icon: "https://cdn-icons-png.flaticon.com/512/174/174856.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 14,
+        name: "Pinterest",
+        icon: "https://cdn-icons-png.flaticon.com/512/174/174861.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 15,
+        name: "Twitch",
+        icon: "https://cdn-icons-png.flaticon.com/512/5968/5968819.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 16,
+        name: "Tinder",
+        icon: "https://cdn-icons-png.flaticon.com/512/5968/5968926.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 17,
+        name: "Python",
+        icon: "https://cdn-icons-png.flaticon.com/512/5968/5968350.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 18,
+        name: "Airbnb",
+        icon: "https://cdn-icons-png.flaticon.com/512/2111/2111320.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 19,
+        name: "FireFox",
+        icon: "https://cdn-icons-png.flaticon.com/512/5968/5968827.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 20,
+        name: "Shopee",
+        icon: "https://cdn-icons-png.flaticon.com/512/2111/2111340.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 21,
+        name: "PayPal",
+        icon: "https://cdn-icons-png.flaticon.com/512/174/174861.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 22,
+        name: "Google",
+        icon: "https://cdn-icons-png.flaticon.com/512/2991/2991148.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 23,
+        name: "Phone",
+        icon: "https://cdn-icons-png.flaticon.com/512/552/552489.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 24,
+        name: "Zoom",
+        icon: "https://cdn-icons-png.flaticon.com/512/5968/5968885.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 25,
+        name: "Microsoft Teams",
+        icon: "https://cdn-icons-png.flaticon.com/512/2991/2991112.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 26,
+        name: "Slack",
+        icon: "https://cdn-icons-png.flaticon.com/512/2111/2111615.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 27,
+        name: "Dropbox",
+        icon: "https://cdn-icons-png.flaticon.com/512/174/174864.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 28,
+        name: "Google Drive",
+        icon: "https://cdn-icons-png.flaticon.com/512/2991/2991148.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 29,
+        name: "OneDrive",
+        icon: "https://cdn-icons-png.flaticon.com/512/5968/5968749.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 30,
+        name: "iCloud",
+        icon: "https://cdn-icons-png.flaticon.com/512/174/174836.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 31,
+        name: "Apple Music",
+        icon: "https://cdn-icons-png.flaticon.com/512/174/174872.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 32,
+        name: "SoundCloud",
+        icon: "https://cdn-icons-png.flaticon.com/512/174/174872.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 33,
+        name: "Deezer",
+        icon: "https://cdn-icons-png.flaticon.com/512/174/174872.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 34,
+        name: "Apple Podcasts",
+        icon: "https://cdn-icons-png.flaticon.com/512/174/174872.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 35,
+        name: "Spotify Podcasts",
+        icon: "https://cdn-icons-png.flaticon.com/512/174/174872.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 36,
+        name: "Disney+",
+        icon: "https://cdn-icons-png.flaticon.com/512/5977/5977590.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 37,
+        name: "Hulu",
+        icon: "https://cdn-icons-png.flaticon.com/512/5977/5977590.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 38,
+        name: "HBO Max",
+        icon: "https://cdn-icons-png.flaticon.com/512/5977/5977590.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 39,
+        name: "Prime Video",
+        icon: "https://cdn-icons-png.flaticon.com/512/5968/5968529.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 40,
+        name: "Apple TV+",
+        icon: "https://cdn-icons-png.flaticon.com/512/174/174872.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 41,
+        name: "Bumble",
+        icon: "https://cdn-icons-png.flaticon.com/512/5968/5968907.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 42,
+        name: "OkCupid",
+        icon: "https://cdn-icons-png.flaticon.com/512/5968/5968926.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 43,
+        name: "Grindr",
+        icon: "https://cdn-icons-png.flaticon.com/512/5968/5968907.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 44,
+        name: "Lyft",
+        icon: "https://cdn-icons-png.flaticon.com/512/5968/5968756.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 45,
+        name: "DoorDash",
+        icon: "https://cdn-icons-png.flaticon.com/512/5968/5968350.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 46,
+        name: "Uber Eats",
+        icon: "https://cdn-icons-png.flaticon.com/512/5968/5968756.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 47,
+        name: "Grubhub",
+        icon: "https://cdn-icons-png.flaticon.com/512/5968/5968350.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 48,
+        name: "Postmates",
+        icon: "https://cdn-icons-png.flaticon.com/512/5968/5968350.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 49,
+        name: "eBay",
+        icon: "https://cdn-icons-png.flaticon.com/512/5968/5968269.png",
+        earning: 11.00,
+        status: "ongoing"
+      },
+      {
+        id: 50,
+        name: "Alibaba",
+        icon:"https://cdn.brandfetch.io/id_eF5X4DY/w/800/h/403/theme/dark/symbol.png?c=1bxid64Mup7aczewSAYMX&t=1668078223326",
+        earning: 11.00,
+        status: "ongoing"
+      }
+    ];
+
+    let currentFilter = 'ongoing';
+    let tasks = [...sampleTasks];
+    let isTaskInProgress = false; // Global flag to track if a task is currently running
+    let currentTaskId = null; // Track the currently running task ID
+
+    function renderTasks() {
+      console.log('🎨 renderTasks called');
+      console.log('🎨 Tasks to render:', tasks.length);
+      
+      const taskList = document.getElementById('task-list');
+      taskList.innerHTML = '';
+
+      const filteredTasks = tasks.filter(task => {
+        if (currentFilter === 'all') return true;
+        if (currentFilter === 'completed') {
+          return task.status === 'completed' || task.completedToday === true;
+        }
+        if (currentFilter === 'ongoing') {
+          return task.status === 'ongoing' && !task.completedToday;
+        }
+        return task.status === currentFilter;
+      });
+
+      // Get user info from localStorage or API
+      const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+      const userLevel = userInfo.level || 0;
+      
+      // Create user-specific labels (removed invitation code)
+      const getUserLabel = () => {
+        if (userLevel === 0) {
+          return 'Temporary Worker';
+        } else {
+          return `Level ${userLevel} Worker`;
+        }
+      };
+      
+      // Get level-based rewards
+      const getLevelReward = (userLevel) => {
+        const levelRewards = {
+          0: 11.00,   // Temporary Worker
+          1: 17.00,   // Level 1
+          2: 23.4,    // Level 2
+          3: 48.00,   // Level 3
+          4: 65.00,   // Level 4
+          5: 118.00,  // Level 5
+          6: 155.00,  // Level 6
+          7: 220.00,  // Level 7
+          8: 430.00,  // Level 8
+          9: 480.00   // Level 9
+        };
+        return levelRewards[userLevel] || 11.00;
+      };
+
+      filteredTasks.forEach(task => {
+        const taskCard = document.createElement('div');
+        taskCard.className = 'task-card';
+        const levelReward = getLevelReward(userLevel);
+        
+        // Check if task is completed
+        const isCompleted = task.status === 'completed' || task.completedToday === true;
+        
+        taskCard.innerHTML = `
+          <div class="task-icon">
+            <img src="${task.icon}" alt="${task.name}" style="width: 40px; height: 40px; border-radius: 8px;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="icon-fallback" style="display: none; width: 40px; height: 40px; border-radius: 8px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); align-items: center; justify-content: center; color: white; font-size: 16px; font-weight: bold;">📱</div>
+          </div>
+          <div class="task-info">
+            <div class="task-name">${task.name}</div>
+            <div class="task-earning">Earn KES ${levelReward.toFixed(2)}</div>
+            <div class="task-user-label">${getUserLabel()}</div>
+          </div>
+          <button class="install-btn ${isCompleted ? 'completed' : ''}" onclick="installApp(${task.id})" ${isCompleted ? 'disabled' : ''}>
+            ${isCompleted ? 'Task Done' : 'Install'}
+          </button>
+          <div class="download-progress">
+            <div class="progress-bar"></div>
+          </div>
+        `;
+        
+        // Add completed styling
+        if (isCompleted) {
+          taskCard.classList.add('completed');
+          const installBtn = taskCard.querySelector('.install-btn');
+          installBtn.style.background = '#4caf50';
+          installBtn.style.color = 'white';
+        }
+        
+        // Add in-progress styling
+        if (isTaskInProgress && currentTaskId === task.id) {
+          taskCard.classList.add('in-progress');
+          const installBtn = taskCard.querySelector('.install-btn');
+          installBtn.style.background = '#ff9800';
+          installBtn.style.color = 'white';
+          installBtn.textContent = 'In Progress...';
+        }
+        
+        taskList.appendChild(taskCard);
+      });
+    }
+
+    function filterTasks(filter) {
+      currentFilter = filter;
+      
+      // Update filter buttons
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      event.target.classList.add('active');
+      
+      renderTasks();
+    }
+
+    async function installApp(taskId) {
+      // Check for day restrictions first
+      if (checkDayRestrictions()) {
+        showModal('error', 'Task completion is not allowed today. Please try again tomorrow.');
+        return;
+      }
+      
+      // Check if another task is already in progress
+      if (isTaskInProgress) {
+        if (currentTaskId === taskId) {
+          showModal('error', 'This task is already in progress. Please wait for it to complete.');
+        } else {
+          showModal('error', 'Another task is currently in progress. Please wait for it to complete before starting a new one.');
+        }
+        return;
+      }
+      
+      const task = tasks.find(t => t.id === taskId);
+      const taskCard = event.target.closest('.task-card');
+      const installBtn = event.target;
+      const progressBar = taskCard.querySelector('.progress-bar');
+      const downloadProgress = taskCard.querySelector('.download-progress');
+      
+      // Get user level for debugging
+      const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+      const userLevel = userInfo.level || 0;
+      
+      // Debug: Log element findings
+      console.log('🔍 Task completion debug for task:', taskId);
+      console.log('🔍 User level:', userLevel);
+      console.log('🔍 taskCard found:', !!taskCard);
+      console.log('🔍 installBtn found:', !!installBtn);
+      console.log('🔍 progressBar found:', !!progressBar);
+      console.log('🔍 downloadProgress found:', !!downloadProgress);
+      
+      if (taskCard) {
+        console.log('🔍 taskCard HTML:', taskCard.outerHTML.substring(0, 200) + '...');
+        console.log('🔍 taskCard children:', taskCard.children.length);
+        console.log('🔍 taskCard querySelectorAll download-progress:', taskCard.querySelectorAll('.download-progress').length);
+        console.log('🔍 taskCard querySelectorAll progress-bar:', taskCard.querySelectorAll('.progress-bar').length);
+      }
+      
+      // Check if user is logged in
+      const token = localStorage.getItem('token');
+      if (!token) {
+        showModal('error', 'Please log in to complete tasks');
+        return;
+      }
+      
+      // Set global state to indicate task is in progress
+      isTaskInProgress = true;
+      currentTaskId = taskId;
+      
+      // Disable all task buttons to prevent multiple tasks
+      document.querySelectorAll('.install-btn').forEach(btn => {
+        if (!btn.disabled) {
+          btn.style.opacity = '0.5';
+          btn.style.pointerEvents = 'none';
+        }
+      });
+      
+      // Disable button and show progress
+      installBtn.classList.add('downloading');
+      installBtn.textContent = 'Downloading...';
+      
+      // Debug: Check if progress elements exist and create them if missing
+      if (!downloadProgress) {
+        console.warn('⚠️ downloadProgress element not found, creating it for task:', taskId);
+        console.warn('⚠️ User level:', userLevel, 'Task ID:', taskId);
+        const newDownloadProgress = document.createElement('div');
+        newDownloadProgress.className = 'download-progress';
+        newDownloadProgress.innerHTML = '<div class="progress-bar"></div>';
+        taskCard.appendChild(newDownloadProgress);
+        
+        // Update references
+        const newProgressBar = newDownloadProgress.querySelector('.progress-bar');
+        progressBar = newProgressBar;
+        downloadProgress = newDownloadProgress;
+        console.log('✅ Created downloadProgress element for task:', taskId);
+      }
+      
+      if (!progressBar) {
+        console.warn('⚠️ progressBar element not found, creating it for task:', taskId);
+        console.warn('⚠️ User level:', userLevel, 'Task ID:', taskId);
+        const newProgressBar = document.createElement('div');
+        newProgressBar.className = 'progress-bar';
+        downloadProgress.appendChild(newProgressBar);
+        progressBar = newProgressBar;
+        console.log('✅ Created progressBar element for task:', taskId);
+      }
+      
+      console.log('🔍 About to show progress bar for task:', taskId, 'User level:', userLevel);
+      
+      // Force visibility with additional checks
+      if (downloadProgress) {
+        downloadProgress.style.display = 'block';
+        downloadProgress.classList.add('show');
+        downloadProgress.style.opacity = '1';
+        console.log('✅ Progress bar should now be visible for task:', taskId);
+        
+        // Additional check after a short delay
+        setTimeout(() => {
+          if (downloadProgress.style.opacity !== '1') {
+            console.warn('⚠️ Progress bar not visible after timeout, forcing visibility for task:', taskId);
+            downloadProgress.style.opacity = '1';
+            downloadProgress.style.display = 'block';
+          }
+        }, 100);
+      } else {
+        console.error('❌ downloadProgress still null after creation attempt for task:', taskId);
+      }
+      
+      // Start progress animation
+      let progress = 0;
+      const duration = 10000; // 10 seconds
+      const interval = 100; // Update every 100ms
+      const increment = (interval / duration) * 100;
+      
+      const progressInterval = setInterval(async () => {
+        progress += increment;
+        
+        // Debug: Log progress updates (reduced frequency)
+        if (progress % 50 === 0) { // Log every 50% progress
+          console.log(`📊 Progress: ${Math.round(progress)}% for task ${taskId}`);
+        }
+        
+        if (progress >= 100) {
+          progress = 100;
+          clearInterval(progressInterval);
+          console.log(`✅ Progress completed for task ${taskId}`);
+          
+                     // Complete download and send to backend
+           try {
+             console.log('Sending task completion request for task ID:', taskId);
+             const response = await fetch('/api/app-tasks/complete', {
+               method: 'POST',
+               headers: {
+                 'Content-Type': 'application/json',
+                 'Authorization': `Bearer ${token}`
+               },
+               body: JSON.stringify({ task_id: taskId })
+             });
+             
+             console.log('Response status:', response.status);
+             const result = await response.json();
+             console.log('Response result:', result);
+             console.log('Response ok:', response.ok);
+             console.log('Result success:', result.success);
+             console.log('Result success type:', typeof result.success);
+             console.log('Result has reward:', !!result.reward);
+             console.log('Result has appName:', !!result.appName);
+             console.log('Result has error:', !!result.error);
+             console.log('Result keys:', Object.keys(result));
+             
+             // Check if response is successful (200-299) and has success flag
+             // The backend explicitly returns success: true for successful completions
+             if (response.ok && result.success === true) {
+              console.log('SUCCESS: Task completed successfully!');
+              console.log('Reward:', result.reward);
+              console.log('App name:', result.appName);
+              
+              // Update task status
+              task.status = 'completed';
+              
+              // Update summary
+              updateSummary();
+              
+              // Reload user info to update task limits immediately
+              loadUserInfo();
+              
+              // Refresh blue container data from API
+              setTimeout(() => {
+                loadTasksFromAPI();
+              }, 1000);
+              
+              // Show success message
+              installBtn.textContent = 'Task Done';
+              installBtn.style.background = '#4caf50';
+              downloadProgress.classList.remove('show');
+              
+              // Show earnings notification
+              showEarningsNotification(result.reward, result.appName);
+              
+              // Update daily and monthly earning on profile page if available
+              if (window.updateTodayEarningsDisplay) {
+                window.updateTodayEarningsDisplay(result.reward);
+                console.log('💰 Daily earning updated for task completion:', result.reward);
+              }
+              if (window.updateMonthlyEarningsDisplay) {
+                window.updateMonthlyEarningsDisplay(result.reward);
+                console.log('💰 Monthly earning updated for task completion:', result.reward);
+              }
+              
+              // Also refresh profile data from API as backup (with delay to ensure backend is updated)
+              setTimeout(() => {
+                if (window.refreshProfileData) {
+                  window.refreshProfileData();
+                  console.log('🔄 Profile data refreshed from API after task completion');
+                }
+              }, 2000);
+              
+              // Reset after 3 seconds
+              setTimeout(() => {
+                installBtn.classList.remove('downloading');
+                installBtn.textContent = 'Task Done';
+                installBtn.style.background = '#4caf50';
+                progressBar.style.width = '0%';
+                resetTaskState(); // Reset global state
+              }, 3000);
+            } else {
+              console.log('ERROR: Task completion failed or returned error');
+              console.log('Response status:', response.status);
+              console.log('Result:', result);
+              
+              // Handle different types of errors
+              installBtn.textContent = 'Error';
+              installBtn.style.background = '#f44336';
+              downloadProgress.classList.remove('show');
+              
+              // Check for specific error types (even for non-200 responses)
+              if (response.status === 401) {
+                // Authentication failed
+                showModal('error', 'Authentication failed. Please log out and log back in.');
+              } else if (result.alreadyCompleted) {
+                // Task already completed - treat as success
+                console.log('Task already completed - showing success message');
+                
+                // Update task status to completed since it was already done
+                task.status = 'completed';
+                updateSummary();
+                
+                // Refresh blue container data from API
+                setTimeout(() => {
+                  loadTasksFromAPI();
+                }, 1000);
+                
+                // Update button to show completed
+                installBtn.textContent = 'Task Done';
+                installBtn.style.background = '#4caf50';
+                downloadProgress.classList.remove('show');
+                
+                // Show success notification instead of error
+                showEarningsNotification(result.reward, result.appName, 'Task already completed!');
+                
+              } else if (result.dailyLimitReached) {
+                // Show daily limit reached message
+                showDailyLimitNotification(result.completedToday, result.maxTasksPerDay);
+              } else if (result.shouldUpgrade) {
+                // Show upgrade message
+                showModal('error', result.error);
+              } else if (result.restriction === 'sunday') {
+                // Show Sunday restriction message
+                showModal('error', result.error);
+                installBtn.textContent = 'Not Available (Sunday)';
+                installBtn.style.background = '#ff9800';
+                installBtn.style.color = 'white';
+              } else if (result.restriction === 'public_holiday') {
+                // Show public holiday restriction message
+                showModal('error', result.error);
+                installBtn.textContent = 'Not Available (Holiday)';
+                installBtn.style.background = '#ff9800';
+                installBtn.style.color = 'white';
+              } else {
+                // Show general error
+                showModal('error', result.error || 'Failed to complete task');
+              }
+              
+              // Reset after 2 seconds
+              setTimeout(() => {
+                installBtn.classList.remove('downloading');
+                installBtn.textContent = 'Install';
+                installBtn.style.background = '';
+                progressBar.style.width = '0%';
+                resetTaskState(); // Reset global state
+              }, 2000);
+            }
+          } catch (error) {
+            console.error('Error completing task:', error);
+            installBtn.textContent = 'Error';
+            installBtn.style.background = '#f44336';
+            downloadProgress.classList.remove('show');
+            
+            // Check if it's a response error with status
+            if (error.name === 'TypeError' && error.message.includes('fetch')) {
+              showModal('error', 'Network error. Please try again.');
+            } else if (response && response.status === 401) {
+              showModal('error', 'Authentication failed. Please log out and log back in.');
+            } else {
+              showModal('error', 'An error occurred. Please try again.');
+            }
+            
+            // Reset after 2 seconds
+            setTimeout(() => {
+              installBtn.classList.remove('downloading');
+              installBtn.textContent = 'Install';
+              installBtn.style.background = '';
+              progressBar.style.width = '0%';
+              resetTaskState(); // Reset global state
+            }, 2000);
+          }
+        }
+        
+        // Debug: Check if progressBar exists before updating
+        if (progressBar) {
+          progressBar.style.width = progress + '%';
+          if (progress % 25 === 0) { // Log every 25% progress
+            console.log(`📊 Progress updated: ${Math.round(progress)}% for task ${taskId} (User level: ${userLevel})`);
+          }
+        } else {
+          console.error('❌ progressBar is null when trying to update progress for task:', taskId, 'User level:', userLevel);
+        }
+      }, interval);
+    }
+
+    // Function to reset global task state and re-enable all buttons
+    function resetTaskState() {
+      isTaskInProgress = false;
+      currentTaskId = null;
+      
+      // Re-enable all task buttons
+      document.querySelectorAll('.install-btn').forEach(btn => {
+        if (!btn.disabled) {
+          btn.style.opacity = '1';
+          btn.style.pointerEvents = 'auto';
+        }
+      });
+    }
+
+    function updateSummary() {
+      // Get user info to determine daily limit
+      const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+      const userLevel = userInfo.level || 0;
+      
+      // Update task progress indicator in header
+      const headerTitle = document.querySelector('.header-title');
+      if (headerTitle) {
+        if (isTaskInProgress) {
+          headerTitle.innerHTML = 'Task List - UAI <span style="color: #ff9800; font-size: 0.8em;">(Task in Progress)</span>';
+        } else {
+          headerTitle.innerHTML = 'Task List - UAI';
+        }
+      }
+      
+      // Level-based daily task limits
+      const levelTaskLimits = {
+        0: 5,   // Temporary Worker
+        1: 5,   // Level 1
+        2: 10,  // Level 2
+        3: 15,  // Level 3
+        4: 15,  // Level 4
+        5: 20,  // Level 5
+        6: 25,  // Level 6
+        7: 30,  // Level 7
+        8: 35,  // Level 8
+        9: 40   // Level 9
+      };
+      
+      const maxTasksPerDay = levelTaskLimits[userLevel] || 5;
+      
+      // Check if we have API data stored (more accurate than local counting)
+      const apiData = JSON.parse(localStorage.getItem('apiTaskData') || '{}');
+      let completedToday;
+      
+      if (apiData.completedToday !== undefined) {
+        // Use API data (includes ALL completed tasks)
+        completedToday = apiData.completedToday;
+        console.log(`📊 Using API data: ${completedToday} tasks completed today`);
+      } else {
+        // Fallback to local counting (only app tasks)
+        completedToday = tasks.filter(task => task.status === 'completed' || task.completedToday).length;
+        console.log(`📱 Using local count: ${completedToday} app tasks completed today`);
+      }
+      
+      const totalTasks = tasks.length;
+      const ongoingToday = totalTasks - completedToday;
+      
+      // Update blue container with daily progress
+      document.querySelector('.ongoing-count').textContent = ongoingToday;
+      document.querySelector('.completed-count').textContent = completedToday;
+      
+      // Update progress circle with animation
+      updateProgressCircle(completedToday, maxTasksPerDay);
+      
+      console.log(`✅ updateSummary: ${completedToday}/${maxTasksPerDay} tasks completed, ${ongoingToday} available`);
+    }
+    
+    function updateProgressCircle(completed, maxTasks) {
+      const progressCircle = document.querySelector('.progress-circle');
+      const progressSpan = progressCircle.querySelector('span');
+      
+      const percentage = Math.min(Math.round((completed / maxTasks) * 100), 100);
+      
+      // Update the text
+      progressSpan.textContent = `${percentage}%`;
+      
+      // Update the water fill animation
+      progressCircle.style.setProperty('--progress-height', `${percentage}%`);
+      
+      // Show/hide waves based on water level
+      if (percentage > 0) {
+        progressCircle.classList.add('has-water');
+        // Add ripple effect when progress changes
+        progressCircle.classList.add('ripple');
+        setTimeout(() => {
+          progressCircle.classList.remove('ripple');
+        }, 1000);
+      } else {
+        progressCircle.classList.remove('has-water');
+      }
+    }
+
+    // Load user information and task limits
+    async function loadUserInfo() {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          console.log('No token found, cannot load user info');
+          return;
+        }
+
+        const response = await fetch(`/api/user/stats?t=${Date.now()}&v=${Math.random()}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          }
+        });
+
+        if (response.ok) {
+          const userData = await response.json();
+          console.log('🔍 API Response Data:', userData);
+          console.log('🔍 User Level:', userData.level);
+          console.log('🔍 Today Earning:', userData.today_earning);
+          // Store user info in localStorage for task labeling
+          localStorage.setItem('userInfo', JSON.stringify({
+            level: userData.level,
+            invitation_code: userData.invitation_code,
+            name: userData.name
+          }));
+          console.log('User info loaded and stored:', userData);
+          
+          // Update task limit display
+          updateTaskLimitDisplay(userData);
+        }
+      } catch (error) {
+        console.log('Error loading user info:', error);
+      }
+    }
+    
+    // Update task limit display based on user level
+    function updateTaskLimitDisplay(userData) {
+      const taskLimitDisplay = document.getElementById('task-limit-display');
+      const completedToday = document.getElementById('completed-today');
+      const maxTasksPerDay = document.getElementById('max-tasks-per-day');
+      const currentUserLevel = document.getElementById('current-user-level');
+      const taskLimitBarFill = document.getElementById('task-limit-bar-fill');
+      const rewardPerTask = document.getElementById('reward-per-task');
+      const progressText = document.getElementById('progress-text');
+      
+      if (!taskLimitDisplay) return;
+      
+      // Get level-based task limits and rewards
+      const levelTaskLimits = {
+        0: 5,   // Temporary Worker
+        1: 5,   // Level 1
+        2: 10,  // Level 2 (updated)
+        3: 15,  // Level 3 (updated)
+        4: 15,  // Level 4
+        5: 20,  // Level 5
+        6: 25,  // Level 6
+        7: 30,  // Level 7
+        8: 35,  // Level 8
+        9: 40   // Level 9
+      };
+      
+      const levelRewards = {
+        0: 11.00,   // Temporary Worker
+        1: 17.00,   // Level 1
+        2: 23.4,    // Level 2
+        3: 48.00,   // Level 3
+        4: 65.00,   // Level 4
+        5: 267.00,  // Level 5
+        6: 230.00,  // Level 6
+        7: 298.00,  // Level 7
+        8: 428.00,  // Level 8
+        9: 555.00   // Level 9
+      };
+      
+      const userLevel = userData.level || 0;
+      const maxTasks = levelTaskLimits[userLevel] || 5;
+      const completed = userData.tasks_completed_today || 0;
+      const reward = levelRewards[userLevel] || 11.00;
+      
+      console.log(`🔍 Debug - User Level: ${userLevel}, Reward from levelRewards: ${levelRewards[userLevel]}, Final reward: ${reward}`);
+      console.log(`🔍 Debug - levelRewards object:`, levelRewards);
+      console.log(`🔍 Debug - userData object:`, userData);
+      const progressPercent = Math.min((completed / maxTasks) * 100, 100);
+      
+      // Update display
+      completedToday.textContent = completed;
+      maxTasksPerDay.textContent = maxTasks;
+      currentUserLevel.textContent = userLevel;
+      rewardPerTask.textContent = reward.toFixed(2);
+      taskLimitBarFill.style.width = `${progressPercent}%`;
+      progressText.textContent = `${Math.round(progressPercent)}% Complete`;
+      
+      // Show the task limit display
+      taskLimitDisplay.style.display = 'block';
+      
+      console.log(`Task limits updated: Level ${userLevel}, ${completed}/${maxTasks} tasks completed, KES ${reward} per task`);
+      console.log(`Reward per task display updated to: KES ${reward.toFixed(2)}`);
+    }
+
+    // Load tasks from API if available
+    // This function refreshes the blue container with current day's progress
+    // Task completion status is managed by backend daily reset (midnight)
+    async function loadTasksFromAPI() {
+      try {
+        const token = localStorage.getItem('token');
+        console.log('🔍 Loading tasks from API...');
+        console.log('Token exists:', !!token);
+        
+        if (!token) {
+          console.log('No token found, using sample tasks');
+          return;
+        }
+
+        console.log('📡 Making API call to /api/app-tasks...');
+        const response = await fetch('/api/app-tasks', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        console.log('📡 API Response status:', response.status);
+        
+        if (response.ok) {
+          const apiData = await response.json();
+          console.log('📡 API Response data:', apiData);
+          console.log('📡 Tasks count:', apiData.tasks ? apiData.tasks.length : 'No tasks');
+          
+          if (apiData.tasks && Array.isArray(apiData.tasks)) {
+            // Convert app tasks format to frontend format
+            const apiTasks = apiData.tasks;
+            console.log(`API returned ${apiTasks.length} app tasks`);
+            
+            // Convert app tasks to frontend format
+            tasks = apiTasks.map(task => ({
+              id: task.id,
+              name: task.name,
+              icon: task.icon || "https://cdn-icons-png.flaticon.com/512/5968/5968350.png",
+              earning: task.earning,
+              status: task.status,
+              completedToday: task.completedToday || false
+            }));
+            
+            console.log(`Converted ${apiTasks.length} app tasks to frontend format`);
+            console.log(`Tasks with completion status:`, tasks.filter(t => t.status === 'completed' || t.completedToday).length);
+            
+            // Update summary with real data from API
+            const totalTasks = tasks.length;
+            const completedToday = apiData.completedToday || 0; // Use completedToday from API (includes ALL tasks)
+            const ongoingToday = totalTasks - completedToday;
+            
+            // Update blue container with daily progress
+            document.querySelector('.ongoing-count').textContent = ongoingToday;
+            document.querySelector('.completed-count').textContent = completedToday;
+            
+            // Calculate daily progress percentage based on user's daily limit
+            const maxTasksPerDay = apiData.maxTasksPerDay || 5;
+            
+            // Store API data for use by updateSummary function
+            localStorage.setItem('apiTaskData', JSON.stringify({
+              completedToday: completedToday,
+              maxTasksPerDay: maxTasksPerDay,
+              userLevel: apiData.userLevel
+            }));
+            
+            // Update progress circle with animation
+            updateProgressCircle(completedToday, maxTasksPerDay);
+            
+            console.log(`✅ Updated blue container: ${completedToday}/${maxTasksPerDay} tasks completed today`);
+            console.log(`📊 API Response:`, apiData);
+            console.log(`🔍 Note: API completedToday (${completedToday}) includes ALL completed app tasks`);
+            console.log(`📱 App tasks in array: ${tasks.filter(t => t.status === 'completed' || t.completedToday).length} marked as completed`);
+          }
+        }
+      } catch (error) {
+        console.log('❌ Error loading tasks from API:', error);
+        console.log('❌ Error details:', error.message);
+        console.log('❌ Falling back to sample tasks');
+        // Fallback to sample tasks if API fails
+        tasks = [...sampleTasks];
+        
+        // Update summary with fallback data
+        updateSummary();
+      }
+      
+      console.log('✅ loadTasksFromAPI completed');
+      console.log('✅ Final tasks count:', tasks.length);
+      console.log('✅ First task:', tasks[0] ? tasks[0].name : 'No tasks');
+    }
+
+    // Show modal notification
+    function showModal(type, message) {
+      const modal = document.getElementById('notification-modal');
+      const emoji = document.getElementById('modal-emoji');
+      const title = document.getElementById('modal-title');
+      const msg = document.getElementById('modal-message');
+      const button = document.getElementById('modal-button');
+      
+      if (type === 'error') {
+        emoji.textContent = '😢';
+        title.textContent = 'Sorry!';
+        title.style.color = '#e53935';
+        button.style.background = '#e53935';
+      } else if (type === 'limit') {
+        emoji.textContent = '⏰';
+        title.textContent = 'Daily Limit Reached!';
+        title.style.color = '#ff9800';
+        button.style.background = '#ff9800';
+      } else if (type === 'info') {
+        emoji.textContent = 'ℹ️';
+        title.textContent = 'Task Already Completed';
+        title.style.color = '#2196f3';
+        button.style.background = '#2196f3';
+      } else {
+        emoji.textContent = '🎉';
+        title.textContent = 'Well Done!';
+        title.style.color = '#2979ff';
+        button.style.background = '#2979ff';
+      }
+      
+      msg.textContent = message;
+      modal.style.display = 'flex';
+    }
+
+    function hideModal() {
+      document.getElementById('notification-modal').style.display = 'none';
+    }
+
+    // Show earnings notification using modal
+    function showEarningsNotification(amount, appName, customMessage = null) {
+      const message = customMessage || `You have earned KES ${amount.toFixed(2)} from completing ${appName}! 🎉\n\n💰 Money has been added to your wallet!`;
+      showModal('success', message);
+      
+      // Update daily earning tracking
+      updateDailyEarningTracking(amount);
+    }
+    
+    // Function to update daily and monthly earning tracking
+    function updateDailyEarningTracking(amount) {
+      const today = new Date().toDateString();
+      const currentMonth = new Date().getMonth() + '_' + new Date().getFullYear();
+      const lastCheckedDate = localStorage.getItem('lastDailyEarningDate');
+      const lastCheckedMonth = localStorage.getItem('lastMonthlyEarningDate');
+      
+      // Update daily earning
+      if (lastCheckedDate === today) {
+        // Same day, add to existing earning
+        const currentEarning = parseFloat(localStorage.getItem('lastTodayEarning') || 0);
+        const newEarning = currentEarning + amount;
+        localStorage.setItem('lastTodayEarning', newEarning.toString());
+        console.log('💰 Daily earning updated:', newEarning);
+      } else {
+        // New day, start fresh
+        localStorage.setItem('lastDailyEarningDate', today);
+        localStorage.setItem('lastTodayEarning', amount.toString());
+        console.log('🔄 New day, daily earning started:', amount);
+      }
+      
+      // Update monthly earning
+      if (lastCheckedMonth === currentMonth) {
+        // Same month, add to existing earning
+        const currentMonthEarning = parseFloat(localStorage.getItem('lastMonthEarning') || 0);
+        const newMonthEarning = currentMonthEarning + amount;
+        localStorage.setItem('lastMonthEarning', newMonthEarning.toString());
+        console.log('💰 Monthly earning updated:', newMonthEarning);
+      } else {
+        // New month, start fresh
+        localStorage.setItem('lastMonthlyEarningDate', currentMonth);
+        localStorage.setItem('lastMonthEarning', amount.toString());
+        console.log('🔄 New month, monthly earning started:', amount);
+      }
+    }
+
+    // Show daily limit reached notification using modal
+    function showDailyLimitNotification(completedToday, maxTasksPerDay) {
+      const message = `Daily limit reached! You have completed ${completedToday} tasks today.\n\n📅 Daily limit for your level is ${maxTasksPerDay} tasks.\n\n⏰ Come back tomorrow for more tasks!`;
+      showModal('limit', message);
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', async function() {
+      console.log('🚀 DOMContentLoaded - Starting initialization...');
+      console.log('🔄 Page refreshed - Loading fresh data from API...');
+      
+      // Show one-task-at-a-time notification on first visit
+      const hasSeenNotification = localStorage.getItem('taskRestrictionNotified');
+      if (!hasSeenNotification) {
+        showModal('info', '📱 Task Restriction: You can only perform one task at a time. Please wait for the current task to complete before starting another one.');
+        localStorage.setItem('taskRestrictionNotified', 'true');
+      }
+      
+      console.log('👤 Loading user info...');
+      await loadUserInfo();
+      
+      console.log('📱 Loading tasks from API...');
+      await loadTasksFromAPI();
+      
+      console.log('🎨 Rendering tasks...');
+      renderTasks();
+      
+      // Ensure summary is updated after all data is loaded
+      setTimeout(() => {
+        updateSummary();
+      }, 500);
+      
+      // Log task count for verification
+      console.log(`📱 Task page loaded with ${tasks.length} apps available`);
+      console.log(`📊 Summary: ${tasks.filter(t => t.status === 'ongoing').length} ongoing, ${tasks.filter(t => t.status === 'completed').length} completed`);
+      
+      // Set up periodic refresh of task limits (but not task completion status)
+      setInterval(loadUserInfo, 30000); // Refresh user info every 30 seconds
+      
+      // Refresh when user returns to tab
+      document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) {
+          console.log('👁️  Tab became visible - Refreshing user info...');
+          loadUserInfo();
+          
+          // If a task was in progress, check if it's still valid
+          if (isTaskInProgress && currentTaskId) {
+            console.log('🔄 Tab became visible with task in progress, checking status...');
+            // Re-render tasks to show current state
+            renderTasks();
+            updateSummary();
+          }
+        }
+      });
+    });
+
+    // Make functions available globally for testing
+    window.hideModal = hideModal;
+    window.showModal = showModal;
+    window.showEarningsNotification = showEarningsNotification;
+    window.showDailyLimitNotification = showDailyLimitNotification;
+    
+    // Test function for debugging
+    window.testModals = function() {
+      console.log('Testing modals...');
+      showEarningsNotification(11.00, 'TikTok');
+      setTimeout(() => {
+        hideModal();
+        setTimeout(() => {
+          showDailyLimitNotification(5, 5);
+        }, 1000);
+      }, 3000);
+    };
+    
+    // Test function to simulate backend response
+    window.testBackendResponse = function() {
+      console.log('Testing backend response simulation...');
+      
+      // Simulate successful response
+      const mockSuccessResponse = {
+        success: true,
+        reward: 11.00,
+        appName: 'TikTok',
+        newBalance: 100.00
+      };
+      
+      console.log('Mock success response:', mockSuccessResponse);
+      
+      // Test the condition
+      const responseOk = true;
+      const hasSuccess = mockSuccessResponse.success === true;
+      const hasRewardData = mockSuccessResponse.reward && mockSuccessResponse.appName;
+      const hasNoError = !mockSuccessResponse.error;
+      
+      console.log('Response ok:', responseOk);
+      console.log('Has success flag:', hasSuccess);
+      console.log('Has reward data:', hasRewardData);
+      console.log('Has no error:', hasNoError);
+      console.log('Condition result:', (responseOk && hasSuccess) || (responseOk && hasRewardData) || (responseOk && hasNoError));
+      
+      if ((responseOk && hasSuccess) || (responseOk && hasRewardData) || (responseOk && hasNoError)) {
+        console.log('SUCCESS: Would show success modal');
+        showEarningsNotification(mockSuccessResponse.reward, mockSuccessResponse.appName);
+      } else {
+        console.log('ERROR: Would show error modal');
+        showModal('error', 'Test failed');
+      }
+    };
+    
+    // Test function to simulate different backend response formats
+    window.testDifferentResponses = function() {
+      console.log('Testing different backend response formats...');
+      
+      const testCases = [
+        {
+          name: 'Standard success response',
+          response: { success: true, reward: 11.00, appName: 'TikTok' }
+        },
+        {
+          name: 'Response without success flag but with reward',
+          response: { reward: 11.00, appName: 'TikTok', newBalance: 100.00 }
+        },
+        {
+          name: 'Response with just reward data',
+          response: { reward: 11.00, appName: 'TikTok' }
+        },
+        {
+          name: 'Response with error',
+          response: { error: 'Daily limit reached', dailyLimitReached: true }
+        }
+      ];
+      
+      testCases.forEach((testCase, index) => {
+        console.log(`\n--- Test Case ${index + 1}: ${testCase.name} ---`);
+        console.log('Response:', testCase.response);
+        
+        const responseOk = true;
+        const hasSuccess = testCase.response.success === true;
+        const hasRewardData = testCase.response.reward && testCase.response.appName;
+        const hasNoError = !testCase.response.error;
+        
+        const condition = (responseOk && hasSuccess) || (responseOk && hasRewardData) || (responseOk && hasNoError);
+        
+        console.log('Condition result:', condition);
+        
+        if (condition) {
+          console.log('✅ Would show SUCCESS modal');
+          if (testCase.response.reward && testCase.response.appName) {
+            showEarningsNotification(testCase.response.reward, testCase.response.appName);
+          }
+        } else {
+          console.log('❌ Would show ERROR modal');
+          if (testCase.response.dailyLimitReached) {
+            showDailyLimitNotification(5, 5);
+          } else {
+            showModal('error', testCase.response.error || 'Failed to complete task');
+          }
+        }
+        
+        // Wait before next test
+        setTimeout(() => {
+          hideModal();
+        }, 2000);
+      });
+    };
+
+    // Test function to verify success condition
+    window.testSuccessCondition = function() {
+      console.log('Testing success condition...');
+      
+      // Simulate the exact backend response format
+      const mockResponse = {
+        success: true,
+        reward: 11.00,
+        newBalance: 100.00,
+        appName: 'TikTok',
+        stats: {
+          totalTasksCompleted: 1,
+          totalEarnings: 11.00,
+          thisMonthEarnings: 11.00,
+          todaysEarnings: 11.00,
+          tasksCompletedToday: 1
+        },
+        message: 'App downloaded! Earned KES 11'
+      };
+      
+      console.log('Mock response:', mockResponse);
+      
+      const responseOk = true;
+      const hasSuccess = mockResponse.success === true;
+      
+      console.log('Response ok:', responseOk);
+      console.log('Has success:', hasSuccess);
+      console.log('Condition result:', responseOk && hasSuccess);
+      
+      if (responseOk && hasSuccess) {
+        console.log('✅ SUCCESS: Condition passed - would show success modal');
+        showEarningsNotification(mockResponse.reward, mockResponse.appName);
+      } else {
+        console.log('❌ ERROR: Condition failed - would show error modal');
+        showModal('error', 'Test failed');
+      }
+    };
+    
+    // Check for day restrictions (Sunday and public holidays)
+    function checkDayRestrictions() {
+      const today = new Date();
+      const isSunday = today.getDay() === 0;
+      
+      // Kenya public holidays 2024-2025
+      const publicHolidays = [
+        // 2024 Holidays
+        '2024-01-01', // New Year's Day
+        '2024-03-29', // Good Friday
+        '2024-04-01', // Easter Monday
+        '2024-05-01', // Labour Day
+        '2024-06-01', // Madaraka Day
+        '2024-06-16', // Eid al-Fitr (approximate)
+        '2024-10-10', // Moi Day
+        '2024-10-20', // Mashujaa Day
+        '2024-12-12', // Jamhuri Day
+        '2024-12-25', // Christmas Day
+        '2024-12-26', // Boxing Day
+        
+        // 2025 Holidays
+        '2025-01-01', // New Year's Day
+        '2025-03-21', // Good Friday
+        '2025-03-24', // Easter Monday
+        '2025-05-01', // Labour Day
+        '2025-06-01', // Madaraka Day
+        '2025-06-06', // Eid al-Fitr (approximate)
+        '2025-10-10', // Moi Day
+        '2025-10-20', // Mashujaa Day
+        '2025-12-12', // Jamhuri Day
+        '2025-12-25', // Christmas Day
+        '2025-12-26'  // Boxing Day
+      ];
+      
+      const todayString = today.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+      const isPublicHoliday = publicHolidays.includes(todayString);
+      
+      const banner = document.getElementById('restriction-banner');
+      const title = document.getElementById('restriction-title');
+      const message = document.getElementById('restriction-message');
+      
+      if (isSunday) {
+        banner.style.display = 'block';
+        title.textContent = 'Tasks Not Available - Sunday';
+        message.textContent = 'Task completion is not allowed on Sundays. Please try again tomorrow.';
+        return true;
+      } else if (isPublicHoliday) {
+        banner.style.display = 'block';
+        title.textContent = 'Tasks Not Available - Public Holiday';
+        message.textContent = 'Task completion is not allowed on public holidays. Please try again tomorrow.';
+        return true;
+      } else {
+        banner.style.display = 'none';
+        return false;
+      }
+    }
+    
+    // Initialize language manager immediately
+    (async function() {
+      // Load language manager
+      const script = document.createElement('script');
+      script.src = 'js/language-manager.js';
+      document.head.appendChild(script);
+      
+      // Load trial countdown
+      const trialScript = document.createElement('script');
+      trialScript.src = 'js/trial-countdown.js';
+      document.head.appendChild(trialScript);
+      
+      script.onload = async function() {
+        if (window.languageManager) {
+          await window.languageManager.init();
+          console.log('🌍 Language manager loaded and initialized on task page');
+        }
+      };
+      
+      // Check for day restrictions when page loads
+      checkDayRestrictions();
+    })();
+  </script>
+  <script src="js/admin-notifications.js"></script>
+</body>
+</html>

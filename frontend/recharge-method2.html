@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Recharge Method 1 - UAI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #2979ff 0%, #ad7ce6 100%);
+      margin: 0; padding: 0;
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .container {
+      background: rgba(255,255,255,0.96);
+      margin-top: 60px;
+      padding: 36px 24px 28px 24px;
+      border-radius: 22px;
+      max-width: 410px;
+      width: 97vw;
+      box-shadow: 0 2px 24px #ad7ce62a;
+      text-align: center;
+      position: relative;
+    }
+    .uai-logo {
+      position: absolute;
+      left: 50%; top: -38px;
+      transform: translateX(-50%);
+      width: 70px; height: 70px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ad7ce6 0%, #2979ff 100%);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 18px #7a09c555;
+      border: 4px solid #fff;
+    }
+    .uai-logo span {
+      color: #fff;
+      font-size: 2em;
+      font-weight: 800;
+      letter-spacing: 3px;
+      text-shadow: 0 2px 8px #7a09c577, 0 0 2px #4f2b7c;
+    }
+    h2 { color: #2979ff; margin-bottom: 1.5em;}
+    .info-block {
+      margin: 1.3em 0 2em 0;
+      background: #e3f0ff;
+      border-radius: 12px;
+      padding: 15px 13px;
+      color: #2979ff;
+      font-weight: 700;
+      font-size: 1.12em;
+      letter-spacing: 0.4px;
+      word-break: break-all;
+      box-shadow: 0 1px 8px #ad7ce632;
+    }
+    .copy-btn {
+      background: #ad7ce6;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 7px 18px;
+      font-size: 0.95em;
+      font-weight: 600;
+      margin-left: 10px;
+      cursor: pointer;
+      margin-bottom: 1em;
+      transition: background .15s;
+    }
+    .copy-btn:active { background: #2979ff; }
+    .label {
+      color: #ad7ce6;
+      font-size: 0.98em;
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: block;
+    }
+    .input-group { 
+      margin-bottom: 1.1em; 
+      text-align: left;
+    }
+    .input-group label { 
+      display: block; 
+      margin-bottom: 0.35em; 
+      color: #ad7ce6; 
+      font-weight: 600;
+    }
+    .input-group input[type="text"], 
+    .input-group input[type="number"] {
+      width: 100%; 
+      padding: 10px 8px; 
+      border-radius: 9px; 
+      border: 1px solid #ad7ce6;
+      font-size: 1em; 
+      margin-bottom: 0.7em; 
+      box-sizing: border-box;
+    }
+    textarea {
+      width: 100%; min-height: 62px; border-radius: 7px; border: 1px solid #ad7ce6;
+      padding: 9px; font-size: 1em; margin-bottom: 1em; box-sizing: border-box;
+    }
+    .pay-btn {
+      background: linear-gradient(90deg, #2979ff 0%, #ad7ce6 100%);
+      color: #fff; border: none; border-radius: 14px; font-size: 1.09em;
+      padding: 13px 22px; font-weight: 700; cursor: pointer; transition: background .18s;
+      min-width: 110px; display: inline-block; box-shadow: 0 2px 10px #ad7ce655;
+      outline: none; margin-top: 6px;
+    }
+    .pay-btn:active { background: #1565c0; }
+    
+    /* Warning Message Styles */
+    .warning-message {
+      background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+      border: 2px solid #f39c12;
+      border-radius: 12px;
+      padding: 16px;
+      margin: 20px 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      box-shadow: 0 2px 8px rgba(243, 156, 18, 0.2);
+    }
+    
+    .warning-icon {
+      font-size: 1.5em;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    
+    .warning-text {
+      color: #856404;
+      font-size: 0.95em;
+      line-height: 1.4;
+      text-align: left;
+    }
+    
+    .warning-text strong {
+      color: #d68910;
+      font-weight: 700;
+    }
+    
+    .message { margin-top: 1.2em; color: #2979ff; font-weight: 600; min-height: 24px;}
+    .recharge-note {
+      color: #ad7ce6;
+      margin-bottom: 19px;
+      font-size: 1.01em;
+      font-style: italic;
+      text-align: center;
+    }
+    #hr-assignment {
+      display: none;
+    }
+    .hr-details {
+      background: #f8f9ff;
+      border-radius: 12px;
+      padding: 15px;
+      margin: 15px 0;
+      border-left: 4px solid #2979ff;
+      position: relative;
+      min-height: 120px; /* Fixed height to prevent layout shift */
+    }
+    .countdown-container {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #fff3cd;
+      border-radius: 0 0 12px 12px;
+      padding: 8px;
+      border-top: 1px solid #ffeaa7;
+      text-align: center;
+      font-weight: bold;
+      color: #856404;
+      font-size: 0.85em;
+    }
+    .hr-details h3 {
+      color: #2979ff;
+      margin: 0 0 10px 0;
+      font-size: 1.1em;
+    }
+    .hr-details p {
+      margin: 5px 0;
+      color: #666;
+    }
+    .transaction-info {
+      background: #e8f5e8;
+      border-radius: 8px;
+      padding: 10px;
+      margin: 10px 0;
+      border-left: 4px solid #4caf50;
+    }
+    .admin-refresh-btn {
+      background: linear-gradient(90deg, #2979ff 0%, #ad7ce6 100%);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-size: 0.9em;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: all 0.2s ease;
+    }
+    .admin-refresh-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(41, 121, 255, 0.3);
+    }
+    .admin-refresh-btn:active {
+      transform: translateY(0);
+    }
+  </style>
+  <script src="js/payment-monitor.js"></script>
+</head>
+<body>
+<div class="container">
+  <div class="uai-logo"><span>UAI</span></div>
+  <h2>Recharge - Method 2 (Available Deposit Details)</h2>
+  
+  <!-- Random Admin Display -->
+  <div id="random-admin-display">
+    <div class="hr-details">
+      <h3>📞 Available Deposit Details</h3>
+      <p><strong>Name:</strong> <span id="admin-name">Loading...</span></p>
+      <p><strong>Phone:</strong> <span id="admin-phone">Loading...</span></p>
+      <p style="font-size: 0.9em; color: #666; margin-top: 10px;">
+        <em>Last updated: <span id="admin-last-updated">Just now</span></em>
+      </p>
+                    <button type="button" class="admin-refresh-btn" onclick="fetchRandomAdmin()">
+          🔄 Get Different Deposit Details
+        </button>
+      <div class="countdown-container" id="countdownContainer" style="display: none;">
+        ⏰ New details available in: 60s
+      </div>
+    </div>
+  </div>
+  
+  <div class="recharge-note">
+    Enter your phone number and amount. Available deposit details will be provided for your payment.
+  </div>
+  
+  <form id="rechargeForm">
+    <div class="input-group">
+      <label for="phone">Phone Number</label>
+              <input type="text" id="phone" placeholder="e.g. 0712345678, 0112345678, +254712345678" maxlength="15" required>
+    </div>
+    <div class="input-group">
+      <label for="amount">Amount (KES)</label>
+      <input type="number" id="amount" placeholder="Enter amount" min="10" required>
+    </div>
+    <div class="input-group">
+      <label for="message">Verification Message (Optional)</label>
+      <textarea id="message" placeholder="Enter any message for verification (e.g., transaction details, reference number, etc.)" rows="3"></textarea>
+    </div>
+    
+    <!-- Warning Message -->
+    <div class="warning-message">
+      <div class="warning-icon">⚠️</div>
+      <div class="warning-text">
+        <strong>Important:</strong> Do not keep or call financial manager numbers. 
+        All communications should be done through the official UAI platform only.
+      </div>
+    </div>
+    
+    <button type="submit" class="pay-btn">Submit Recharge Request</button>
+  </form>
+  
+  <!-- Pending Recharge Status -->
+  <div id="pending-recharge-status" style="display: none;">
+    <div class="hr-details" style="border-left-color: #ff9800;">
+      <h3 style="color: #ff9800;">⏳ Recharge Request Pending</h3>
+      <p><strong>Status:</strong> <span style="color: #ff9800; font-weight: bold;">Awaiting Approval</span></p>
+      <p><strong>Amount:</strong> <span id="pending-amount">Loading...</span></p>
+      <p><strong>Phone:</strong> <span id="pending-phone">Loading...</span></p>
+      <p><strong>Transaction ID:</strong> <span id="pending-transaction-id">Loading...</span></p>
+      <p><strong>Submitted:</strong> <span id="pending-submitted-time">Loading...</span></p>
+      <div style="background: #fff3cd; border-radius: 8px; padding: 12px; margin-top: 15px; border-left: 4px solid #ff9800;">
+        <p style="margin: 0; color: #856404; font-weight: 600;">
+          📋 Your recharge request has been submitted and is awaiting approval from deposit details. 
+          Please wait for the approval process to complete. You will be notified once your recharge is approved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div id="hr-assignment">
+    <div class="hr-details">
+      <h3>📞 Deposit Details Assigned</h3>
+      <p><strong>Name:</strong> <span id="hr-name">Loading...</span></p>
+    </div>
+    <div class="transaction-info">
+      <p><strong>Transaction Number:</strong> <span id="transaction-number">Loading...</span></p>
+    </div>
+    <div class="label">Message to Copy:</div>
+    <div class="info-block" id="message-block">
+      <span id="copy-message">Loading...</span>
+      <button type="button" class="copy-btn" onclick="copyText(document.getElementById('copy-message').textContent)">Copy Message</button>
+    </div>
+    <div class="recharge-note">
+      Copy the message above and send it to the provided deposit details. Your payment will be processed once verified.
+    </div>
+  </div>
+  <div class="message" id="message"></div>
+</div>
+<script>
+  function copyText(text) {
+    navigator.clipboard.writeText(text);
+  }
+  
+
+  
+  // Function to get admin portal URL based on current location
+  function getAdminPortalUrl() {
+    const currentProtocol = window.location.protocol;
+    const currentHostname = window.location.hostname;
+    const currentPort = window.location.port;
+    
+    console.log('🔍 Current location:', {
+      protocol: currentProtocol,
+      hostname: currentHostname,
+      port: currentPort,
+      fullUrl: window.location.href
+    });
+    
+    // If we're on localhost, use localhost:3001
+    if (currentHostname === 'localhost' || currentHostname === '127.0.0.1') {
+      return `${currentProtocol}//${currentHostname}:3001`;
+    }
+    
+    // If we're on a forwarded port, try different approaches
+    // First, try the same hostname with port 3001
+    const adminPortalUrl = `${currentProtocol}//${currentHostname}:3001`;
+    console.log('🔍 Trying admin portal URL:', adminPortalUrl);
+    
+    return adminPortalUrl;
+  }
+
+  // Function to get fallback admin portal URLs
+  function getFallbackAdminPortalUrls() {
+    const currentProtocol = window.location.protocol;
+    const currentHostname = window.location.hostname;
+    
+    // Check if we're using a tunnel
+    const isTunnel = currentHostname.includes('devtunnels.ms') || 
+                     currentHostname.includes('ngrok') || 
+                     currentHostname.includes('tunnel');
+    
+    // If using tunnel, try to construct admin portal tunnel URL
+    if (isTunnel) {
+      // Extract the tunnel ID and region from the current URL
+      const tunnelMatch = currentHostname.match(/([a-z0-9]+)-(\d+)\.[a-z0-9]+\.devtunnels\.ms/);
+      if (tunnelMatch) {
+        const [, tunnelId, port] = tunnelMatch;
+        // Try to construct admin portal tunnel URL
+        const adminTunnelUrl = `${currentProtocol}//${tunnelId}-3001.${currentHostname.split('.').slice(1).join('.')}`;
+        return [
+          adminTunnelUrl,
+          `${currentProtocol}//${currentHostname}:3001`,
+          `${currentProtocol}//${currentHostname.replace('-3000', '-3001')}`,
+          `${currentProtocol}//localhost:3001`,
+          `${currentProtocol}//127.0.0.1:3001`,
+          'http://localhost:3001',
+          'http://127.0.0.1:3001'
+        ];
+      }
+    }
+    
+    // Get the current IP address if available
+    const currentIP = window.location.hostname;
+    
+    return [
+      `${currentProtocol}//${currentHostname}:3001`,
+      `${currentProtocol}//${currentIP}:3001`,
+      `${currentProtocol}//localhost:3001`,
+      `${currentProtocol}//127.0.0.1:3001`,
+      'http://localhost:3001',
+      'http://127.0.0.1:3001'
+    ];
+  }
+
+  // Function to test admin portal connectivity
+  async function testAdminPortalConnectivity() {
+    const fallbackUrls = getFallbackAdminPortalUrls();
+    
+    for (let i = 0; i < fallbackUrls.length; i++) {
+      const adminPortalUrl = fallbackUrls[i];
+      const testUrl = `${adminPortalUrl}/api/health`;
+      
+      try {
+        console.log(`🔍 Testing admin portal connectivity (attempt ${i + 1}):`, testUrl);
+        const response = await fetch(testUrl, { 
+          method: 'GET',
+          mode: 'cors',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (response.ok) {
+          console.log('✅ Admin portal is accessible at:', adminPortalUrl);
+          // Store the working URL for future use
+          window.workingAdminPortalUrl = adminPortalUrl;
+          return true;
+        } else {
+          console.log('❌ Admin portal responded with status:', response.status);
+        }
+      } catch (error) {
+        console.log(`❌ Admin portal connectivity test failed for ${adminPortalUrl}:`, error.message);
+      }
+    }
+    
+    console.log('❌ All admin portal connectivity tests failed');
+    return false;
+  }
+
+  // Countdown functionality for financial details
+  function getCountdownData() {
+    try {
+      const data = localStorage.getItem('financialCountdown');
+      return data ? JSON.parse(data) : null;
+    } catch (error) {
+      console.error('Error getting countdown data:', error);
+      return null;
+    }
+  }
+  
+  function setCountdownData(endTime, financialDetails = null) {
+    try {
+      const data = {
+        endTime: endTime,
+        method: 2, // Track which method this countdown is for
+        financialDetails: financialDetails
+      };
+      localStorage.setItem('financialCountdown', JSON.stringify(data));
+    } catch (error) {
+      console.error('Error setting countdown data:', error);
+    }
+  }
+  
+  function getFinancialDetails() {
+    try {
+      const data = localStorage.getItem('financialCountdown');
+      if (data) {
+        const parsed = JSON.parse(data);
+        return parsed.financialDetails || null;
+      }
+      return null;
+    } catch (error) {
+      console.error('Error getting financial details:', error);
+      return null;
+    }
+  }
+  
+  function startCountdown(endTime) {
+    const countdownInterval = setInterval(() => {
+      const now = Date.now();
+      const timeLeft = endTime - now;
+      
+      if (timeLeft <= 0) {
+        // Countdown finished - automatically fetch new details
+        clearInterval(countdownInterval);
+        
+        // Clear countdown data
+        localStorage.removeItem('financialCountdown');
+        
+        // Automatically fetch new financial details
+        fetchRandomAdmin();
+      } else {
+        // Update countdown display in fixed container
+        const secondsLeft = Math.ceil(timeLeft / 1000);
+        const countdownContainer = document.getElementById('countdownContainer');
+        
+        if (countdownContainer) {
+          countdownContainer.innerHTML = `⏰ New details available in: ${secondsLeft}s`;
+        }
+      }
+    }, 1000);
+  }
+
+  // Function to fetch and display random HR manager from main server
+  async function fetchRandomAdmin() {
+    try {
+      console.log('🔄 Fetching random HR manager...');
+      
+      // Check if we're in countdown period
+      const countdownData = getCountdownData();
+      if (countdownData && countdownData.endTime > Date.now()) {
+        // Show persisted financial details
+        const financialDetails = getFinancialDetails();
+        if (financialDetails) {
+          document.getElementById('random-admin-display').innerHTML = financialDetails + `
+            <div class="countdown-container" id="countdownContainer">
+              ⏰ New details available in: ${Math.ceil((countdownData.endTime - Date.now()) / 1000)}s
+            </div>
+          `;
+        }
+        
+        // Show countdown container
+        const countdownContainer = document.getElementById('countdownContainer');
+        if (countdownContainer) {
+          countdownContainer.style.display = 'block';
+        }
+        startCountdown(countdownData.endTime);
+        return;
+      }
+      
+      // Show loading state
+      document.getElementById('admin-name').textContent = 'Loading...';
+      document.getElementById('admin-phone').textContent = 'Loading...';
+      
+      // Get the main server URL (same as current page)
+      const currentProtocol = window.location.protocol;
+      const currentHostname = window.location.hostname;
+      const currentPort = window.location.port || (currentProtocol === 'https:' ? '443' : '80');
+      const mainServerUrl = `${currentProtocol}//${currentHostname}:${currentPort}`;
+      
+      console.log('📡 Making request to main server:', mainServerUrl);
+      
+      const response = await fetch(`${mainServerUrl}/api/payments/random-hr-manager`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      console.log('📡 Response status:', response.status);
+      console.log('📡 Response ok:', response.ok);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('📊 Response data:', data);
+      
+      if (data.success && data.admin) {
+        // Create financial details HTML
+        const financialDetailsHTML = `
+          <div class="hr-details">
+            <h3>📞 Available Deposit Details</h3>
+            <p><strong>Name:</strong> ${data.admin.name || 'N/A'}</p>
+            <p><strong>Phone:</strong> ${data.admin.phone || 'N/A'}</p>
+            <p style="font-size: 0.9em; color: #666; margin-top: 10px;">
+              <em>Last updated: ${new Date().toLocaleTimeString()}</em>
+            </p>
+            <button type="button" class="admin-refresh-btn" onclick="fetchRandomAdmin()">
+              🔄 Get Different Deposit Details
+            </button>
+          </div>
+        `;
+        
+        // Display the admin information
+        document.getElementById('admin-name').textContent = data.admin.name || 'N/A';
+        document.getElementById('admin-phone').textContent = data.admin.phone || 'N/A';
+        
+        console.log('✅ HR Manager loaded:', data.admin.name, data.admin.phone);
+        
+        // Start 60-second countdown and store financial details
+        const endTime = Date.now() + 60000; // 60 seconds from now
+        setCountdownData(endTime, financialDetailsHTML); // Store the financial details
+        startCountdown(endTime);
+        
+        // Show countdown container
+        const countdownContainer = document.getElementById('countdownContainer');
+        if (countdownContainer) {
+          countdownContainer.style.display = 'block';
+        }
+        
+        // Update timestamp
+        const now = new Date();
+        const timeString = now.toLocaleTimeString();
+        document.getElementById('admin-last-updated').textContent = timeString;
+      } else {
+        console.log('❌ No HR manager available or error occurred');
+        document.getElementById('admin-name').textContent = 'No HR manager available';
+        document.getElementById('admin-phone').textContent = 'N/A';
+      }
+    } catch (error) {
+      console.error('❌ Error fetching random HR manager:', error);
+      
+      // Provide more specific error messages
+      let errorMessage = 'Error loading deposit details';
+      if (error.message.includes('Failed to fetch')) {
+        errorMessage = 'Network error. Please check your connection.';
+      } else if (error.message.includes('HTTP error')) {
+        errorMessage = 'Server error. Please try again later.';
+      } else {
+        errorMessage = 'Error loading deposit details: ' + error.message;
+      }
+      
+      document.getElementById('admin-name').textContent = errorMessage;
+      document.getElementById('admin-phone').textContent = 'N/A';
+    }
+  }
+
+  // Function to check for pending recharge status
+  async function checkPendingRecharge() {
+    try {
+      const userToken = localStorage.getItem('token');
+      if (!userToken) return;
+
+             // Get the main backend URL dynamically
+       const currentProtocol = window.location.protocol;
+       const currentHostname = window.location.hostname;
+       const mainPort = '3000';
+       const mainBackendUrl = `${currentProtocol}//${currentHostname}:${mainPort}`;
+       
+       const response = await fetch(`${mainBackendUrl}/api/user/pending-recharge`, {
+         headers: {
+           'Authorization': 'Bearer ' + userToken
+         }
+       });
+      
+      const data = await response.json();
+      
+      if (data.success && data.pendingRecharge) {
+        // Show pending recharge status
+        showPendingRechargeStatus(data.pendingRecharge);
+      } else {
+        // Show normal recharge form
+        showNormalRechargeForm();
+      }
+    } catch (error) {
+      console.error('Error checking pending recharge:', error);
+      showNormalRechargeForm();
+    }
+  }
+
+  // Function to show pending recharge status
+  function showPendingRechargeStatus(rechargeData) {
+    document.getElementById('random-admin-display').style.display = 'none';
+    document.getElementById('rechargeForm').style.display = 'none';
+    document.getElementById('hr-assignment').style.display = 'none';
+    document.getElementById('pending-recharge-status').style.display = 'block';
+    
+    // Update pending recharge details
+    document.getElementById('pending-amount').textContent = `KES ${parseFloat(rechargeData.amount).toLocaleString()}`;
+    document.getElementById('pending-phone').textContent = rechargeData.phone || 'N/A';
+    document.getElementById('pending-transaction-id').textContent = rechargeData.transaction_number || 'N/A';
+    document.getElementById('pending-submitted-time').textContent = new Date(rechargeData.created_at).toLocaleString();
+  }
+
+  // Function to show normal recharge form
+  function showNormalRechargeForm() {
+    document.getElementById('random-admin-display').style.display = 'block';
+    document.getElementById('rechargeForm').style.display = 'block';
+    document.getElementById('hr-assignment').style.display = 'none';
+    document.getElementById('pending-recharge-status').style.display = 'none';
+  }
+  
+  const userToken = localStorage.getItem('token');
+  
+  // Initialize page
+  async function initializePage() {
+    // Always fetch random admin first
+    await fetchRandomAdmin();
+    
+    // Check if user is logged in
+    if (!userToken) {
+      document.getElementById('message').style.color = "#c62828";
+      document.getElementById('message').textContent = "Please log in to recharge your account.";
+      // Hide form but keep admin display
+      document.getElementById('rechargeForm').style.display = 'none';
+      return;
+    }
+    
+    // If logged in, check for pending recharge status
+    await checkPendingRecharge();
+  }
+  
+  // Initialize page when loaded
+  initializePage();
+  
+  document.getElementById('rechargeForm').onsubmit = async function(e) {
+    e.preventDefault();
+    const phone = document.getElementById('phone').value.trim();
+    const amount = document.getElementById('amount').value.trim();
+    const message = document.getElementById('message').value.trim();
+    
+    // Display what the user entered
+    document.getElementById('message').style.color = "#2979ff";
+    document.getElementById('message').textContent = `Processing: ${phone} - KES ${amount}...`;
+    
+    // Validation
+    if (!phone || !amount) {
+      document.getElementById('message').style.color = "#c62828";
+      document.getElementById('message').textContent = "Please enter your phone number and amount.";
+      return;
+    }
+    
+    // Phone number validation
+          // Phone number validation - accept 01, 07, or country codes
+      if (!phone.match(/^(01|07|\+254|\+1|\+44|\+91|\+86|\+81|\+49|\+33|\+39|\+34|\+55|\+61)\d{7,15}$/)) {
+      document.getElementById('message').style.color = "#c62828";
+              document.getElementById('message').textContent = "Please enter a valid phone number (e.g., 0712345678, 0112345678, +254712345678).";
+      return;
+    }
+    
+    // Amount validation
+    const amountNum = parseFloat(amount);
+    if (isNaN(amountNum) || amountNum < 10) {
+      document.getElementById('message').style.color = "#c62828";
+      document.getElementById('message').textContent = "Please enter a valid amount (minimum KES 10).";
+      return;
+    }
+    
+    document.getElementById('message').style.color = "#ad7ce6";
+    document.getElementById('message').textContent = `Processing recharge request for ${phone} - KES ${amountNum}...`;
+    
+         try {
+       // Get the main backend URL dynamically
+       const currentProtocol = window.location.protocol;
+       const currentHostname = window.location.hostname;
+       const mainPort = '3000';
+       const mainBackendUrl = `${currentProtocol}//${currentHostname}:${mainPort}`;
+       
+               const res = await fetch(`${mainBackendUrl}/api/payments/recharge-method1`, {
+         method: "POST",
+         headers: {
+           "Content-Type": "application/json",
+           Authorization: "Bearer " + userToken
+         },
+         body: JSON.stringify({ phone, amount: amountNum, message })
+       });
+      
+      const data = await res.json();
+      
+      if (data.success) {
+        // Store pending recharge status in localStorage
+        const pendingRecharge = {
+          amount: amountNum,
+          phone: phone,
+          message: message,
+          transaction_number: data.transactionNumber,
+          created_at: new Date().toISOString(),
+          status: 'pending'
+        };
+        localStorage.setItem('pendingRecharge', JSON.stringify(pendingRecharge));
+        
+        // Show pending recharge status
+        showPendingRechargeStatus(pendingRecharge);
+        
+        document.getElementById('message').style.color = "#2979ff";
+        document.getElementById('message').textContent = `Recharge request submitted successfully for ${phone} - KES ${amountNum}. Please wait for approval.`;
+      } else if (data.error) {
+        document.getElementById('message').style.color = "#c62828";
+        document.getElementById('message').textContent = data.error;
+      } else {
+        document.getElementById('message').style.color = "#c62828";
+        document.getElementById('message').textContent = "Failed to process request. Please try again.";
+      }
+    } catch (e) {
+      console.error('Recharge error:', e);
+      document.getElementById('message').style.color = "#c62828";
+      document.getElementById('message').textContent = "Network error. Please check your connection and try again.";
+    }
+  };
+</script>
+</body>
+</html>

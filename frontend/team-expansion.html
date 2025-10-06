@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Team Expansion - UAI</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <style>
+    :root {
+      --brand-blue: #2979ff;
+      --brand-dark: #183c6c;
+      --brand-accent: #bd7de7;
+      --brand-yellow: #fff200;
+      --gradient-bg: linear-gradient(135deg, #2979ff 0%, #bd7de7 50%, #e3f0ff 100%);
+      --card-shadow: 0 8px 32px rgba(41, 121, 255, 0.15);
+      --success-color: #4caf50;
+      --warning-color: #ff9800;
+      --error-color: #f44336;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: var(--gradient-bg);
+      min-height: 100vh;
+      color: #1a237e;
+      overflow-x: hidden;
+    }
+
+    .header {
+      background: var(--brand-dark);
+      color: white;
+      padding: 20px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+      animation: shimmer 3s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 15px;
+    }
+
+    .hexagon {
+      width: 50px;
+      height: 50px;
+      background: var(--brand-accent);
+      clip-path: polygon(25% 6%, 75% 6%, 100% 50%, 75% 94%, 25% 94%, 0% 50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 15px;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .hexagon-text {
+      color: white;
+      font-weight: 700;
+      font-size: 1.5em;
+      letter-spacing: 2px;
+    }
+
+    .brand-title {
+      font-size: 2.2em;
+      font-weight: 700;
+      color: white;
+      letter-spacing: 3px;
+    }
+
+    .page-title {
+      font-size: 1.8em;
+      font-weight: 600;
+      margin-top: 10px;
+      opacity: 0.9;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .stats-section {
+      background: white;
+      border-radius: 20px;
+      padding: 25px;
+      margin: 20px 0;
+      box-shadow: var(--card-shadow);
+      text-align: center;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .stat-item {
+      padding: 15px;
+      border-radius: 15px;
+      background: linear-gradient(135deg, #f8f9ff 0%, #e3f0ff 100%);
+    }
+
+    .stat-number {
+      font-size: 2.5em;
+      font-weight: 700;
+      color: var(--brand-blue);
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .stat-label {
+      color: #666;
+      font-size: 0.9em;
+      font-weight: 600;
+    }
+
+    .referral-section {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      margin: 20px 0;
+      box-shadow: var(--card-shadow);
+    }
+
+    .section-title {
+      font-size: 1.5em;
+      font-weight: 700;
+      color: var(--brand-dark);
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .referral-link-container {
+      background: linear-gradient(135deg, #f8f9ff 0%, #e3f0ff 100%);
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border: 2px dashed var(--brand-blue);
+    }
+
+    .referral-link {
+      font-family: 'Courier New', monospace;
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      border: 1px solid #e0e0e0;
+      font-size: 0.9em;
+      word-break: break-all;
+      margin-bottom: 15px;
+      position: relative;
+    }
+
+    .copy-btn {
+      background: var(--brand-blue);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 25px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin: 5px;
+    }
+
+    .copy-btn:hover {
+      background: var(--brand-dark);
+      transform: translateY(-2px);
+    }
+
+    .qr-section {
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    .qr-code {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      display: inline-block;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .invitation-code {
+      background: linear-gradient(135deg, var(--brand-blue) 0%, var(--brand-accent) 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 15px;
+      text-align: center;
+      margin: 20px 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .invitation-code::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+      animation: shine 3s infinite;
+    }
+
+    @keyframes shine {
+      0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+      100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
+
+    .code-display {
+      font-size: 2em;
+      font-weight: 700;
+      letter-spacing: 3px;
+      margin: 10px 0;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .share-section {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 15px;
+      margin: 20px 0;
+    }
+
+    .share-btn {
+      background: white;
+      border: 2px solid var(--brand-blue);
+      color: var(--brand-blue);
+      padding: 12px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .share-btn:hover {
+      background: var(--brand-blue);
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    .team-members {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      margin: 20px 0;
+      box-shadow: var(--card-shadow);
+    }
+
+    .member-card {
+      background: linear-gradient(135deg, #f8f9ff 0%, #e3f0ff 100%);
+      border-radius: 15px;
+      padding: 20px;
+      margin: 15px 0;
+      border-left: 4px solid var(--brand-blue);
+      transition: all 0.3s ease;
+    }
+
+    .member-card:hover {
+      transform: translateX(5px);
+      box-shadow: 0 5px 20px rgba(41, 121, 255, 0.2);
+    }
+
+    .member-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .member-name {
+      font-weight: 600;
+      color: var(--brand-dark);
+      font-size: 1.1em;
+    }
+
+    .member-date {
+      color: #666;
+      font-size: 0.9em;
+    }
+
+    .member-status {
+      padding: 5px 10px;
+      border-radius: 15px;
+      font-size: 0.8em;
+      font-weight: 600;
+    }
+
+    .status-active {
+      background: #e8f5e8;
+      color: var(--success-color);
+    }
+
+    .status-pending {
+      background: #fff3e0;
+      color: var(--warning-color);
+    }
+
+    .rewards-section {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      margin: 20px 0;
+      box-shadow: var(--card-shadow);
+      text-align: center;
+    }
+
+    .reward-item {
+      background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+      border-radius: 15px;
+      padding: 20px;
+      margin: 15px 0;
+      border: 2px solid var(--warning-color);
+    }
+
+    .reward-title {
+      font-weight: 700;
+      color: var(--warning-color);
+      font-size: 1.2em;
+      margin-bottom: 10px;
+    }
+
+    .reward-description {
+      color: #666;
+      font-size: 0.9em;
+    }
+
+    .floating-elements {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .floating-element {
+      position: absolute;
+      width: 15px;
+      height: 15px;
+      background: var(--brand-accent);
+      border-radius: 50%;
+      opacity: 0.1;
+      animation: float-around 25s infinite linear;
+    }
+
+    @keyframes float-around {
+      0% { transform: translate(0, 0) rotate(0deg); }
+      100% { transform: translate(100vw, -100vh) rotate(360deg); }
+    }
+
+    .floating-element:nth-child(2) {
+      animation-delay: -8s;
+      background: var(--brand-blue);
+    }
+
+    .floating-element:nth-child(3) {
+      animation-delay: -15s;
+      background: var(--brand-yellow);
+    }
+
+    .floating-element:nth-child(4) {
+      animation-delay: -22s;
+      background: var(--brand-accent);
+    }
+
+    .back-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      font-size: 1.5em;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+
+    .back-button:hover {
+      background: white;
+      transform: scale(1.1);
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 15px;
+      }
+      
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .share-section {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .brand-title {
+        font-size: 1.8em;
+      }
+    }
+
+    .success-message {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--success-color);
+      color: white;
+      padding: 15px 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      z-index: 1001;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+    }
+
+    .success-message.show {
+      transform: translateX(0);
+    }
+
+    .loading-spinner {
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #e3f0ff;
+      border-top: 4px solid #2979ff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 16px auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #666;
+    }
+
+    .empty-state-icon {
+      font-size: 4em;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    .empty-state-text {
+      font-size: 1.1em;
+      margin-bottom: 8px;
+      color: #333;
+    }
+
+    .empty-state-subtext {
+      font-size: 0.9em;
+      color: #666;
+    }
+
+
+  </style>
+</head>
+<body>
+  <div class="floating-elements">
+    <div class="floating-element"></div>
+    <div class="floating-element"></div>
+    <div class="floating-element"></div>
+    <div class="floating-element"></div>
+  </div>
+
+  <button class="back-button" onclick="goBack()">←</button>
+
+  <header class="header">
+    <div class="logo-container">
+      <div class="hexagon">
+        <span class="hexagon-text">U</span>
+      </div>
+      <h1 class="brand-title">UAI</h1>
+    </div>
+    <h2 class="page-title">Team Expansion</h2>
+  </header>
+
+  <div class="container">
+    <!-- Stats Section -->
+    <div class="stats-section">
+      <h3 class="section-title">Your Team Performance</h3>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <span class="stat-number" id="total-members">0</span>
+          <div class="stat-label">Total Members</div>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number" id="active-members">0</span>
+          <div class="stat-label">Active Members</div>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number" id="total-earnings">$0</span>
+          <div class="stat-label">Total Earnings</div>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number" id="this-month">0</span>
+          <div class="stat-label">This Month</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Referral Section -->
+    <div class="referral-section">
+      <h3 class="section-title">Invite Friends & Earn</h3>
+      
+      <div class="referral-link-container">
+        <h4 style="color: var(--brand-dark); margin-bottom: 15px;">Your Referral Link</h4>
+        <div class="referral-link" id="referral-link">
+          Loading referral link...
+        </div>
+        <button class="copy-btn" onclick="copyReferralLink()">📋 Copy Link</button>
+        <button class="copy-btn" onclick="shareReferralLink()">📤 Share</button>
+      </div>
+
+      <div class="qr-section">
+        <h4 style="color: var(--brand-dark); margin-bottom: 15px;">QR Code</h4>
+        <div class="qr-code" id="qr-code"></div>
+        <p style="color: #666; margin-top: 10px; font-size: 0.9em;">Scan to join UAI</p>
+      </div>
+
+      <div class="invitation-code">
+        <h4 style="margin-bottom: 15px;">Your Invitation Code</h4>
+        <div class="code-display" id="invitation-code">Loading...</div>
+        <button class="copy-btn" onclick="copyInvitationCode()">📋 Copy Code</button>
+      </div>
+
+      <div class="share-section">
+        <button class="share-btn" onclick="shareViaWhatsApp()">
+          📱 WhatsApp
+        </button>
+        <button class="share-btn" onclick="shareViaTelegram()">
+          📬 Telegram
+        </button>
+        <button class="share-btn" onclick="shareViaEmail()">
+          📧 Email
+        </button>
+        <button class="share-btn" onclick="shareViaSMS()">
+          💬 SMS
+        </button>
+      </div>
+    </div>
+
+
+
+    <!-- Team Members Section -->
+    <div class="team-members">
+      <h3 class="section-title">Your Team Members</h3>
+      <div id="team-members-list">
+        <div class="loading-spinner" id="team-loading">
+          <div class="spinner"></div>
+          <div>Loading team members...</div>
+        </div>
+        <div class="empty-state" id="team-empty" style="display: none;">
+          <div class="empty-state-icon">👥</div>
+          <div class="empty-state-text">No team members yet</div>
+          <div class="empty-state-subtext">Invite friends to start building your team</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rewards Section -->
+    <div class="rewards-section">
+      <h3 class="section-title">Referral Rewards</h3>
+      <div class="reward-item">
+        <div class="reward-title">🎁 Welcome Bonus</div>
+        <div class="reward-description">Get $10 for each friend who joins using your referral link</div>
+      </div>
+      <div class="reward-item">
+        <div class="reward-title">💰 Commission Bonus</div>
+        <div class="reward-description">Earn 5% commission on your team's earnings</div>
+      </div>
+      <div class="reward-item">
+        <div class="reward-title">🏆 Level Up Rewards</div>
+        <div class="reward-description">Unlock exclusive rewards as your team grows</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="success-message" id="success-message">
+    Copied to clipboard!
+  </div>
+
+  <script>
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', async function() {
+      try {
+        console.log('🚀 Initializing team expansion page...');
+        
+        // Check if user is logged in
+        const token = localStorage.getItem('token');
+        if (!token) {
+          console.log('❌ No token found, redirecting to login');
+          window.location.href = 'index.html';
+          return;
+        }
+        
+        // Load user data first
+        console.log('📋 Loading user data...');
+        const userCode = await loadUserData();
+        
+        // Generate QR code with the loaded user data
+        console.log('🔲 Generating QR code...');
+        await generateQRCode();
+        
+        // Load other data
+        console.log('📊 Loading stats...');
+        await updateStats();
+        
+        console.log('👥 Loading team members...');
+        await loadTeamMembers();
+        
+        console.log('✅ Page initialized successfully with user code:', userCode);
+      } catch (error) {
+        console.error('❌ Error initializing page:', error);
+        console.error('❌ Error details:', error.message);
+        console.error('❌ Error stack:', error.stack);
+        // Show error message to user
+        showErrorMessage(`Error loading page data: ${error.message}. Please refresh.`);
+      }
+    });
+
+    function goBack() {
+      window.history.back();
+    }
+
+    // Load user data and generate referral link from database
+    async function loadUserData() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = 'index.html';
+        return;
+      }
+
+      try {
+        // Fetch user data from database
+        const response = await fetch('/api/user/stats', {
+          headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          const userData = await response.json();
+          const userCode = userData.invitation_code; // Use invitation_code, not referral_code
+          const referralLink = `${window.location.origin}/signup.html?code=${userCode}`;
+          
+          // Update DOM elements with real user data
+          document.getElementById('referral-link').textContent = referralLink;
+          document.getElementById('invitation-code').textContent = userCode;
+          
+          // Store user code in localStorage for caching
+          localStorage.setItem('userCode', userCode);
+          localStorage.setItem('userReferralLink', referralLink);
+          
+          console.log('User data loaded successfully:', { userCode, referralLink });
+          return userCode;
+        } else {
+          throw new Error('Failed to load user data');
+        }
+      } catch (error) {
+        console.error('Error loading user data:', error);
+        
+        // Try to get cached data first
+        const cachedUserCode = localStorage.getItem('userCode');
+        const cachedReferralLink = localStorage.getItem('userReferralLink');
+        
+        if (cachedUserCode && cachedReferralLink) {
+          document.getElementById('referral-link').textContent = cachedReferralLink;
+          document.getElementById('invitation-code').textContent = cachedUserCode;
+          console.log('Using cached user data:', { userCode: cachedUserCode, referralLink: cachedReferralLink });
+          return cachedUserCode;
+        }
+        
+                 // Generate fallback code if no cached data (6-8 characters alphanumeric)
+         const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+         const length = Math.floor(Math.random() * 3) + 6; // 6-8 characters
+         let fallbackCode = '';
+         for (let i = 0; i < length; i++) {
+           fallbackCode += chars.charAt(Math.floor(Math.random() * chars.length));
+         }
+        const fallbackLink = `https://uai-agency.com/ref/${fallbackCode}`;
+        
+        document.getElementById('referral-link').textContent = fallbackLink;
+        document.getElementById('invitation-code').textContent = fallbackCode;
+        
+        console.log('Using fallback user data:', { userCode: fallbackCode, referralLink: fallbackLink });
+        return fallbackCode;
+      }
+    }
+
+    // Generate QR code with unique user data
+    async function generateQRCode() {
+      const qrContainer = document.getElementById('qr-code');
+      
+      // Clear previous QR code
+      qrContainer.innerHTML = '';
+      
+      // Get the current referral link
+      const referralLink = document.getElementById('referral-link').textContent;
+      
+      // Ensure we have a valid referral link
+      if (!referralLink || referralLink === 'Loading referral link...') {
+        console.log('Waiting for user data to load...');
+        // Wait a bit and try again if data is not loaded yet
+        setTimeout(() => {
+          const updatedLink = document.getElementById('referral-link').textContent;
+          if (updatedLink && updatedLink !== 'Loading referral link...') {
+            generateQRCodeWithLink(updatedLink, qrContainer);
+          }
+        }, 1000);
+        return;
+      }
+      
+      generateQRCodeWithLink(referralLink, qrContainer);
+    }
+    
+    // Helper function to generate QR code with specific link
+    function generateQRCodeWithLink(referralLink, qrContainer) {
+      console.log('Generating QR code for:', referralLink);
+      
+      // Check if QRCode library is available
+      if (typeof QRCode === 'undefined') {
+        console.warn('⚠️ QRCode library not loaded, showing text instead');
+        qrContainer.innerHTML = `
+          <div style="padding: 20px; text-align: center; background: white; border-radius: 10px;">
+            <div style="font-size: 14px; color: #2979ff; font-weight: bold; margin-bottom: 10px;">
+              📱 Scan with your camera
+            </div>
+            <div style="font-size: 12px; color: #666; word-break: break-all;">
+              ${referralLink}
+            </div>
+          </div>
+        `;
+        return;
+      }
+      
+      try {
+        QRCode.toCanvas(qrContainer, referralLink, {
+          width: 200,
+          height: 200,
+          margin: 2,
+          color: {
+            dark: '#2979ff',
+            light: '#ffffff'
+          }
+        }, function (error) {
+          if (error) {
+            console.error('QR Code generation error:', error);
+            // Fallback to text display
+            qrContainer.innerHTML = `
+              <div style="padding: 20px; text-align: center; background: white; border-radius: 10px;">
+                <div style="font-size: 14px; color: #2979ff; font-weight: bold; margin-bottom: 10px;">
+                  📱 Scan with your camera
+                </div>
+                <div style="font-size: 12px; color: #666; word-break: break-all;">
+                  ${referralLink}
+                </div>
+              </div>
+            `;
+          } else {
+            console.log('QR Code generated successfully');
+          }
+        });
+      } catch (error) {
+        console.error('QR Code generation error:', error);
+        // Fallback to text display
+        qrContainer.innerHTML = `
+          <div style="padding: 20px; text-align: center; background: white; border-radius: 10px;">
+            <div style="font-size: 14px; color: #2979ff; font-weight: bold; margin-bottom: 10px;">
+              📱 Scan with your camera
+            </div>
+            <div style="font-size: 12px; color: #666; word-break: break-all;">
+              ${referralLink}
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    // Copy referral link
+    function copyReferralLink() {
+      const link = document.getElementById('referral-link').textContent;
+      navigator.clipboard.writeText(link).then(() => {
+        showSuccessMessage('Referral link copied!');
+      });
+    }
+
+    // Copy invitation code
+    function copyInvitationCode() {
+      const code = document.getElementById('invitation-code').textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        showSuccessMessage('Invitation code copied!');
+      });
+    }
+
+    // Share referral link
+    function shareReferralLink() {
+      const link = document.getElementById('referral-link').textContent;
+      const code = document.getElementById('invitation-code').textContent;
+      const text = `Join UAI Agency and start earning! Use my invitation code: ${code}\n\nRegister here: ${link}`;
+      
+      if (navigator.share) {
+        navigator.share({
+          title: 'Join UAI Agency',
+          text: text,
+          url: link
+        });
+      } else {
+        copyReferralLink();
+      }
+    }
+
+    // Share via WhatsApp
+    function shareViaWhatsApp() {
+      const link = document.getElementById('referral-link').textContent;
+      const code = document.getElementById('invitation-code').textContent;
+      const text = `Join UAI Agency and start earning! Use my invitation code: ${code}\n\nRegister here: ${link}`;
+      const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+      window.open(url, '_blank');
+    }
+
+    // Share via Telegram
+    function shareViaTelegram() {
+      const link = document.getElementById('referral-link').textContent;
+      const code = document.getElementById('invitation-code').textContent;
+      const text = `Join UAI Agency and start earning! Use my invitation code: ${code}\n\nRegister here: ${link}`;
+      const url = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(text)}`;
+      window.open(url, '_blank');
+    }
+
+    // Share via Email
+    function shareViaEmail() {
+      const link = document.getElementById('referral-link').textContent;
+      const code = document.getElementById('invitation-code').textContent;
+      const subject = 'Join UAI Agency - Earn Money Together!';
+      const body = `Hi! I thought you might be interested in joining UAI Agency. It's a great opportunity to earn money online. Use my invitation code: ${code} or click this link to register: ${link}`;
+      const url = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      window.open(url);
+    }
+
+    // Share via SMS
+    function shareViaSMS() {
+      const link = document.getElementById('referral-link').textContent;
+      const code = document.getElementById('invitation-code').textContent;
+      const text = `Join UAI Agency and start earning! Use my invitation code: ${code}\n\nRegister here: ${link}`;
+      const url = `sms:?body=${encodeURIComponent(text)}`;
+      window.open(url);
+    }
+
+
+
+    // Show success message
+    function showSuccessMessage(message) {
+      const successMsg = document.getElementById('success-message');
+      successMsg.textContent = message;
+      successMsg.style.background = 'var(--success-color)';
+      successMsg.classList.add('show');
+      
+      setTimeout(() => {
+        successMsg.classList.remove('show');
+      }, 3000);
+    }
+
+    // Show error message
+    function showErrorMessage(message) {
+      const successMsg = document.getElementById('success-message');
+      successMsg.textContent = message;
+      successMsg.style.background = 'var(--error-color)';
+      successMsg.classList.add('show');
+      
+      setTimeout(() => {
+        successMsg.classList.remove('show');
+      }, 5000);
+    }
+
+    // Update stats from database
+    async function updateStats() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.log('❌ No token available for stats');
+        return;
+      }
+
+      try {
+        console.log('🔄 Loading stats from team management...');
+        
+        // Test server connectivity first
+        const testResponse = await fetch('/api/user/stats', {
+          headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (!testResponse.ok) {
+          throw new Error(`Server error: ${testResponse.status} ${testResponse.statusText}`);
+        }
+        
+        // Fetch team stats data from team management endpoint
+        const teamStatsResponse = await fetch('/api/user/invitation-users', {
+          headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        console.log('📊 Team stats response status:', teamStatsResponse.status);
+
+        if (teamStatsResponse.ok) {
+          const teamStatsData = await teamStatsResponse.json();
+          console.log('📊 Team stats data:', teamStatsData);
+          console.log('📊 Total earnings type:', typeof teamStatsData.totalEarnings);
+          console.log('📊 Total earnings value:', teamStatsData.totalEarnings);
+          
+          // Update stats with team management data
+          document.getElementById('total-members').textContent = teamStatsData.totalInvited || '0';
+          document.getElementById('active-members').textContent = teamStatsData.totalInvited || '0';
+          
+          // Use totalEarnings from team management (same as team management page)
+          const totalEarnings = parseFloat(teamStatsData.totalEarnings) || 0;
+          document.getElementById('total-earnings').textContent = `KES ${totalEarnings.toFixed(2)}`;
+          
+          document.getElementById('this-month').textContent = teamStatsData.totalInvited || '0';
+          
+          console.log('✅ Stats updated:', {
+            totalInvited: teamStatsData.totalInvited,
+            totalEarnings: teamStatsData.totalEarnings
+          });
+        } else {
+          const errorText = await teamStatsResponse.text();
+          console.error('❌ Failed to load team stats:', teamStatsResponse.status, errorText);
+          throw new Error(`Team stats API error: ${teamStatsResponse.status} ${errorText}`);
+        }
+      } catch (error) {
+        console.error('❌ Error loading stats:', error);
+        // Set default values
+        document.getElementById('total-members').textContent = '0';
+        document.getElementById('active-members').textContent = '0';
+        document.getElementById('total-earnings').textContent = 'KES 0.00';
+        document.getElementById('this-month').textContent = '0';
+        throw error; // Re-throw to be caught by caller
+      }
+    }
+
+    // Load team members from database
+    async function loadTeamMembers() {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      const teamList = document.getElementById('team-members-list');
+      const loadingSpinner = document.getElementById('team-loading');
+      const emptyState = document.getElementById('team-empty');
+
+      try {
+        console.log('🔄 Loading team members from team management...');
+        
+        // Fetch team stats data
+        const response = await fetch('/api/user/team-stats', {
+          headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        console.log('📊 Team members response status:', response.status);
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log('📊 Team members data:', data);
+          
+          // Combine direct and indirect referrals
+          const allTeamMembers = [...(data.directReferralsList || []), ...(data.indirectReferralsList || [])];
+          
+          // Hide loading spinner
+          loadingSpinner.style.display = 'none';
+          
+          if (!allTeamMembers || allTeamMembers.length === 0) {
+            console.log('📊 No team members found');
+            emptyState.style.display = 'block';
+            return;
+          }
+
+          // Clear existing content
+          teamList.innerHTML = '';
+          
+          // Display team members
+          allTeamMembers.forEach(member => {
+            console.log('📊 Adding team member:', member);
+            const memberCard = createMemberCard(member);
+            teamList.appendChild(memberCard);
+          });
+          
+          console.log('✅ Team members loaded:', allTeamMembers.length);
+        } else {
+          const errorText = await response.text();
+          console.error('❌ Failed to load team members:', response.status, errorText);
+          throw new Error('Failed to load team members');
+        }
+      } catch (error) {
+        console.error('❌ Error loading team members:', error);
+        loadingSpinner.style.display = 'none';
+        emptyState.style.display = 'block';
+      }
+    }
+
+    // Function to mask phone numbers for privacy
+    function maskPhoneNumber(phone) {
+      if (!phone) return 'N/A';
+      
+      // Remove any non-digit characters
+      const digits = phone.replace(/\D/g, '');
+      
+      // Handle different phone number formats
+      if (digits.length >= 10) {
+        // For Kenyan numbers (+254XXXXXXXXX or 0XXXXXXXXX)
+        if (digits.startsWith('254')) {
+          // Format: +254 XXX *** XXX
+          return `+254 ${digits.slice(3, 6)} *** ${digits.slice(-3)}`;
+        } else if (digits.startsWith('0')) {
+          // Format: 0XX *** XXX
+          return `${digits.slice(0, 3)} *** ${digits.slice(-3)}`;
+        } else if (digits.length >= 10) {
+          // Generic format: XXX *** XXX
+          return `${digits.slice(0, 3)} *** ${digits.slice(-3)}`;
+        }
+      }
+      
+      // Fallback: show first 3 and last 3 digits
+      if (digits.length >= 6) {
+        return `${digits.slice(0, 3)} *** ${digits.slice(-3)}`;
+      }
+      
+      // Very short numbers: mask middle digits
+      if (digits.length >= 4) {
+        return `${digits.slice(0, 2)} *** ${digits.slice(-2)}`;
+      }
+      
+      // Very short numbers: just show first and last
+      if (digits.length >= 3) {
+        return `${digits[0]} *** ${digits.slice(-1)}`;
+      }
+      
+      // Too short to mask meaningfully
+      return '***';
+    }
+
+    // Create member card
+    function createMemberCard(member) {
+      const card = document.createElement('div');
+      card.className = 'member-card';
+      
+      const joinDate = new Date(member.created_at).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+      
+      // Determine status based on level (temporary workers are level 0)
+      const isActive = member.level > 0;
+      const statusClass = isActive ? 'status-active' : 'status-pending';
+      const statusText = isActive ? `Level ${member.level}` : 'Temporary Worker';
+      
+      card.innerHTML = `
+        <div class="member-info">
+          <div>
+            <div class="member-name">${member.name || maskPhoneNumber(member.phone)}</div>
+            <div class="member-date">Joined: ${joinDate}</div>
+            <div class="member-date">Balance: KES ${parseFloat(member.balance || 0).toFixed(2)}</div>
+          </div>
+          <span class="member-status ${statusClass}">${statusText}</span>
+        </div>
+      `;
+      
+      return card;
+    }
+
+    // Track referral clicks
+    function trackReferralClick() {
+      const userCode = localStorage.getItem('userCode');
+      // Send analytics to your server
+      console.log('Referral clicked:', userCode);
+    }
+  </script>
+</body>
+</html>

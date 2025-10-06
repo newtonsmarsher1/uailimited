@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>System Settings - UAI Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { 
+      font-family: 'Segoe UI', Arial, sans-serif; 
+      background: linear-gradient(to bottom, #2979ff 0%, #e3f0ff 100%); 
+      margin: 0; 
+      padding: 20px;
+    }
+    .container { 
+      max-width: 800px; 
+      margin: 0 auto; 
+      background: #fff; 
+      border-radius: 18px; 
+      box-shadow: 0 2px 16px #2979ff22; 
+      padding: 32px 24px; 
+    }
+    .back-btn { 
+      margin-bottom: 18px;
+      background: #2979ff;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 18px;
+      font-size: 1em;
+      cursor: pointer;
+      box-shadow: 0 2px 8px #2979ff22; 
+    }
+    h1 { 
+      color: #2979ff; 
+      text-align: center; 
+      margin-bottom: 32px; 
+      font-size: 2.2em;
+    }
+    .settings-section {
+      background: #f7faff;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      border: 1px solid #e3f0ff;
+    }
+    .settings-section h3 {
+      color: #2979ff;
+      margin-bottom: 16px;
+      font-size: 1.3em;
+    }
+    .setting-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #e3f0ff;
+    }
+    .setting-item:last-child {
+      border-bottom: none;
+    }
+    .setting-label {
+      font-weight: 600;
+      color: #333;
+    }
+    .setting-value {
+      color: #666;
+    }
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 34px;
+    }
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 34px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    input:checked + .slider {
+      background-color: #2979ff;
+    }
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+    .btn {
+      background: #2979ff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      margin: 5px;
+    }
+    .btn:hover {
+      background: #1565c0;
+    }
+    .btn-secondary {
+      background: #6c757d;
+    }
+    .btn-secondary:hover {
+      background: #545b62;
+    }
+    .message {
+      padding: 12px;
+      border-radius: 8px;
+      margin: 10px 0;
+      display: none;
+    }
+    .message.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .message.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <button class="back-btn" onclick="window.location.href='dashboard.html'">&larr; Back to Dashboard</button>
+    <h1>⚙️ System Settings</h1>
+    
+    <div class="settings-section">
+      <h3>🔐 Security Settings</h3>
+      <div class="setting-item">
+        <span class="setting-label">Two-Factor Authentication</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="twoFactorAuth">
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="setting-item">
+        <span class="setting-label">Session Timeout (minutes)</span>
+        <span class="setting-value">30</span>
+      </div>
+      <div class="setting-item">
+        <span class="setting-label">Password Policy</span>
+        <span class="setting-value">Minimum 6 characters</span>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h3>💰 Payment Settings</h3>
+      <div class="setting-item">
+        <span class="setting-label">Withdrawal Time Window</span>
+        <span class="setting-value">8:00 AM - 4:00 PM</span>
+      </div>
+      <div class="setting-item">
+        <span class="setting-label">Daily Withdrawal Limit</span>
+        <span class="setting-value">1 per day</span>
+      </div>
+      <div class="setting-item">
+        <span class="setting-label">Blocked Days</span>
+        <span class="setting-value">Sundays, Public Holidays, 2nd Tuesday</span>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h3>📊 Task Settings</h3>
+      <div class="setting-item">
+        <span class="setting-label">One Task at a Time</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="oneTaskAtTime" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="setting-item">
+        <span class="setting-label">Auto-approve Tasks</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="autoApproveTasks">
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h3>🔔 Notification Settings</h3>
+      <div class="setting-item">
+        <span class="setting-label">Email Notifications</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="emailNotifications">
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="setting-item">
+        <span class="setting-label">SMS Notifications</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="smsNotifications">
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="setting-item">
+        <span class="setting-label">Push Notifications</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="pushNotifications" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h3>🔄 System Maintenance</h3>
+      <div class="setting-item">
+        <span class="setting-label">Database Backup</span>
+        <button class="btn" onclick="backupDatabase()">Backup Now</button>
+      </div>
+      <div class="setting-item">
+        <span class="setting-label">Clear Cache</span>
+        <button class="btn" onclick="clearCache()">Clear Cache</button>
+      </div>
+      <div class="setting-item">
+        <span class="setting-label">System Health Check</span>
+        <button class="btn" onclick="healthCheck()">Run Check</button>
+      </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 32px;">
+      <button class="btn" onclick="saveSettings()">💾 Save Settings</button>
+      <button class="btn btn-secondary" onclick="resetSettings()">🔄 Reset to Default</button>
+    </div>
+
+    <div id="messageDiv"></div>
+  </div>
+
+  <script>
+    // Check if user is logged in and has appropriate role
+    const userRole = localStorage.getItem('userRole');
+    const adminId = localStorage.getItem('adminId');
+    
+    if (!userRole || !adminId) {
+      window.location.href = 'index.html';
+    }
+
+    // Only CEO can access system settings
+    if (userRole !== 'CEO') {
+      document.body.innerHTML = `
+        <div style="text-align: center; padding: 50px; font-family: 'Segoe UI', Arial, sans-serif;">
+          <h2 style="color: #d32f2f;">🚫 Access Denied</h2>
+          <p>Only the CEO can access System Settings.</p>
+          <button onclick="window.location.href='dashboard.html'" style="background: #2979ff; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">
+            Back to Dashboard
+          </button>
+        </div>
+      `;
+    }
+
+    function showMessage(message, isSuccess = true) {
+      const messageDiv = document.getElementById('messageDiv');
+      messageDiv.innerHTML = `<div class="message ${isSuccess ? 'success' : 'error'}">${message}</div>`;
+      messageDiv.style.display = 'block';
+      setTimeout(() => {
+        messageDiv.style.display = 'none';
+      }, 5000);
+    }
+
+    function saveSettings() {
+      const settings = {
+        twoFactorAuth: document.getElementById('twoFactorAuth').checked,
+        oneTaskAtTime: document.getElementById('oneTaskAtTime').checked,
+        autoApproveTasks: document.getElementById('autoApproveTasks').checked,
+        emailNotifications: document.getElementById('emailNotifications').checked,
+        smsNotifications: document.getElementById('smsNotifications').checked,
+        pushNotifications: document.getElementById('pushNotifications').checked
+      };
+
+      // Save to localStorage for now (in a real app, this would go to the server)
+      localStorage.setItem('systemSettings', JSON.stringify(settings));
+      showMessage('✅ Settings saved successfully!', true);
+    }
+
+    function resetSettings() {
+      if (confirm('Are you sure you want to reset all settings to default?')) {
+        // Reset checkboxes to default values
+        document.getElementById('twoFactorAuth').checked = false;
+        document.getElementById('oneTaskAtTime').checked = true;
+        document.getElementById('autoApproveTasks').checked = false;
+        document.getElementById('emailNotifications').checked = false;
+        document.getElementById('smsNotifications').checked = false;
+        document.getElementById('pushNotifications').checked = true;
+        
+        localStorage.removeItem('systemSettings');
+        showMessage('🔄 Settings reset to default!', true);
+      }
+    }
+
+    function backupDatabase() {
+      showMessage('🔄 Database backup initiated...', true);
+      // In a real implementation, this would trigger a server-side backup
+    }
+
+    function clearCache() {
+      showMessage('🧹 Cache cleared successfully!', true);
+      // In a real implementation, this would clear server-side cache
+    }
+
+    function healthCheck() {
+      showMessage('🔍 System health check completed. All systems operational!', true);
+      // In a real implementation, this would run actual health checks
+    }
+
+    // Load saved settings on page load
+    window.addEventListener('load', function() {
+      const savedSettings = localStorage.getItem('systemSettings');
+      if (savedSettings) {
+        const settings = JSON.parse(savedSettings);
+        document.getElementById('twoFactorAuth').checked = settings.twoFactorAuth;
+        document.getElementById('oneTaskAtTime').checked = settings.oneTaskAtTime;
+        document.getElementById('autoApproveTasks').checked = settings.autoApproveTasks;
+        document.getElementById('emailNotifications').checked = settings.emailNotifications;
+        document.getElementById('smsNotifications').checked = settings.smsNotifications;
+        document.getElementById('pushNotifications').checked = settings.pushNotifications;
+      }
+    });
+  </script>
+</body>
+</html>

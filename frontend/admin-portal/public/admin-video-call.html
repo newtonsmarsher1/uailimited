@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Video Conference - UAI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #1a1a1a;
+      color: white;
+      height: 100vh;
+      overflow: hidden;
+    }
+    
+    /* Header */
+    .header {
+      background: #2d2d2d;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #404040;
+    }
+    
+    .header h1 {
+      color: #fff;
+      font-size: 18px;
+    }
+    
+    .back-btn {
+      background: #2979ff;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    
+    /* Main video conference layout */
+    .video-conference {
+      height: calc(100vh - 70px);
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 90px; /* Space for fixed controls */
+    }
+    
+    /* Video grid */
+    .video-grid {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 0px;
+      padding: 0px;
+      background: #1a1a1a;
+      overflow-y: auto;
+    }
+    
+    /* Single user view - full screen */
+    .video-grid.single-user {
+      grid-template-columns: 1fr;
+      grid-template-rows: 1fr;
+    }
+    
+    .video-grid.single-user .video-participant {
+      width: 100%;
+      height: 100%;
+      border-radius: 0px;
+    }
+    
+    .video-participant {
+      background: #2d2d2d;
+      border-radius: 12px;
+      position: relative;
+      aspect-ratio: 16/9;
+      overflow: hidden;
+      border: 2px solid transparent;
+      transition: border-color 0.3s;
+    }
+    
+    .video-participant.speaking {
+      border-color: #2979ff;
+      box-shadow: 0 0 20px rgba(41, 121, 255, 0.3);
+    }
+    
+    .video-participant.self {
+      border-color: #28a745;
+    }
+    
+    .video-element {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      background: #404040;
+    }
+    
+    .participant-info {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .participant-name {
+      font-weight: 600;
+    }
+    
+    .participant-status {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #28a745;
+    }
+    
+    .participant-status.muted {
+      background: #dc3545;
+    }
+    
+    .participant-status.speaking {
+      background: #2979ff;
+      animation: pulse 1s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+    
+    /* Controls bar */
+    .controls-bar {
+      background: #2d2d2d;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      border-top: 1px solid #404040;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+    }
+    
+    .control-btn {
+      background: #404040;
+      border: none;
+      color: white;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      transition: all 0.3s;
+    }
+    
+    .control-btn:hover {
+      background: #555;
+      transform: scale(1.1);
+    }
+    
+    .control-btn.active {
+      background: #2979ff;
+    }
+    
+    .control-btn.danger {
+      background: #dc3545;
+    }
+    
+    .control-btn.danger:hover {
+      background: #c82333;
+    }
+    
+    .control-btn.leave {
+      background: #dc3545;
+      width: 60px;
+      height: 60px;
+      font-size: 20px;
+    }
+    
+    /* Meeting info */
+    .meeting-info {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 10px 15px;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    
+    .connection-status {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #dc3545;
+    }
+    
+    .status-dot.connected {
+      background: #28a745;
+    }
+    
+    .meeting-id {
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    
+    .participant-count {
+      color: #ccc;
+    }
+    
+    /* Chat sidebar */
+    .chat-sidebar {
+      position: fixed;
+      right: -400px;
+      top: 70px;
+      width: 400px;
+      height: calc(100vh - 70px);
+      background: #2d2d2d;
+      border-left: 1px solid #404040;
+      transition: right 0.3s;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .chat-sidebar.open {
+      right: 0;
+    }
+    
+    .chat-header {
+      padding: 15px 20px;
+      border-bottom: 1px solid #404040;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .chat-title {
+      font-size: 16px;
+      font-weight: 600;
+    }
+    
+    .close-chat {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+    }
+    
+    .chat-messages {
+      height: calc(100% - 120px);
+      overflow-y: auto;
+      padding: 20px;
+    }
+    
+    .chat-message {
+      margin-bottom: 15px;
+      display: flex;
+      gap: 10px;
+    }
+    
+    .message-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #2979ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    
+    .message-content {
+      flex: 1;
+    }
+    
+    .message-sender {
+      font-size: 12px;
+      color: #ccc;
+      margin-bottom: 2px;
+    }
+    
+    .message-text {
+      background: #404040;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    
+    .chat-input {
+      padding: 15px 20px;
+      border-top: 1px solid #404040;
+    }
+    
+    .chat-input input {
+      width: 100%;
+      background: #404040;
+      border: none;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 6px;
+      font-size: 14px;
+      outline: none;
+    }
+    
+    .chat-input input::placeholder {
+      color: #ccc;
+    }
+    
+    /* Meeting confirmation modal */
+    .meeting-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+    
+    .modal-content {
+      background: #2d2d2d;
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+    }
+    
+    .modal-title {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #fff;
+    }
+    
+    .modal-text {
+      font-size: 16px;
+      color: #ccc;
+      margin-bottom: 25px;
+      line-height: 1.5;
+    }
+    
+    .modal-buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+    }
+    
+    .modal-btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .modal-btn.primary {
+      background: #2979ff;
+      color: white;
+    }
+    
+    .modal-btn.primary:hover {
+      background: #1565c0;
+    }
+    
+    .modal-btn.secondary {
+      background: #404040;
+      color: white;
+    }
+    
+    .modal-btn.secondary:hover {
+      background: #555;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .video-grid {
+        grid-template-columns: 1fr;
+        padding: 10px;
+      }
+      
+      .controls-bar {
+        padding: 10px;
+        gap: 10px;
+      }
+      
+      .control-btn {
+        width: 45px;
+        height: 45px;
+        font-size: 16px;
+      }
+      
+      .chat-sidebar {
+        width: 100%;
+        right: -100%;
+        height: calc(100vh - 70px);
+        top: 70px;
+      }
+      
+      .chat-input {
+        padding: 10px 15px;
+        position: sticky;
+        bottom: 0;
+        background: #2d2d2d;
+      }
+      
+      .chat-input input {
+        font-size: 16px; /* Prevents zoom on iOS */
+        padding: 12px 15px;
+      }
+      
+      .modal-content {
+        padding: 20px;
+        margin: 20px;
+      }
+      
+      .modal-buttons {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Video Conference</h1>
+    <a href="dashboard.html" class="back-btn">← Back to Dashboard</a>
+  </div>
+  
+  <div class="video-conference">
+    <!-- Meeting Info -->
+    <div class="meeting-info">
+      <div class="meeting-id">Meeting ID: <span id="meeting-id">UAI-123456</span></div>
+      <div class="participant-count"><span id="participant-count">1</span> participants</div>
+    </div>
+    
+    <!-- Connection Status -->
+    <div class="connection-status" id="connection-status">
+      <div class="status-dot" id="status-dot"></div>
+      <span id="status-text">Connecting...</span>
+    </div>
+    
+    <!-- Video Grid -->
+    <div class="video-grid" id="video-grid">
+      <!-- Video participants will be added here -->
+    </div>
+    
+    <!-- Controls Bar -->
+    <div class="controls-bar">
+      <button class="control-btn" id="mic-btn" title="Mute/Unmute">
+        🎤
+      </button>
+      <button class="control-btn" id="camera-btn" title="Turn Camera On/Off">
+        📹
+      </button>
+      <button class="control-btn" id="screen-btn" title="Share Screen">
+        🖥️
+      </button>
+      <button class="control-btn" id="chat-btn" title="Open Chat">
+        💬
+      </button>
+      <button class="control-btn" id="participants-btn" title="Show Participants">
+        👥
+      </button>
+      <button class="control-btn leave" id="leave-btn" title="Leave Meeting">
+        📞
+      </button>
+    </div>
+  </div>
+  
+  <!-- Chat Sidebar -->
+  <div class="chat-sidebar" id="chat-sidebar">
+    <div class="chat-header">
+      <div class="chat-title">Chat</div>
+      <button class="close-chat" id="close-chat">×</button>
+    </div>
+    <div class="chat-messages" id="chat-messages">
+      <!-- Chat messages will be added here -->
+    </div>
+    <div class="chat-input">
+      <input type="text" id="chat-input" placeholder="Type a message...">
+    </div>
+  </div>
+  
+  <!-- Meeting Confirmation Modal -->
+  <div class="meeting-modal" id="meeting-modal">
+    <div class="modal-content">
+      <div class="modal-title">🎥 Join Video Conference</div>
+      <div class="modal-text">
+        You are about to join the video conference. This will access your camera and microphone.<br><br>
+        <strong>Meeting ID:</strong> <span id="modal-meeting-id">UAI-123456</span>
+      </div>
+      <div class="modal-buttons">
+        <button class="modal-btn primary" id="join-meeting-btn">Join Meeting</button>
+        <button class="modal-btn secondary" id="cancel-meeting-btn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    class VideoConference {
+      constructor() {
+        this.localStream = null;
+        this.isMicMuted = false;
+        this.isCameraOff = false;
+        this.isScreenSharing = false;
+        this.participants = new Map();
+        this.meetingId = this.generateMeetingId();
+        this.isMeetingStarted = false;
+        this.websocket = null;
+        this.userId = 'user_' + Date.now();
+        this.userName = 'User ' + Math.floor(Math.random() * 1000);
+        
+        this.initializeElements();
+        this.setupEventListeners();
+        this.showMeetingConfirmation();
+      }
+      
+      initializeElements() {
+        this.videoGrid = document.getElementById('video-grid');
+        this.micBtn = document.getElementById('mic-btn');
+        this.cameraBtn = document.getElementById('camera-btn');
+        this.screenBtn = document.getElementById('screen-btn');
+        this.chatBtn = document.getElementById('chat-btn');
+        this.participantsBtn = document.getElementById('participants-btn');
+        this.leaveBtn = document.getElementById('leave-btn');
+        this.chatSidebar = document.getElementById('chat-sidebar');
+        this.closeChatBtn = document.getElementById('close-chat');
+        this.chatMessages = document.getElementById('chat-messages');
+        this.chatInput = document.getElementById('chat-input');
+        this.participantCount = document.getElementById('participant-count');
+        this.meetingIdElement = document.getElementById('meeting-id');
+        this.meetingModal = document.getElementById('meeting-modal');
+        this.joinMeetingBtn = document.getElementById('join-meeting-btn');
+        this.cancelMeetingBtn = document.getElementById('cancel-meeting-btn');
+        this.modalMeetingId = document.getElementById('modal-meeting-id');
+        this.statusDot = document.getElementById('status-dot');
+        this.statusText = document.getElementById('status-text');
+      }
+      
+      setupEventListeners() {
+        this.micBtn.addEventListener('click', () => {
+          if (this.isMeetingStarted) this.toggleMic();
+        });
+        this.cameraBtn.addEventListener('click', () => {
+          if (this.isMeetingStarted) this.toggleCamera();
+        });
+        this.screenBtn.addEventListener('click', () => {
+          if (this.isMeetingStarted) this.toggleScreenShare();
+        });
+        this.chatBtn.addEventListener('click', () => {
+          if (this.isMeetingStarted) this.toggleChat();
+        });
+        this.closeChatBtn.addEventListener('click', () => this.closeChat());
+        this.leaveBtn.addEventListener('click', () => this.leaveMeeting());
+        this.chatInput.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter' && this.isMeetingStarted) {
+            this.sendChatMessage();
+          }
+        });
+        
+        // Meeting confirmation buttons
+        this.joinMeetingBtn.addEventListener('click', () => this.joinMeeting());
+        this.cancelMeetingBtn.addEventListener('click', () => this.cancelMeeting());
+        
+        // No fake participants - only real users
+      }
+      
+      generateMeetingId() {
+        return 'UAI-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+      }
+      
+      showMeetingConfirmation() {
+        this.modalMeetingId.textContent = this.meetingId;
+        this.meetingIdElement.textContent = this.meetingId;
+      }
+      
+      async joinMeeting() {
+        this.meetingModal.style.display = 'none';
+        this.isMeetingStarted = true;
+        
+        try {
+          await this.startLocalVideo();
+          this.addParticipant('self', 'You', true);
+          this.connectWebSocket();
+          console.log('✅ Meeting started successfully');
+        } catch (error) {
+          console.error('❌ Error starting meeting:', error);
+          this.showError('Could not start meeting. Please check your camera and microphone permissions.');
+        }
+      }
+      
+      cancelMeeting() {
+        window.location.href = 'dashboard.html';
+      }
+      
+      async startLocalVideo() {
+        try {
+          this.localStream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: true
+          });
+          
+          const selfParticipant = this.participants.get('self');
+          if (selfParticipant) {
+            selfParticipant.video.srcObject = this.localStream;
+            selfParticipant.video.play(); // Ensure video plays
+          }
+          
+          console.log('✅ Local video started');
+        } catch (error) {
+          console.error('❌ Error starting local video:', error);
+          this.showError('Could not access camera/microphone. Please allow camera and microphone permissions.');
+        }
+      }
+      
+      addParticipant(id, name, isSelf = false) {
+        const participantDiv = document.createElement('div');
+        participantDiv.className = `video-participant ${isSelf ? 'self' : ''}`;
+        participantDiv.id = `participant-${id}`;
+        
+        const video = document.createElement('video');
+        video.className = 'video-element';
+        video.autoplay = true;
+        video.muted = isSelf;
+        
+        const participantInfo = document.createElement('div');
+        participantInfo.className = 'participant-info';
+        
+        const participantName = document.createElement('span');
+        participantName.className = 'participant-name';
+        participantName.textContent = name;
+        
+        const participantStatus = document.createElement('div');
+        participantStatus.className = 'participant-status';
+        
+        participantInfo.appendChild(participantName);
+        participantInfo.appendChild(participantStatus);
+        
+        participantDiv.appendChild(video);
+        participantDiv.appendChild(participantInfo);
+        
+        this.videoGrid.appendChild(participantDiv);
+        
+        this.participants.set(id, {
+          name,
+          video,
+          status: participantStatus,
+          element: participantDiv,
+          isSelf
+        });
+        
+        this.updateParticipantCount();
+        this.updateVideoGridLayout();
+        
+        console.log(`✅ Added participant: ${name}`);
+      }
+      
+      updateVideoGridLayout() {
+        const participantCount = this.participants.size;
+        
+        if (participantCount === 1) {
+          // Single user - full screen
+          this.videoGrid.classList.add('single-user');
+        } else {
+          // Multiple users - grid layout
+          this.videoGrid.classList.remove('single-user');
+        }
+      }
+      
+      toggleMic() {
+        this.isMicMuted = !this.isMicMuted;
+        
+        if (this.localStream) {
+          this.localStream.getAudioTracks().forEach(track => {
+            track.enabled = !this.isMicMuted;
+          });
+        }
+        
+        this.micBtn.classList.toggle('active', this.isMicMuted);
+        this.micBtn.textContent = this.isMicMuted ? '🎤' : '🎤';
+        
+        // Update status
+        const selfParticipant = this.participants.get('self');
+        if (selfParticipant) {
+          selfParticipant.status.classList.toggle('muted', this.isMicMuted);
+        }
+        
+        console.log(`🎤 Microphone ${this.isMicMuted ? 'muted' : 'unmuted'}`);
+      }
+      
+      toggleCamera() {
+        this.isCameraOff = !this.isCameraOff;
+        
+        if (this.localStream) {
+          this.localStream.getVideoTracks().forEach(track => {
+            track.enabled = !this.isCameraOff;
+          });
+        }
+        
+        this.cameraBtn.classList.toggle('active', this.isCameraOff);
+        this.cameraBtn.textContent = this.isCameraOff ? '📹' : '📹';
+        
+        console.log(`📹 Camera ${this.isCameraOff ? 'off' : 'on'}`);
+      }
+      
+      async toggleScreenShare() {
+        if (!this.isScreenSharing) {
+          try {
+            const screenStream = await navigator.mediaDevices.getDisplayMedia({
+              video: true,
+              audio: true
+            });
+            
+            const selfParticipant = this.participants.get('self');
+            if (selfParticipant) {
+              selfParticipant.video.srcObject = screenStream;
+            }
+            
+            this.isScreenSharing = true;
+            this.screenBtn.classList.add('active');
+            this.screenBtn.textContent = '🖥️';
+            
+            console.log('🖥️ Screen sharing started');
+          } catch (error) {
+            console.error('❌ Error starting screen share:', error);
+            this.showError('Could not start screen sharing');
+          }
+        } else {
+          // Stop screen sharing
+          const selfParticipant = this.participants.get('self');
+          if (selfParticipant && this.localStream) {
+            selfParticipant.video.srcObject = this.localStream;
+          }
+          
+          this.isScreenSharing = false;
+          this.screenBtn.classList.remove('active');
+          this.screenBtn.textContent = '🖥️';
+          
+          console.log('🖥️ Screen sharing stopped');
+        }
+      }
+      
+      toggleChat() {
+        this.chatSidebar.classList.toggle('open');
+        this.chatBtn.classList.toggle('active', this.chatSidebar.classList.contains('open'));
+      }
+      
+      closeChat() {
+        this.chatSidebar.classList.remove('open');
+        this.chatBtn.classList.remove('active');
+      }
+      
+      connectWebSocket(retryCount = 0) {
+        const maxRetries = 3;
+        try {
+          this.websocket = new WebSocket('ws://127.0.0.1:3001');
+          
+          this.websocket.onopen = () => {
+            console.log('✅ WebSocket connected');
+            this.updateConnectionStatus(true, 'Connected');
+            // Send join message
+            this.websocket.send(JSON.stringify({
+              type: 'join_video_meeting',
+              userId: this.userId,
+              userName: this.userName,
+              meetingId: this.meetingId
+            }));
+          };
+          
+          this.websocket.onmessage = (event) => {
+            try {
+              const message = JSON.parse(event.data);
+              this.handleWebSocketMessage(message);
+            } catch (error) {
+              console.error('❌ Error parsing WebSocket message:', error);
+            }
+          };
+          
+          this.websocket.onclose = () => {
+            console.log('❌ WebSocket disconnected');
+            this.updateConnectionStatus(false, 'Disconnected');
+            if (retryCount < maxRetries) {
+              console.log(`🔄 Retrying connection (${retryCount + 1}/${maxRetries})...`);
+              setTimeout(() => this.connectWebSocket(retryCount + 1), 2000);
+            } else {
+              this.showError('Connection lost. Please refresh the page.');
+            }
+          };
+          
+          this.websocket.onerror = (error) => {
+            console.error('❌ WebSocket error:', error);
+            this.updateConnectionStatus(false, 'Error');
+            if (retryCount < maxRetries) {
+              console.log(`🔄 Retrying connection (${retryCount + 1}/${maxRetries})...`);
+              setTimeout(() => this.connectWebSocket(retryCount + 1), 2000);
+            } else {
+              this.showError('Could not connect to server. Please check if the server is running.');
+            }
+          };
+        } catch (error) {
+          console.error('❌ Error connecting WebSocket:', error);
+          this.showError('Could not connect to server. Please check your internet connection.');
+        }
+      }
+      
+      handleWebSocketMessage(message) {
+        switch (message.type) {
+          case 'user_joined':
+            this.addParticipant(message.userId, message.userName, false);
+            break;
+          case 'user_left':
+            this.removeParticipant(message.userId);
+            break;
+          case 'chat_message':
+            this.addChatMessage(message.senderName, message.message);
+            break;
+          case 'video_meeting_users':
+            // Update participant list
+            message.users.forEach(user => {
+              if (user.userId !== this.userId) {
+                this.addParticipant(user.userId, user.userName, false);
+              }
+            });
+            break;
+        }
+      }
+      
+      sendChatMessage() {
+        const message = this.chatInput.value.trim();
+        if (!message) return;
+        
+        // Send to WebSocket server
+        if (this.websocket && this.websocket.readyState === WebSocket.OPEN) {
+          this.websocket.send(JSON.stringify({
+            type: 'send_chat_message',
+            userId: this.userId,
+            userName: this.userName,
+            message: message,
+            meetingId: this.meetingId
+          }));
+        }
+        
+        this.addChatMessage('You', message);
+        this.chatInput.value = '';
+      }
+      
+      removeParticipant(userId) {
+        const participant = this.participants.get(userId);
+        if (participant) {
+          participant.element.remove();
+          this.participants.delete(userId);
+          this.updateParticipantCount();
+          this.updateVideoGridLayout();
+        }
+      }
+      
+      addChatMessage(sender, message) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'chat-message';
+        
+        const avatar = document.createElement('div');
+        avatar.className = 'message-avatar';
+        avatar.textContent = sender.charAt(0).toUpperCase();
+        
+        const content = document.createElement('div');
+        content.className = 'message-content';
+        
+        const senderName = document.createElement('div');
+        senderName.className = 'message-sender';
+        senderName.textContent = sender;
+        
+        const messageText = document.createElement('div');
+        messageText.className = 'message-text';
+        messageText.textContent = message;
+        
+        content.appendChild(senderName);
+        content.appendChild(messageText);
+        
+        messageDiv.appendChild(avatar);
+        messageDiv.appendChild(content);
+        
+        this.chatMessages.appendChild(messageDiv);
+        this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
+      }
+      
+      updateParticipantCount() {
+        this.participantCount.textContent = this.participants.size;
+      }
+      
+      leaveMeeting() {
+        if (confirm('Are you sure you want to leave the meeting?')) {
+          // Disconnect WebSocket
+          if (this.websocket) {
+            this.websocket.send(JSON.stringify({
+              type: 'leave_video_meeting',
+              userId: this.userId,
+              meetingId: this.meetingId
+            }));
+            this.websocket.close();
+          }
+          
+          // Stop all streams
+          if (this.localStream) {
+            this.localStream.getTracks().forEach(track => track.stop());
+          }
+          
+          // Redirect to dashboard
+          window.location.href = 'dashboard.html';
+        }
+      }
+      
+      updateConnectionStatus(connected, status) {
+        if (this.statusDot && this.statusText) {
+          this.statusDot.classList.toggle('connected', connected);
+          this.statusText.textContent = status;
+        }
+      }
+      
+      showError(message) {
+        alert(message);
+      }
+    }
+    
+    // Initialize video conference when page loads
+    document.addEventListener('DOMContentLoaded', () => {
+      new VideoConference();
+    });
+  </script>
+</body>
+</html>

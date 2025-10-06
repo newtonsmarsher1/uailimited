@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manage Users - UAI Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: linear-gradient(to bottom, #2979ff 0%, #e3f0ff 100%); margin: 0; }
+    .container { max-width: 900px; margin: 40px auto; background: #fff; border-radius: 18px; box-shadow: 0 2px 16px #2979ff22; padding: 32px 24px; }
+    h1 { color: #2979ff; text-align: center; margin-bottom: 24px; }
+    .search-bar { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #b3c6ff; margin-bottom: 18px; font-size: 1.1em; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    th, td { padding: 10px 8px; border-bottom: 1px solid #e3f0ff; text-align: left; }
+    th { background: #2979ff; color: #fff; font-weight: 600; }
+    tr:hover { background: #e3f0ff; }
+    .action-btn { background: #2979ff; color: #fff; border: none; border-radius: 8px; padding: 6px 14px; font-size: 1em; cursor: pointer; margin-right: 6px; }
+    .action-btn:hover { background: #1565c0; }
+    .back-link { display: inline-block; margin-bottom: 18px; color: #2979ff; text-decoration: none; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <button onclick="window.location.href='dashboard.html'" style="margin-bottom:18px;background:#2979ff;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:1em;cursor:pointer;box-shadow:0 2px 8px #2979ff22;">&larr; Back</button>
+    <h1>Manage Users</h1>
+    
+    <!-- Bulk Update Section -->
+    <div style="background: #f8f9fa; padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #e9ecef;">
+      <h3 style="color: #2979ff; margin-top: 0;">Bulk Balance Update</h3>
+      <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+        <input type="number" id="startId" placeholder="Start ID" style="padding: 8px; border: 1px solid #ccc; border-radius: 6px; width: 100px;">
+        <span>to</span>
+        <input type="number" id="endId" placeholder="End ID" style="padding: 8px; border: 1px solid #ccc; border-radius: 6px; width: 100px;">
+        <span>Level</span>
+        <input type="number" id="targetLevel" placeholder="Level" style="padding: 8px; border: 1px solid #ccc; border-radius: 6px; width: 80px;">
+        <span>Balance</span>
+        <input type="number" id="newBalance" placeholder="New Balance" style="padding: 8px; border: 1px solid #ccc; border-radius: 6px; width: 120px;">
+        <button onclick="performBulkUpdate()" class="action-btn" style="background: #28a745;">Update</button>
+        <button onclick="previewBulkUpdate()" class="action-btn" style="background: #17a2b8;">Preview</button>
+      </div>
+      <div id="bulkUpdateResult" style="margin-top: 10px; font-size: 14px;"></div>
+    </div>
+    
+    <input class="search-bar" id="searchInput" type="text" placeholder="Search by phone, name, or referral code...">
+    <table id="usersTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Phone</th>
+          <th>Name</th>
+          <th>Level</th>
+          <th>Balance</th>
+          <th>Referral</th>
+          <th>Admin</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <script>
+    async function fetchUsers() {
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        console.error('No admin token found');
+        window.location.href = 'index.html';
+        return;
+      }
+      
+      const res = await fetch('/api/admin/users', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (!res.ok) {
+        console.error('Failed to fetch users:', res.status);
+        return [];
+      }
+      
+      const users = await res.json();
+      return users;
+    }
+    function renderUsers(users) {
+      const tbody = document.querySelector('#usersTable tbody');
+      tbody.innerHTML = '';
+      users.forEach(u => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${u.id}</td>
+          <td>${u.phone}</td>
+          <td>${u.name || ''}</td>
+          <td>${u.level || 0}</td>
+          <td>KES ${parseFloat(u.balance || 0).toLocaleString()}</td>
+          <td>${u.referral_code || ''}</td>
+          <td>${u.is_admin ? 'Yes' : 'No'}</td>
+          <td><button class="action-btn" onclick="viewUser(${u.id})">View</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+    async function loadUsers() {
+      try {
+        // Show loading state
+        const tbody = document.querySelector('#usersTable tbody');
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 20px;">Loading users...</td></tr>';
+        
+        const users = await fetchUsers();
+        if (users.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 20px; color: #666;">No users found</td></tr>';
+        } else {
+          renderUsers(users);
+        }
+      } catch (error) {
+        console.error('Error loading users:', error);
+        const tbody = document.querySelector('#usersTable tbody');
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 20px; color: #ff4444;">Error loading users</td></tr>';
+      }
+    }
+    document.getElementById('searchInput').addEventListener('input', async function() {
+      const q = this.value.toLowerCase();
+      try {
+        const users = await fetchUsers();
+        const filtered = users.filter(u =>
+          (u.phone && u.phone.toLowerCase().includes(q)) ||
+          (u.name && u.name.toLowerCase().includes(q)) ||
+          (u.referral_code && u.referral_code.toLowerCase().includes(q))
+        );
+        renderUsers(filtered);
+      } catch (error) {
+        console.error('Error searching users:', error);
+      }
+    });
+    function viewUser(id) {
+      window.location.href = `user-details.html?id=${id}`;
+    }
+    
+    // Bulk update functions
+    async function previewBulkUpdate() {
+      const startId = document.getElementById('startId').value;
+      const endId = document.getElementById('endId').value;
+      const targetLevel = document.getElementById('targetLevel').value;
+      const newBalance = document.getElementById('newBalance').value;
+      
+      if (!startId || !endId || targetLevel === '' || !newBalance) {
+        showBulkResult('Please fill in all fields', 'error');
+        return;
+      }
+      
+      try {
+        const token = localStorage.getItem('adminToken');
+        const adminRole = localStorage.getItem('userRole');
+        const adminId = localStorage.getItem('adminId');
+        
+        const response = await fetch('/api/admin/bulk-update-balance', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            startId: parseInt(startId),
+            endId: parseInt(endId),
+            level: parseInt(targetLevel),
+            newBalance: parseFloat(newBalance),
+            adminRole: adminRole,
+            adminId: adminId
+          })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          showBulkResult(`Preview: Would update ${result.updatedUsers.length} users`, 'success');
+          console.log('Users that would be updated:', result.updatedUsers);
+        } else {
+          showBulkResult(`Error: ${result.error}`, 'error');
+        }
+      } catch (error) {
+        console.error('Preview error:', error);
+        showBulkResult('Error previewing update', 'error');
+      }
+    }
+    
+    async function performBulkUpdate() {
+      const startId = document.getElementById('startId').value;
+      const endId = document.getElementById('endId').value;
+      const targetLevel = document.getElementById('targetLevel').value;
+      const newBalance = document.getElementById('newBalance').value;
+      
+      if (!startId || !endId || targetLevel === '' || !newBalance) {
+        showBulkResult('Please fill in all fields', 'error');
+        return;
+      }
+      
+      if (!confirm(`Are you sure you want to update balance to ${newBalance} for all users with IDs ${startId}-${endId} and level ${targetLevel}?`)) {
+        return;
+      }
+      
+      try {
+        const token = localStorage.getItem('adminToken');
+        const adminRole = localStorage.getItem('userRole');
+        const adminId = localStorage.getItem('adminId');
+        
+        
+        showBulkResult('Updating...', 'info');
+        
+        const response = await fetch('/api/admin/bulk-update-balance', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            startId: parseInt(startId),
+            endId: parseInt(endId),
+            level: parseInt(targetLevel),
+            newBalance: parseFloat(newBalance),
+            adminRole: adminRole,
+            adminId: adminId
+          })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          showBulkResult(`✅ ${result.message}`, 'success');
+          loadUsers(); // Refresh the user list
+        } else {
+          showBulkResult(`❌ Error: ${result.error}`, 'error');
+        }
+      } catch (error) {
+        console.error('Bulk update error:', error);
+        showBulkResult('❌ Error performing update', 'error');
+      }
+    }
+    
+    function showBulkResult(message, type) {
+      const resultDiv = document.getElementById('bulkUpdateResult');
+      resultDiv.textContent = message;
+      resultDiv.style.color = type === 'error' ? '#dc3545' : type === 'success' ? '#28a745' : '#17a2b8';
+    }
+    
+    // Pre-fill the form for the specific request
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('startId').value = '196';
+      document.getElementById('endId').value = '218';
+      document.getElementById('targetLevel').value = '0';
+      document.getElementById('newBalance').value = '55';
+    });
+    
+    loadUsers();
+  </script>
+</body>
+</html> 

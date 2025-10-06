@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Coming Soon - UAI Agency</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #333;
+    }
+
+    .coming-soon-container {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 40px;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      max-width: 500px;
+      width: 90%;
+      animation: slideIn 0.6s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .icon {
+      font-size: 80px;
+      margin-bottom: 20px;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.05);
+      }
+    }
+
+    .title {
+      font-size: 2.5em;
+      font-weight: 700;
+      color: #2979ff;
+      margin-bottom: 15px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .subtitle {
+      font-size: 1.2em;
+      color: #666;
+      margin-bottom: 30px;
+      line-height: 1.5;
+    }
+
+    .message {
+      font-size: 1.1em;
+      color: #555;
+      margin-bottom: 40px;
+      line-height: 1.6;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: #e0e0e0;
+      border-radius: 4px;
+      margin-bottom: 30px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #2979ff, #1565c0);
+      border-radius: 4px;
+      animation: progress 3s ease-in-out infinite;
+    }
+
+    @keyframes progress {
+      0% {
+        width: 0%;
+      }
+      50% {
+        width: 70%;
+      }
+      100% {
+        width: 100%;
+      }
+    }
+
+    .return-btn {
+      background: linear-gradient(135deg, #2979ff, #1565c0);
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 50px;
+      font-size: 1.1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(41, 121, 255, 0.3);
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .return-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(41, 121, 255, 0.4);
+    }
+
+    .return-btn:active {
+      transform: translateY(0);
+    }
+
+    .features-list {
+      margin: 30px 0;
+      text-align: left;
+    }
+
+    .features-list h3 {
+      color: #2979ff;
+      margin-bottom: 15px;
+      font-size: 1.3em;
+    }
+
+    .features-list ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .features-list li {
+      padding: 8px 0;
+      color: #666;
+      position: relative;
+      padding-left: 25px;
+    }
+
+    .features-list li::before {
+      content: "🚀";
+      position: absolute;
+      left: 0;
+      top: 8px;
+    }
+
+    @media (max-width: 480px) {
+      .coming-soon-container {
+        padding: 30px 20px;
+      }
+      
+      .title {
+        font-size: 2em;
+      }
+      
+      .subtitle {
+        font-size: 1.1em;
+      }
+      
+      .icon {
+        font-size: 60px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="coming-soon-container">
+    <div class="icon">🚧</div>
+    <h1 class="title">Coming Soon!</h1>
+    <p class="subtitle">We're working hard to bring you something amazing</p>
+    
+    <div class="features-list">
+      <h3>What's Coming:</h3>
+      <ul>
+        <li>Advanced investment opportunities</li>
+        <li>Real-time market analysis</li>
+        <li>Enhanced security features</li>
+        <li>Improved user experience</li>
+        <li>Exciting new features</li>
+      </ul>
+    </div>
+    
+    <div class="progress-bar">
+      <div class="progress-fill"></div>
+    </div>
+    
+    <p class="message">
+      Our team is currently developing and testing this feature to ensure it meets our high standards. 
+      We appreciate your patience and can't wait to show you what we've been working on!
+    </p>
+    
+    <a href="home.html" class="return-btn">Return to Home</a>
+  </div>
+
+  <script>
+    // Add some interactive effects
+    document.addEventListener('DOMContentLoaded', function() {
+      const container = document.querySelector('.coming-soon-container');
+      
+      // Add hover effect to the container
+      container.addEventListener('mouseenter', function() {
+        this.style.transform = 'scale(1.02)';
+        this.style.transition = 'transform 0.3s ease';
+      });
+      
+      container.addEventListener('mouseleave', function() {
+        this.style.transform = 'scale(1)';
+      });
+      
+      // Add click effect to the return button
+      const returnBtn = document.querySelector('.return-btn');
+      returnBtn.addEventListener('click', function(e) {
+        // Add a small delay to show the click effect
+        this.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+          this.style.transform = 'scale(1)';
+        }, 150);
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title data-translate="signup-title">UAI Register</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    html, body {
+      padding: 0;
+      margin: 0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
+    body {
+      background: linear-gradient(to bottom, #2979ff 0%, #e3f0ff 100%);
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 370px;
+      margin: 32px auto 0 auto;
+      background: transparent;
+      padding: 0 8px;
+    }
+    .logo-row {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 36px;
+      margin-top: 24px;
+      position: relative;
+      height: 64px;
+    }
+    .hexagon {
+      width: 60px;
+      height: 60px;
+      background: #bd7de7;
+      clip-path: polygon(25% 6%, 75% 6%, 100% 50%, 75% 94%, 25% 94%, 0% 50%);
+      margin-bottom: 8px;
+      box-shadow: 0 2px 10px rgba(98, 142, 219, 0.15);
+      position: relative;
+      overflow: visible;
+    }
+    /* UAI text enters and stays inside hexagon, and swings like a bell */
+    .uai-in-hex {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transform: translate(-50%, 0);
+      pointer-events: none;
+      z-index: 2;
+      animation: uaiEnter 0.8s cubic-bezier(0.38, 0.8, 0.32, 1.2) 0.2s both;
+    }
+    .uai-in-hex span {
+      color: #fff;
+      font-size: 2em;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-shadow: 0 2px 8px #7a09c577, 0 0 2px #4f2b7c;
+      display: inline-block;
+      animation: bellSwing 1.2s cubic-bezier(.23,1.1,.32,1.08) infinite alternate;
+      transform-origin: 50% 0;
+    }
+    @keyframes uaiEnter {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -60px) scale(0.8) rotate(-15deg);
+      }
+      70% {
+        opacity: 1;
+        transform: translate(-50%, 8px) scale(1.12) rotate(7deg);
+      }
+      90% {
+        transform: translate(-50%, -6px) scale(0.98) rotate(-3deg);
+      }
+      100% {
+        opacity: 1;
+        transform: translate(-50%, 0) scale(1) rotate(0);
+      }
+    }
+    @keyframes bellSwing {
+      0% { transform: rotate(0deg); }
+      10% { transform: rotate(-18deg);}
+      20% { transform: rotate(-12deg);}
+      30% { transform: rotate(14deg);}
+      40% { transform: rotate(9deg);}
+      50% { transform: rotate(-10deg);}
+      60% { transform: rotate(-6deg);}
+      70% { transform: rotate(7deg);}
+      80% { transform: rotate(-5deg);}
+      90% { transform: rotate(3deg);}
+      100% { transform: rotate(0deg);}
+    }
+    .logo-text {
+      color: #adbfdf;
+      font-size: 1.85em;
+      font-weight: 700;
+      letter-spacing: 2px;
+      /* Hidden for this version, since it's now inside hex */
+      opacity: 0;
+      height: 0;
+      pointer-events: none;
+    }
+    form.register-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .input-row {
+      display: flex;
+      align-items: center;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(41,121,255,0.07);
+      padding: 0 12px;
+      border: 1px solid #b3c6ff;
+      position: relative;
+      min-height: 50px;
+    }
+    .input-icon {
+      font-size: 1.2em;
+      color: #2979ff;
+      margin-right: 8px;
+    }
+    input[type="text"], input[type="password"] {
+      border: none;
+      outline: none;
+      background: transparent;
+      padding: 14px 0;
+      font-size: 1em;
+      flex: 1;
+    }
+    .captcha-combo-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    .captcha-canvas {
+      background: #fff;
+      border-radius: 8px;
+      border: 1px solid #b3c6ff;
+      box-shadow: 0 1px 4px rgba(41,121,255,0.07);
+      width: 110px;
+      height: 38px;
+      display: block;
+      user-select: none;
+      touch-action: none;
+    }
+    .captcha-refresh {
+      background: none;
+      border: none;
+      color: #2979ff;
+      font-size: 1.4em;
+      cursor: pointer;
+      margin-left: 0;
+      padding: 4px 6px;
+      border-radius: 50%;
+      transition: background 0.1s;
+    }
+    .captcha-refresh:active {
+      background: #e3f0ff;
+    }
+    .captcha-input {
+      flex: 1 1 0;
+      min-width: 0;
+      margin-left: 2px;
+      padding: 8px 4px;
+      font-size: 1em;
+      border-radius: 6px;
+      border: 2px solid #2979ff;
+      outline: none;
+      background: #fff !important;
+      box-shadow: 0 1px 4px rgba(41,121,255,0.07);
+    }
+    .register-btn {
+      width: 100%;
+      padding: 14px 0;
+      background: linear-gradient(90deg, #2979ff 0%, #1565c0 100%);
+      color: #fff;
+      font-size: 1.08em;
+      font-weight: 600;
+      border: none;
+      border-radius: 24px;
+      margin-top: 10px;
+      box-shadow: 0 2px 8px rgba(41,121,255,0.12);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .register-btn:hover:not(:disabled) {
+      background: linear-gradient(90deg, #1565c0 0%, #2979ff 100%);
+    }
+    .register-btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+    .login-link {
+      text-align: center;
+      font-size: 1em;
+      color: #183c6c;
+      margin-top: 14px;
+    }
+    .login-link a {
+      color: #2979ff;
+      text-decoration: none;
+      font-weight: bold;
+      margin-left: 4px;
+    }
+    #success-message {
+      display: none;
+      color: #2e7d32;
+      text-align: center;
+      margin-top: 16px;
+      font-weight: 600;
+      font-size: 1.1em;
+    }
+    
+    .error-display {
+      display: none;
+      background: #f44336;
+      color: white;
+      padding: 12px;
+      border-radius: 8px;
+      text-align: center;
+      margin-top: 16px;
+      font-weight: 600;
+      border: 1px solid #d32f2f;
+    }
+    .error-message {
+      color: #d32f2f;
+      font-size: 0.85em;
+      position: absolute;
+      bottom: -18px;
+      left: 40px;
+    }
+    @media (max-width: 420px) {
+      .container {
+        max-width: 100vw;
+        padding: 0 2vw;
+      }
+      .hexagon,
+      .uai-in-hex {
+        width: 46px;
+        height: 46px;
+      }
+      .uai-in-hex span {
+        font-size: 1.35em;
+      }
+      .input-row, .captcha-combo-row {
+        font-size: 1em;
+      }
+    }
+    .password-toggle {
+      background: none;
+      border: none;
+      color: #2979ff;
+      font-size: 1.2em;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 4px;
+      transition: background 0.2s;
+      margin-left: 8px;
+    }
+    .password-toggle:hover {
+      background: #e3f0ff;
+    }
+    .password-toggle:active {
+      background: #b3c6ff;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo-row">
+      <div class="hexagon">
+        <div class="uai-in-hex"><span>UAI</span></div>
+      </div>
+      <span class="logo-text">UAI</span>
+    </div>
+    <form class="register-form" novalidate>
+      <div class="input-row" id="name-row">
+        <span class="input-icon">&#128100;</span>
+        <input 
+          type="text" 
+          name="name" 
+          placeholder="Enter your full name" 
+          required 
+          autocomplete="name"
+        >
+        <div class="error-message" aria-live="polite"></div>
+      </div>
+      <div class="input-row" id="phone-row">
+        <span class="input-icon">&#128241;</span>
+        <input 
+          type="text" 
+          name="phone" 
+          placeholder="Enter your phone number" 
+          required 
+          autocomplete="tel"
+        >
+        <div class="error-message" aria-live="polite"></div>
+      </div>
+      <div class="input-row" id="invitation-row">
+        <span class="input-icon">&#127873;</span>
+        <input 
+          type="text" 
+          name="invitationCode" 
+          placeholder="Enter invitation code (optional)" 
+          maxlength="20"
+        >
+        <div class="error-message" aria-live="polite"></div>
+      </div>
+      <div class="input-row" id="password-row">
+        <span class="input-icon">&#128274;</span>
+        <input 
+          type="password" 
+          name="password" 
+          placeholder="Enter password" 
+          minlength="6" 
+          required 
+          autocomplete="new-password"
+        >
+        <button type="button" class="password-toggle" data-target="password">👁</button>
+        <div class="error-message" aria-live="polite"></div>
+      </div>
+      <div class="input-row" id="confirm-password-row">
+        <span class="input-icon">&#128274;</span>
+        <input 
+          type="password" 
+          name="confirmPassword" 
+          placeholder="Re-enter password" 
+          minlength="6" 
+          required 
+          autocomplete="new-password"
+        >
+        <button type="button" class="password-toggle" data-target="confirmPassword">👁</button>
+        <div class="error-message" aria-live="polite"></div>
+      </div>
+      <!-- CAPTCHA and input on the same row -->
+      <div class="captcha-combo-row">
+        <canvas id="captcha-canvas" class="captcha-canvas" width="110" height="38" aria-label="Verification code"></canvas>
+        <button type="button" class="captcha-refresh" title="Refresh" aria-label="Refresh verification code">&#x21bb;</button>
+        <input 
+          type="text"
+          id="captcha-input"
+          class="captcha-input"
+          name="captcha" 
+          placeholder="Code"
+          maxlength="6"
+          required 
+          autocomplete="off"
+        >
+      </div>
+      <div style="height:18px;">
+        <span id="captcha-error" style="color:#d32f2f;font-size:0.87em;"></span>
+      </div>
+              <button type="submit" class="register-btn" data-translate="register-btn">Register</button>
+    </form>
+    <div id="success-message">Registration successful! You are now a temporary worker. Redirecting to login...</div>
+    <div id="error-message" class="error-display"></div>
+    <div class="login-link">
+      <span>Already have an account?</span>
+      <a href="index.html">Log in</a>
+    </div>
+  </div>
+  <script>
+    // Password toggle functionality
+    const passwordToggles = document.querySelectorAll('.password-toggle');
+    
+    passwordToggles.forEach(toggle => {
+      toggle.addEventListener('click', function() {
+        const targetName = this.getAttribute('data-target');
+        const passwordInput = document.querySelector(`input[name="${targetName}"]`);
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        this.textContent = type === 'password' ? '👁' : '🙈';
+      });
+    });
+
+    // CAPTCHA logic
+    function randomColor() {
+      return `rgb(${100+Math.floor(Math.random()*155)},${100+Math.floor(Math.random()*155)},${100+Math.floor(Math.random()*155)})`;
+    }
+    function generateCaptchaText(length=6) {
+      const chars = "0123456789ABCDEFGHJKLMNPQRSTUVWXYZ";
+      let code = "";
+      for (let i = 0; i < length; i++) {
+        code += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return code;
+    }
+    function drawCaptcha(code) {
+      const canvas = document.getElementById('captcha-canvas');
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.save();
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+
+      // Draw random lines ("scratches")
+      for(let i=0;i<7;i++) {
+        ctx.beginPath();
+        ctx.moveTo(Math.random()*canvas.width, Math.random()*canvas.height);
+        ctx.lineTo(Math.random()*canvas.width, Math.random()*canvas.height);
+        ctx.strokeStyle = randomColor();
+        ctx.lineWidth = 1 + Math.random()*1.6;
+        ctx.stroke();
+      }
+      // Draw random dots
+      for(let i=0;i<25;i++) {
+        ctx.beginPath();
+        ctx.arc(Math.random()*canvas.width, Math.random()*canvas.height, 0.9+Math.random()*1.3, 0, 2*Math.PI);
+        ctx.fillStyle = randomColor();
+        ctx.globalAlpha = 0.5+Math.random()*0.5;
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+
+      // Draw the code, each char with a little random rotation and position
+      ctx.font = "bold 20px Segoe UI, Arial";
+      ctx.textBaseline = "middle";
+      for(let i=0;i<code.length;i++) {
+        let angle = (Math.random()-0.5)*0.45;
+        ctx.save();
+        ctx.translate(15+i*15, 20+(Math.random()-0.5)*2);
+        ctx.rotate(angle);
+        ctx.fillStyle = randomColor();
+        ctx.shadowColor = "#ccc";
+        ctx.shadowBlur = 1.5;
+        ctx.fillText(code[i], 0, 0);
+        ctx.restore();
+      }
+      ctx.restore();
+    }
+
+    let currentCaptcha = "";
+
+    function refreshCaptcha() {
+      currentCaptcha = generateCaptchaText();
+      drawCaptcha(currentCaptcha);
+      document.getElementById('captcha-error').textContent = '';
+      document.getElementById('captcha-input').value = '';
+    }
+
+    document.querySelector('.captcha-refresh').addEventListener('click', refreshCaptcha);
+    document.getElementById('captcha-canvas').addEventListener('click', refreshCaptcha);
+
+    // Initial load
+    refreshCaptcha();
+
+    // Form validation and submit
+    const form = document.querySelector('.register-form');
+    const successMessage = document.getElementById('success-message');
+    const errorMessage = document.getElementById('error-message');
+    const submitBtn = form.querySelector('.register-btn');
+
+    // Function to show error messages
+    function showErrorMessage(message) {
+      errorMessage.textContent = message;
+      errorMessage.style.display = 'block';
+      successMessage.style.display = 'none';
+      
+      // Hide error message after 5 seconds
+      setTimeout(() => {
+        errorMessage.style.display = 'none';
+      }, 5000);
+    }
+
+    // Function to hide error messages
+    function hideErrorMessage() {
+      errorMessage.style.display = 'none';
+    }
+
+    // Real-time invitation code validation
+    const invitationInput = form.invitationCode;
+    const invitationRow = document.getElementById('invitation-row');
+    let invitationValidationTimeout;
+
+    invitationInput.addEventListener('input', function() {
+      clearTimeout(invitationValidationTimeout);
+      clearError(invitationRow);
+      
+      const code = this.value.trim();
+      if (code.length >= 6) {
+        invitationValidationTimeout = setTimeout(() => {
+          validateInvitationCode(code);
+        }, 500);
+      } else if (code.length > 0 && code.length < 6) {
+        showError(invitationRow, 'Invitation code must be at least 6 characters');
+        invitationInput.style.borderColor = '#d32f2f';
+      } else {
+        clearError(invitationRow);
+        invitationInput.style.borderColor = '';
+      }
+    });
+
+    async function validateInvitationCode(code) {
+      try {
+        const response = await fetch('/api/invitation/validate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ code: code })
+        });
+
+        const data = await response.json();
+        
+        if (data.valid) {
+          clearError(invitationRow);
+          invitationInput.style.borderColor = '#4caf50';
+        } else {
+          showError(invitationRow, data.message || 'Invalid invitation code');
+          invitationInput.style.borderColor = '#d32f2f';
+        }
+      } catch (error) {
+        console.error('Error validating invitation code:', error);
+        showError(invitationRow, 'Error validating invitation code');
+        invitationInput.style.borderColor = '#d32f2f';
+      }
+    }
+
+
+
+    function showError(inputRow, message) {
+      const errorDiv = inputRow.querySelector('.error-message');
+      if(errorDiv) errorDiv.textContent = message;
+    }
+    function clearError(inputRow) {
+      const errorDiv = inputRow.querySelector('.error-message');
+      if(errorDiv) errorDiv.textContent = '';
+    }
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      console.log('📝 Form submission triggered');
+
+      // Grab input elements and their parent rows
+      const nameInput = form.name;
+      const phoneInput = form.phone;
+      const invitationInput = form.invitationCode;
+      const passwordInput = form.password;
+      const confirmPasswordInput = form.confirmPassword;
+      const captchaInput = document.getElementById('captcha-input');
+
+      const nameRow = document.getElementById('name-row');
+      const phoneRow = document.getElementById('phone-row');
+      const passwordRow = document.getElementById('password-row');
+      const confirmPasswordRow = document.getElementById('confirm-password-row');
+      const captchaError = document.getElementById('captcha-error');
+
+      // Clear previous errors
+      clearError(nameRow);
+      clearError(phoneRow);
+      clearError(invitationRow);
+      clearError(passwordRow);
+      clearError(confirmPasswordRow);
+      captchaError.textContent = '';
+
+      // Validate name (not empty)
+      if (!nameInput.value.trim()) {
+        console.log('❌ Name validation failed');
+        showError(nameRow, 'Name is required.');
+        nameInput.focus();
+        return;
+      }
+      console.log('✅ Name validation passed');
+
+      // Validate phone number (not empty and reasonable length)
+      if (!phoneInput.value.trim()) {
+        console.log('❌ Phone validation failed');
+        showError(phoneRow, 'Phone number is required.');
+        phoneInput.focus();
+        return;
+      }
+      console.log('✅ Phone validation passed');
+      
+      if (phoneInput.value.trim().length < 5) {
+        console.log('❌ Phone length validation failed');
+        showError(phoneRow, 'Phone number must be at least 5 characters long.');
+        phoneInput.focus();
+        return;
+      }
+      console.log('✅ Phone length validation passed');
+
+      // Validate invitation code format (if provided)
+      if (invitationInput.value.trim()) {
+        const invitationPattern = /^[A-Za-z0-9]{6,}$/;
+        if (!invitationPattern.test(invitationInput.value.trim())) {
+          console.log('❌ Invitation code format validation failed');
+          showError(invitationRow, 'Invitation code must be at least 6 characters long and contain only letters and numbers.');
+          invitationInput.focus();
+          return;
+        }
+      }
+      console.log('✅ Invitation code validation passed');
+
+
+
+      // Validate password length
+      if (passwordInput.value.length < 6) {
+        console.log('❌ Password length validation failed');
+        showError(passwordRow, 'Password must be at least 6 characters.');
+        passwordInput.focus();
+        return;
+      }
+      console.log('✅ Password length validation passed');
+
+      // Validate password match
+      if (passwordInput.value !== confirmPasswordInput.value) {
+        console.log('❌ Password match validation failed');
+        showError(confirmPasswordRow, 'Passwords do not match. Please try again.');
+        confirmPasswordInput.focus();
+        return;
+      }
+      console.log('✅ Password match validation passed');
+
+      // Validate captcha
+      if (captchaInput.value.trim().toUpperCase() !== currentCaptcha) {
+        console.log('❌ Captcha validation failed');
+        captchaError.textContent = "Verification code is incorrect.";
+        captchaInput.focus();
+        refreshCaptcha();
+        return;
+      }
+      console.log('✅ Captcha validation passed');
+      console.log('🎉 All validations passed! Proceeding with registration...');
+
+      // Disable submit button and show loading state
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Registering...';
+      
+      // Hide any previous error messages
+      hideErrorMessage();
+
+      // Prepare data to send
+      const data = {
+        name: nameInput.value.trim(),
+        phone: phoneInput.value.trim(),
+        password: passwordInput.value,
+        invitationCode: invitationInput.value.trim() || null
+      };
+      
+      console.log('🚀 Starting registration with data:', { ...data, password: '[HIDDEN]' });
+
+      // Send data to backend API (using /api/auth/register and field 'referral')
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+      
+      fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data),
+        signal: controller.signal
+      })
+      .then(async response => {
+        console.log('📡 Registration response status:', response.status);
+        const resData = await response.json();
+        console.log('📡 Registration response data:', resData);
+
+        if (!response.ok) {
+          // Show specific error message
+          const errorMessage = resData.error || resData.message || 'Registration failed';
+          console.error('❌ Registration failed:', errorMessage);
+          showErrorMessage(errorMessage);
+          throw new Error(errorMessage);
+        }
+        console.log('✅ Registration successful!');
+        clearTimeout(timeoutId);
+        return resData;
+      })
+      .then(data => {
+        successMessage.style.display = 'block';
+        form.style.display = 'none';
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 3000);
+      })
+      .catch(err => {
+        console.error('Registration error:', err);
+        clearTimeout(timeoutId);
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Register';
+        
+        // Show error message to user
+        let errorMessage = 'Registration failed. Please try again.';
+        
+        if (err.name === 'AbortError') {
+          errorMessage = 'Registration timed out. Please check your internet connection and try again.';
+        } else if (err.message) {
+          errorMessage = err.message;
+        }
+        
+        showErrorMessage(errorMessage);
+      });
+    });
+    
+    // Auto-fill invitation code from URL parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const invitationCode = urlParams.get('code');
+    if (invitationCode) {
+      const invitationInput = document.querySelector('input[name="invitationCode"]');
+      if (invitationInput) {
+        invitationInput.value = invitationCode;
+        // Trigger validation to show it's valid
+        invitationInput.dispatchEvent(new Event('input'));
+      }
+    }
+    
+    // Initialize language manager immediately
+    (async function() {
+      try {
+        // Load language manager
+        const script = document.createElement('script');
+        script.src = 'js/language-manager.js';
+        document.head.appendChild(script);
+        
+        script.onload = async function() {
+          if (window.languageManager) {
+            await window.languageManager.init();
+            console.log('🌍 Language manager loaded and initialized on signup page');
+          }
+        };
+        
+        script.onerror = function() {
+          console.warn('⚠️ Language manager failed to load, continuing without it');
+        };
+      } catch (error) {
+        console.warn('⚠️ Error loading language manager:', error);
+      }
+    })();
+  </script>
+</body>
+</html>

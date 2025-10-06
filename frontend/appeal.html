@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account Appeal - UAI Agency</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .appeal-container {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .logo {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 50%;
+      margin: 0 auto 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2em;
+      color: white;
+      font-weight: bold;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 2.2em;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 1.1em;
+    }
+
+    .form-group {
+      margin-bottom: 25px;
+      text-align: left;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 600;
+      font-size: 1.1em;
+    }
+
+    select, textarea {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid #e1e5e9;
+      border-radius: 10px;
+      font-size: 1em;
+      transition: border-color 0.3s ease;
+      font-family: inherit;
+    }
+
+    select:focus, textarea:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    .submit-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 15px 40px;
+      border-radius: 10px;
+      font-size: 1.1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+      width: 100%;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .back-btn {
+      background: #6c757d;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 1em;
+      cursor: pointer;
+      margin-top: 20px;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .back-btn:hover {
+      background: #5a6268;
+    }
+
+    .message {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 10px;
+      font-weight: 600;
+      display: none;
+    }
+
+    .message.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .message.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .loading {
+      display: none;
+      margin-top: 20px;
+    }
+
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .info-box {
+      background: #e3f2fd;
+      border: 1px solid #bbdefb;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 30px;
+      text-align: left;
+    }
+
+    .info-box h3 {
+      color: #1976d2;
+      margin-bottom: 10px;
+    }
+
+    .info-box p {
+      color: #424242;
+      line-height: 1.6;
+    }
+
+    .payment-details {
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .payment-details h3 {
+      color: #333;
+      margin-bottom: 15px;
+    }
+
+    .payment-info {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid #e9ecef;
+    }
+
+    .payment-info p {
+      margin-bottom: 8px;
+      color: #333;
+    }
+
+    .payment-info p:last-child {
+      margin-bottom: 0;
+    }
+
+    #paymentReference {
+      font-family: monospace;
+      background: #e9ecef;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .appeal-card {
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .appeal-card h3 {
+      color: #333;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .appeal-detail {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    .appeal-detail:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+    }
+
+    .appeal-detail-label {
+      font-weight: 600;
+      color: #666;
+    }
+
+    .appeal-detail-value {
+      color: #333;
+      text-align: right;
+    }
+
+    .status-indicator {
+      padding: 4px 12px;
+      border-radius: 15px;
+      font-size: 0.9em;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .status-pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .status-under-review {
+      background: #cce5ff;
+      color: #004085;
+    }
+
+    .status-approved {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .status-rejected {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .payment-pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .payment-paid {
+      background: #d4edda;
+      color: #155724;
+    }
+  </style>
+</head>
+<body>
+  <div class="appeal-container">
+    <div class="logo">UAI</div>
+    
+    <h1>Account Appeal</h1>
+    <p class="subtitle" id="pageSubtitle">Submit an appeal to review your account suspension</p>
+
+    <div class="info-box">
+      <h3>📋 Appeal Information</h3>
+      <p id="infoText">Please provide detailed information about why you believe your account suspension should be reviewed. Our team will carefully review your appeal and respond within 24-48 hours.</p>
+    </div>
+
+    <!-- Appeal Form -->
+    <div id="newAppealSection">
+      <form id="appealForm">
+      <div class="form-group">
+        <label for="appealReason">Reason for Appeal *</label>
+        <select id="appealReason" required>
+          <option value="">Select a reason</option>
+          <option value="mistaken_suspension">Mistaken Suspension</option>
+          <option value="policy_violation_clarification">Policy Violation Clarification</option>
+          <option value="technical_error">Technical Error</option>
+          <option value="unfair_punishment">Unfair Punishment</option>
+          <option value="first_time_offense">First Time Offense</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="appealDescription">Detailed Description *</label>
+        <textarea 
+          id="appealDescription" 
+          placeholder="Please provide a detailed explanation of your situation, including any relevant information that might help us understand your case..."
+          required
+        ></textarea>
+      </div>
+
+      <button type="submit" class="submit-btn" id="submitBtn">
+        Submit Appeal
+      </button>
+    </form>
+
+    <!-- Check Status Button -->
+    <div style="text-align: center; margin-top: 30px;">
+      <button class="submit-btn" onclick="window.location.href='appeal-status.html'" style="background: #6c757d;">
+        Check Appeal Status
+      </button>
+    </div>
+
+    <!-- Payment Form (Hidden Initially) -->
+    <div id="paymentForm" style="display: none;">
+      <div class="info-box">
+        <h3>💰 Appeal Payment Required</h3>
+        <p>To process your appeal, a fee of <strong>KES 560</strong> is required. Please complete the payment using the details below:</p>
+      </div>
+
+      <div class="payment-details">
+        <h3>Payment Instructions</h3>
+        <div class="payment-info">
+          <p><strong>Amount:</strong> KES 560</p>
+          <p><strong>Pay to:</strong> <span id="financialManagerPhone">Loading...</span></p>
+          <p><strong>Account Name:</strong> <span id="financialManagerName">Loading...</span></p>
+          <p><strong>Reference:</strong> <span id="paymentReference">Loading...</span></p>
+        </div>
+      </div>
+
+      <form id="paymentProofForm">
+        <div class="form-group">
+          <label for="paymentMessage">Payment Message *</label>
+          <textarea 
+            id="paymentMessage" 
+            placeholder="Paste the payment message you received after sending money to financial details above..."
+            required
+          ></textarea>
+        </div>
+
+        <button type="submit" class="submit-btn" id="paymentBtn">
+          Submit Payment Proof
+        </button>
+      </form>
+    </div>
+
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <p>Submitting your appeal...</p>
+    </div>
+
+    <div class="message" id="message"></div>
+
+    <a href="javascript:history.back()" class="back-btn">← Back</a>
+  </div>
+
+  <script>
+    console.log('Appeal page loaded, initializing...');
+    
+    let currentAppealId = null;
+    let paymentReference = '';
+
+    // Wait for DOM to be fully loaded
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('DOM loaded, setting up event listeners...');
+      
+      const form = document.getElementById('appealForm');
+      const submitBtn = document.getElementById('submitBtn');
+      
+      console.log('Elements found:', {
+        form: !!form,
+        submitBtn: !!submitBtn
+      });
+      
+      if (form && submitBtn) {
+        console.log('Setting up form submit listener...');
+        
+        form.addEventListener('submit', async function(e) {
+          console.log('Form submit event triggered!');
+          e.preventDefault();
+          
+          const submitBtn = document.getElementById('submitBtn');
+          const loading = document.getElementById('loading');
+          const message = document.getElementById('message');
+          
+          // Get form data
+          const appealReason = document.getElementById('appealReason').value;
+          const appealDescription = document.getElementById('appealDescription').value;
+          
+          console.log('Form data:', { appealReason, appealDescription });
+          
+          // Validate form
+          if (!appealReason || !appealDescription.trim()) {
+            showMessage('Please fill in all required fields.', 'error');
+            return;
+          }
+          
+          // Show loading state
+          submitBtn.disabled = true;
+          loading.style.display = 'block';
+          message.style.display = 'none';
+          
+          try {
+            console.log('Submitting appeal...');
+            
+            // Submit appeal (using public endpoint)
+            const response = await fetch('/api/appeals/submit-public', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                appeal_reason: appealReason,
+                appeal_description: appealDescription.trim(),
+                user_name: 'Anonymous User',
+                user_phone: '0000000000'
+              })
+            });
+            
+            console.log('Response received:', response.status);
+            const data = await response.json();
+            console.log('Response data:', data);
+            
+            if (response.ok) {
+              currentAppealId = data.appeal_id;
+              paymentReference = `APPEAL-${data.appeal_id}-${Date.now()}`;
+              
+              // Hide appeal form and show payment form
+              document.getElementById('appealForm').style.display = 'none';
+              document.getElementById('paymentForm').style.display = 'block';
+              document.getElementById('paymentReference').textContent = paymentReference;
+              
+              // Load random financial manager details
+              loadRandomFinancialManager();
+              
+              showMessage('Appeal submitted successfully! Please complete the payment to proceed.', 'success');
+            } else {
+              throw new Error(data.error || 'Failed to submit appeal');
+            }
+            
+          } catch (error) {
+            console.error('Appeal submission error:', error);
+            showMessage(error.message || 'Failed to submit appeal. Please try again.', 'error');
+          } finally {
+            submitBtn.disabled = false;
+            loading.style.display = 'none';
+          }
+        });
+        
+        console.log('Form submit listener attached successfully');
+      } else {
+        console.error('Form or submit button not found!');
+      }
+    });
+
+    // Handle payment proof submission
+    document.addEventListener('DOMContentLoaded', function() {
+      const paymentForm = document.getElementById('paymentProofForm');
+      if (paymentForm) {
+        paymentForm.addEventListener('submit', async function(e) {
+          e.preventDefault();
+          
+          const paymentBtn = document.getElementById('paymentBtn');
+          const loading = document.getElementById('loading');
+          const message = document.getElementById('message');
+          
+          // Get payment message
+          const paymentMessage = document.getElementById('paymentMessage').value.trim();
+          
+          // Validate payment message
+          if (!paymentMessage) {
+            showMessage('Please paste the payment message.', 'error');
+            return;
+          }
+          
+          // Show loading state
+          paymentBtn.disabled = true;
+          loading.style.display = 'block';
+          message.style.display = 'none';
+          
+          try {
+            console.log('Submitting payment proof...');
+            
+            // Submit payment proof (using public endpoint)
+            const response = await fetch('/api/appeals/payment-proof-public', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                appeal_id: currentAppealId,
+                payment_message: paymentMessage,
+                payment_reference: paymentReference
+              })
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+              showMessage('Payment proof submitted successfully! Your payment is now pending approval. We will review it within 24-48 hours.', 'success');
+              
+              // Hide payment form
+              document.getElementById('paymentForm').style.display = 'none';
+              
+              // Show success message and redirect to status page
+              setTimeout(() => {
+                window.location.href = 'appeal-status.html';
+              }, 3000);
+            } else {
+              throw new Error(data.error || 'Failed to submit payment proof');
+            }
+            
+          } catch (error) {
+            console.error('Payment proof submission error:', error);
+            showMessage(error.message || 'Failed to submit payment proof. Please try again.', 'error');
+          } finally {
+            paymentBtn.disabled = false;
+            loading.style.display = 'none';
+          }
+        });
+      }
+    });
+    
+    function showMessage(text, type) {
+      const message = document.getElementById('message');
+      message.textContent = text;
+      message.className = `message ${type}`;
+      message.style.display = 'block';
+      
+      // Auto-hide success messages after 5 seconds
+      if (type === 'success') {
+        setTimeout(() => {
+          message.style.display = 'none';
+        }, 5000);
+      }
+    }
+
+    // Simple form submission handler
+    function handleFormSubmission() {
+      console.log('Form submitted successfully, showing payment form');
+      
+      // Hide appeal form and show payment form
+      document.getElementById('newAppealSection').style.display = 'none';
+      document.getElementById('paymentForm').style.display = 'block';
+      
+      // Load random financial manager details
+      loadRandomFinancialManager();
+      
+      showMessage('Appeal submitted successfully! Please complete the payment to proceed.', 'success');
+    }
+    
+    // Load random financial manager details
+    async function loadRandomFinancialManager() {
+      try {
+        console.log('Loading random financial manager...');
+        
+        const response = await fetch('/api/appeals/random-financial-manager');
+        const data = await response.json();
+        
+        if (data.success && data.financialManager) {
+          const manager = data.financialManager;
+          document.getElementById('financialManagerPhone').textContent = manager.phone || '0114710035';
+          document.getElementById('financialManagerName').textContent = manager.name || 'UAI Agency';
+          
+          console.log('✅ Financial manager loaded:', manager.name);
+        } else {
+          console.log('❌ Failed to load financial manager, using defaults');
+          document.getElementById('financialManagerPhone').textContent = '0114710035';
+          document.getElementById('financialManagerName').textContent = 'UAI Agency';
+        }
+        
+      } catch (error) {
+        console.error('Error loading financial manager:', error);
+        // Use default values if API fails
+        document.getElementById('financialManagerPhone').textContent = '0114710035';
+        document.getElementById('financialManagerName').textContent = 'UAI Agency';
+      }
+    }
+    
+    // Check if user is logged in
+    window.addEventListener('load', function() {
+      console.log('Window loaded, form is ready');
+      const submitBtn = document.getElementById('submitBtn');
+      if (submitBtn) {
+        submitBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
