@@ -2,7 +2,7 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const pool = require('../config/database.js');
+const sql = require('../config/database-supabase.js');
 const { body, validationResult } = require('express-validator');
 const path = require('path');
 
@@ -101,8 +101,8 @@ router.post('/login', validateLogin, async (req, res) => {
   try {
     console.log(`🔍 Login attempt for phone: ${phone} (normalized: ${normalizedPhone})`);
     
-    // Query the database
-    const [userResult] = await pool.query('SELECT * FROM users WHERE phone=?', [normalizedPhone]);
+    // Query the database (Supabase/Postgres)
+    const userResult = await sql`SELECT * FROM users WHERE phone = ${normalizedPhone}`;
     
     console.log(`🔍 Database query result: ${userResult.length} users found`);
     
@@ -132,7 +132,7 @@ router.post('/login', validateLogin, async (req, res) => {
       for (const altPhone of alternativePhones) {
         if (altPhone !== normalizedPhone) {
           console.log(`🔍 Trying alternative format: ${altPhone}`);
-          const [altResult] = await pool.query('SELECT * FROM users WHERE phone=?', [altPhone]);
+          const altResult = await sql`SELECT * FROM users WHERE phone = ${altPhone}`;
           if (altResult.length > 0) {
             console.log(`✅ User found with alternative format: ${altPhone}`);
             userResult.push(...altResult);
@@ -250,7 +250,7 @@ router.post('/register', validateRegistration, async (req, res) => {
     console.log(`🔍 Registration attempt for phone: ${phone} (normalized: ${normalizedPhone})`);
     
     // Check if user already exists
-    const [existingUsers] = await pool.query('SELECT id FROM users WHERE phone=?', [normalizedPhone]);
+    const existingUsers = await sql`SELECT id FROM users WHERE phone = ${normalizedPhone}`;
     
     if (existingUsers.length > 0) {
       console.log(`❌ User already exists: ${phone}`);
@@ -260,10 +260,7 @@ router.post('/register', validateRegistration, async (req, res) => {
     // Validate invitation code if provided
     let referredBy = null;
     if (invitationCode) {
-      const [invitationUsers] = await pool.query(
-        'SELECT id FROM users WHERE invitation_code = ?',
-        [invitationCode]
-      );
+      const invitationUsers = await sql`SELECT id FROM users WHERE invitation_code = ${invitationCode}`;
       
       if (invitationUsers.length === 0) {
         console.log(`❌ Invalid invitation code: ${invitationCode}`);
@@ -287,7 +284,7 @@ router.post('/register', validateRegistration, async (req, res) => {
         invitationCode_new += chars.charAt(Math.floor(Math.random() * chars.length));
       }
       
-      const [existingCodes] = await pool.query('SELECT id FROM users WHERE invitation_code = ?', [invitationCode_new]);
+      const existingCodes = await sql`SELECT id FROM users WHERE invitation_code = ${invitationCode_new}`;
       if (existingCodes.length === 0) {
         isUnique = true;
       }
@@ -298,30 +295,26 @@ router.post('/register', validateRegistration, async (req, res) => {
     const trialEndDate = new Date(now);
     trialEndDate.setDate(trialEndDate.getDate() + 5); // 5 days from now
     
-    const [result] = await pool.query(
-      'INSERT INTO users (phone, password, name, full_name, is_active, level, wallet_balance, bond_balance, invitation_code, referral_code, referred_by, trial_start_date, trial_end_date, trial_days_remaining, is_trial_active, trial_expired, temp_worker_start_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [normalizedPhone, hashedPassword, name, name, 1, 0, 0, 0, invitationCode_new, invitationCode_new, referredBy, now, trialEndDate, 5, true, false, now.toISOString().split('T')[0]]
-    );
-    
-    const userId = result.insertId;
+    const insertRows = await sql`
+      INSERT INTO users (
+        phone, password, name, full_name, is_active, level, wallet_balance, bond_balance, invitation_code, referral_code, referred_by, trial_start_date, trial_end_date, trial_days_remaining, is_trial_active, trial_expired, temp_worker_start_date
+      ) VALUES (
+        ${normalizedPhone}, ${hashedPassword}, ${name}, ${name}, ${1}, ${0}, ${0}, ${0}, ${invitationCode_new}, ${invitationCode_new}, ${referredBy}, ${now}, ${trialEndDate}, ${5}, ${true}, ${false}, ${now.toISOString().split('T')[0]}
+      ) RETURNING id`;
+
+    const userId = insertRows[0].id;
         
         // Process invitation rewards based on level system
         if (referredBy) {
           try {
             // Get referrer details and their level
-            const [referrerRows] = await pool.query(
-              'SELECT id, wallet_balance, level FROM users WHERE id = ?', 
-              [referredBy]
-            );
+            const referrerRows = await sql`SELECT id, wallet_balance, level FROM users WHERE id = ${referredBy}`;
             
             if (referrerRows.length > 0) {
               const referrer = referrerRows[0];
               
               // Get level invitation rates
-              const [levelRows] = await pool.query(
-                'SELECT invitation_rate_a, invitation_rate_b, invitation_rate_c FROM levels WHERE level = ?',
-                [referrer.level]
-              );
+              const levelRows = await sql`SELECT invitation_rate_a, invitation_rate_b, invitation_rate_c FROM levels WHERE level = ${referrer.level}`;
               
               if (levelRows.length > 0) {
                 const level = levelRows[0];
@@ -347,13 +340,11 @@ router.post('/register', validateRegistration, async (req, res) => {
                   const newBalance = parseFloat(referrer.wallet_balance) + rewardAmount;
                   
                   // Update referrer's wallet
-                  await pool.query('UPDATE users SET wallet_balance = ? WHERE id = ?', [newBalance, referredBy]);
+                  await sql`UPDATE users SET wallet_balance = ${newBalance} WHERE id = ${referredBy}`;
                   
                   // Create referral reward record
-                  await pool.query(
-                    'INSERT INTO referral_rewards (inviter_id, user_id, level, reward_amount, status, created_at) VALUES (?, ?, ?, ?, ?, ?)',
-                    [referredBy, userId, referrer.level, rewardAmount, 'completed', now]
-                  );
+                  await sql`INSERT INTO referral_rewards (inviter_id, user_id, level, reward_amount, status, created_at)
+                    VALUES (${referredBy}, ${userId}, ${referrer.level}, ${rewardAmount}, ${'completed'}, ${now})`;
                   
                   console.log(`✅ Invitation reward processed: User ${userId} referred by ${referredBy} (Level ${referrer.level}, +KES ${rewardAmount})`);
                 }
@@ -416,11 +407,8 @@ router.get('/sw.js', (req, res) => {
 // Test database connection endpoint
 router.get('/test-db', async (req, res) => {
   try {
-    const [result] = await pool.query('SELECT COUNT(*) as userCount FROM users');
-    res.json({ 
-      success: true, 
-      message: `Database connected. Total users: ${result[0].userCount}` 
-    });
+    const result = await sql`SELECT COUNT(*) as count FROM users`;
+    res.json({ success: true, message: `Database connected. Total users: ${result[0].count}` });
   } catch (error) {
     console.error('❌ Database test error:', error);
     res.status(500).json({ 
